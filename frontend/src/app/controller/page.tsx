@@ -345,6 +345,40 @@ export default function ControllerPage() {
             )}
           </section>
 
+          {/* Secure Booklet QR Generator */}
+          <section className="bg-card-bg p-5 rounded-xl border border-border-color shadow-sm">
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-accent-amber"></span> Secure Booklet QR Generator
+            </h2>
+            <p className="text-xs text-text-muted mb-4 leading-normal">
+              Stamps a candidate-specific, encrypted verification QR code on the physical exam booklet template.
+            </p>
+            <div className="flex flex-col gap-3 text-xs">
+              <div>
+                <label className="block text-text-muted mb-1">Target Candidate Database ID</label>
+                <input
+                  type="text"
+                  placeholder="Enter candidate registration ID"
+                  id="candCoverId"
+                  className="w-full p-2 bg-background border border-border-color rounded text-white font-mono focus:outline-none focus:border-accent-amber"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const input = document.getElementById("candCoverId") as HTMLInputElement;
+                  if (input && input.value) {
+                    window.open(`${BACKEND_URL}/api/candidates/${input.value}/booklet/cover`, "_blank");
+                  } else {
+                    alert("Please enter a Candidate ID first.");
+                  }
+                }}
+                className="w-full py-2 bg-accent-amber text-background font-bold rounded hover:bg-accent-amber/90 transition cursor-pointer"
+              >
+                Download Encryption QR Stamp
+              </button>
+            </div>
+          </section>
+
           {/* Results Verification & publishing */}
           <section className="bg-card-bg p-5 rounded-xl border border-border-color shadow-sm">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">

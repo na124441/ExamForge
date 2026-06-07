@@ -144,6 +144,17 @@ class Result(Base):
     result_hash = Column(String, nullable=False)
     published_at = Column(DateTime(timezone=True), nullable=True)
 
+class AIEvaluationInsight(Base):
+    __tablename__ = "ai_evaluation_insights"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    evaluation_id = Column(String, ForeignKey("evaluations.id"), nullable=True)
+    ocr_extracted_text = Column(Text, nullable=True)
+    suggested_marks = Column(Float, nullable=True)
+    rubric_mismatch_flags = Column(Text, nullable=True) # JSON list
+    plagiarism_score = Column(Float, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
 class AuditLog(Base):
     __tablename__ = "audit_logs"
 

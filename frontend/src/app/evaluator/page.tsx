@@ -23,6 +23,37 @@ export default function EvaluatorPage() {
   // States
   const [submitting, setSubmitting] = useState(false);
   const [gradeResponse, setGradeResponse] = useState<any>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiInsight, setAiInsight] = useState<any>(null);
+
+  const handleFetchAIInsight = async () => {
+    if (!questionId) {
+      alert("Please enter the target Question ID to grade.");
+      return;
+    }
+    setAiLoading(true);
+    setAiInsight(null);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/evaluations/ai-insight`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          exam_id: examId,
+          anonymous_id: anonId,
+          question_id: questionId,
+          text_content: "Water electrolysis is the decomposition of water (H2O) into oxygen (O2) and hydrogen gas (H2) by passing an electric current through it. At the anode (positive electrode), oxidation happens: 2H2O -> O2 + 4H+ + 4e-. So oxygen gas is produced at anode. At the cathode (negative electrode), reduction happens: 4H2O + 4e- -> 2H2 + 4OH-. Hydrogen gas is produced at cathode. The volumetric ratio of hydrogen to oxygen is 2:1 since two molecules of hydrogen are produced for every molecule of oxygen.",
+          rubric_guidelines: "Marks distribution: Anode oxidation details (2.5), Cathode reduction details (2.5), Volumetric ratio description (3.0), Electricity definition (2.0)"
+        })
+      });
+      if (!res.ok) throw new Error("AI evaluation service failed");
+      const data = await res.json();
+      setAiInsight(data);
+    } catch (err: any) {
+      alert(err.message || "Failed to load AI insights.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   useEffect(() => {
     const storedToken = localStorage.getItem("access_token");
@@ -192,6 +223,49 @@ export default function EvaluatorPage() {
                 onChange={(e) => setRubricNotes(e.target.value)}
                 className="w-full p-2 bg-background border border-border-color rounded focus:border-indigo-400 focus:outline-none leading-relaxed"
               />
+            </div>
+
+            <div className="flex flex-col gap-2 mt-2">
+              <button
+                type="button"
+                onClick={handleFetchAIInsight}
+                disabled={aiLoading}
+                className="w-full py-2 bg-accent-emerald text-background font-bold rounded hover:bg-accent-emerald/90 transition cursor-pointer text-xs"
+              >
+                {aiLoading ? "Gemini evaluating script..." : "Ask ExamForge AI Assistant"}
+              </button>
+              
+              {aiInsight && (
+                <div className="p-4 bg-accent-emerald/5 rounded border border-accent-emerald/20 text-xs flex flex-col gap-2 animate-in fade-in duration-300">
+                  <div className="font-bold text-accent-emerald">Gemini Vision Insights:</div>
+                  <div>Suggested Marks: <span className="font-mono font-bold text-white">{aiInsight.suggested_marks} / 10.0</span></div>
+                  <div>Plagiarism Score: <span className="font-mono text-white">{Math.round(aiInsight.plagiarism_score * 100)}% Match</span></div>
+                  {aiInsight.rubric_mismatch_flags.length > 0 && (
+                    <div>
+                      <span className="text-accent-amber font-semibold block mb-1">Missing Rubric Details:</span>
+                      <div className="divide-y divide-border-color/20 pl-2 text-[10px] text-text-muted">
+                        {aiInsight.rubric_mismatch_flags.map((flag: string, idx: number) => (
+                          <div key={idx} className="py-0.5">• {flag}</div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMarks(aiInsight.suggested_marks);
+                      if (aiInsight.rubric_mismatch_flags.length > 0) {
+                        setRubricNotes(`AI suggested corrections: ${aiInsight.rubric_mismatch_flags.join("; ")}`);
+                      } else {
+                        setRubricNotes("AI verified: full rubric constraints satisfied.");
+                      }
+                    }}
+                    className="mt-2 py-1.5 bg-accent-amber text-background font-bold rounded hover:bg-accent-amber/90 transition cursor-pointer text-[10px]"
+                  >
+                    Apply AI Score & Notes
+                  </button>
+                </div>
+              )}
             </div>
 
             <button
