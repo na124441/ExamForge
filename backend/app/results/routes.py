@@ -1,9 +1,10 @@
 import json
+import time
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from app.database import get_db
 from app.models import (
     Candidate, 
@@ -13,11 +14,22 @@ from app.models import (
     OMRScan, 
     Result, 
     AuditLog,
-    Question
+    Question,
+    RiskSimulation
 )
 from app.security import calculate_sha256, STORAGE_AES_KEY, decrypt_payload
 from app.audit.ledger import verify_audit_chain, log_event
 from app.auth.routes import get_current_user, UserResponse
+
+from app.trust.score_engine import calculate_exam_trust_score
+from app.risk.simulator import trigger_simulation, clear_simulations
+from app.risk.center_risk import (
+    detect_evaluator_conflicts,
+    get_omr_scans_by_band,
+    scan_system_anomalies
+)
+from app.receipts.candidate_receipt import sign_receipt, verify_receipt_signature
+from app.publication.gate import verify_publication_gate
 
 router = APIRouter(tags=["results"])
 
@@ -26,48 +38,7 @@ class TamperRequest(BaseModel):
     target_id: str
     new_value: str # New answer choice, new marks, or altered log action
 
-# --- Helper Verification Engine ---
-def verify_candidate_integrity(db: Session, candidate_id: str) -> tuple[bool, str]:
-    """
-    Validates that a candidate's answer events form a perfect linked hash chain.
-    """
-    events = db.query(CandidateAnswerEvent).filter(
-        CandidateAnswerEvent.candidate_id == candidate_id
-    ).order_by(CandidateAnswerEvent.created_at).all()
-    
-    if not events:
-        return True, "No answer events recorded."
-        
-    expected_previous = calculate_sha256(f"GENESIS_SESSION_{events[0].session_id}")
-    
-    for idx, ev in enumerate(events):
-        # 1. Verify link back to previous answer
-        if ev.previous_event_hash != expected_previous:
-            return False, f"Broken chain link at candidate answer event {idx}."
-            
-        # 2. Recalculate and verify hash
-        chain_input = f"{ev.session_id}|{ev.candidate_id}|{ev.question_id}|{ev.selected_answer}|{ev.previous_event_hash}"
-        recalculated = calculate_sha256(chain_input)
-        if ev.current_event_hash != recalculated:
-            return False, f"Tamper detected in answer event {idx}. Expected hash {recalculated} but found {ev.current_event_hash}"
-            
-        expected_previous = ev.current_event_hash
-        
-    return True, "Candidate answer chain is valid."
-
-def verify_evaluation_integrity(db: Session, candidate_anonymous_id: str) -> tuple[bool, str]:
-    """
-    Validates that a candidate's descriptive grading evaluations match their signatures.
-    """
-    evals = db.query(Evaluation).filter(Evaluation.anonymous_id == candidate_anonymous_id).all()
-    for ev in evals:
-        # SHA256(exam_id | anon_id | question_id | marks | evaluator_id)
-        eval_input = f"{ev.exam_id}|{ev.anonymous_id}|{ev.question_id}|{ev.marks_awarded}|{ev.evaluator_id}"
-        recalculated = calculate_sha256(eval_input)
-        if ev.evaluation_hash != recalculated:
-            return False, f"Tamper detected in evaluation marks for question {ev.question_id}. Mismatched signature."
-            
-    return True, "All evaluations are verified."
+from app.results.verification import verify_candidate_integrity, verify_evaluation_integrity
 
 
 # --- Endpoints ---
@@ -81,44 +52,29 @@ def publish_results(
     if current_user.role != "CONTROLLER":
         raise HTTPException(status_code=403, detail="Only Controllers can publish exam results")
         
-    # Run end-to-end verification checklist
-    verification_errors = []
-    
-    # 1. Verify append-only Audit Chain
-    chain_intact, failing_idx, chain_msg = verify_audit_chain(db)
-    if not chain_intact:
-        verification_errors.append(f"AUDIT_CHAIN_FAILED: {chain_msg}")
-        
-    # 2. Verify all active candidates
-    candidates = db.query(Candidate).filter(Candidate.exam_id == exam_id).all()
-    for cand in candidates:
-        # Validate MCQ answer sequence hashes
-        ans_ok, ans_msg = verify_candidate_integrity(db, cand.id)
-        if not ans_ok:
-            verification_errors.append(f"CANDIDATE_ANSWERS_TAMPERED ({cand.anonymous_id}): {ans_msg}")
-            
-        # Validate written evaluations hashes
-        eval_ok, eval_msg = verify_evaluation_integrity(db, cand.anonymous_id)
-        if not eval_ok:
-            verification_errors.append(f"EVALUATIONS_TAMPERED ({cand.anonymous_id}): {eval_msg}")
-            
-    # 3. Block publishing if errors exist
-    if verification_errors:
+    # Run decoupled publication gate verification checklist
+    gate = verify_publication_gate(db, exam_id)
+    if not gate["allowed"]:
         log_event(
             db=db,
             actor_id=current_user.id,
             action="RESULT_PUBLISH_BLOCKED",
             resource_type="ResultCollection",
             resource_id=exam_id,
-            payload_data=json.dumps({"errors": verification_errors})
+            payload_data=json.dumps({"blocking_reasons": gate["blocking_reasons"]})
         )
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={
                 "message": "Result publishing blocked due to integrity validation failures.",
-                "failures": verification_errors
+                "failures": gate["blocking_reasons"],
+                "checklist": gate["checklist"],
+                "trust_score": gate["trust_score"]
             }
         )
+        
+    chain_intact, failing_idx, chain_msg = verify_audit_chain(db)
+    candidates = db.query(Candidate).filter(Candidate.exam_id == exam_id).all()
         
     # 4. Compile results if verification checks pass
     published_results = []
@@ -245,3 +201,95 @@ def verify_ledger_chain(db: Session = Depends(get_db)):
         "failing_index": failing_idx,
         "message": msg
     }
+
+class SimulateRiskRequest(BaseModel):
+    vector: str
+    details: Optional[str] = ""
+
+class VerifyReceiptRequest(BaseModel):
+    anonymous_id: str
+    exam_id: str
+    timestamp: str
+    root_hash: str
+    signature: str
+
+@router.get("/api/trust/score/{exam_id}")
+def get_trust_score(exam_id: str, db: Session = Depends(get_db)):
+    return calculate_exam_trust_score(db, exam_id)
+
+@router.post("/api/risk/simulate")
+def simulate_risk(request: SimulateRiskRequest, db: Session = Depends(get_db)):
+    return trigger_simulation(db, request.vector, request.details)
+
+@router.post("/api/risk/clear")
+def clear_risk(db: Session = Depends(get_db)):
+    return clear_simulations(db)
+
+@router.get("/api/risk/status/{exam_id}")
+def get_risk_status(exam_id: str, db: Session = Depends(get_db)):
+    anomalies = scan_system_anomalies(db, exam_id)
+    active_sim = db.query(RiskSimulation).filter(RiskSimulation.is_active == True).first()
+    return {
+        "active_simulation": active_sim.vector if active_sim else None,
+        "anomalies": anomalies
+    }
+
+@router.get("/api/risk/omr-queue/{exam_id}")
+def get_omr_queue(exam_id: str, db: Session = Depends(get_db)):
+    return get_omr_scans_by_band(db, exam_id)
+
+@router.get("/api/risk/evaluator-conflicts/{exam_id}")
+def get_evaluator_conflicts(exam_id: str, db: Session = Depends(get_db)):
+    return {
+        "exam_id": exam_id,
+        "conflicts": detect_evaluator_conflicts(db, exam_id)
+    }
+
+@router.get("/api/candidates/{candidate_id}/receipt")
+def get_candidate_receipt(candidate_id: str, db: Session = Depends(get_db)):
+    cand = db.query(Candidate).filter(Candidate.id == candidate_id).first()
+    if not cand:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+        
+    latest_event = db.query(CandidateAnswerEvent).filter(
+        CandidateAnswerEvent.candidate_id == candidate_id
+    ).order_by(CandidateAnswerEvent.created_at.desc()).first()
+    
+    root_hash = latest_event.current_event_hash if latest_event else calculate_sha256(f"EMPTY_SESSION_{cand.id}")
+    
+    timestamp = str(int(time.time()))
+    if cand.created_at:
+        timestamp = str(int(cand.created_at.timestamp()))
+        
+    signature = sign_receipt(cand.anonymous_id, cand.exam_id, timestamp, root_hash)
+    
+    return {
+        "anonymous_id": cand.anonymous_id,
+        "exam_id": cand.exam_id,
+        "timestamp": timestamp,
+        "root_hash": root_hash,
+        "signature": signature
+    }
+
+@router.post("/api/receipts/verify")
+def verify_receipt(request: VerifyReceiptRequest):
+    is_valid = verify_receipt_signature(
+        anonymous_id=request.anonymous_id,
+        exam_id=request.exam_id,
+        timestamp=request.timestamp,
+        root_hash=request.root_hash,
+        signature_hex=request.signature
+    )
+    return {
+        "is_valid": is_valid,
+        "payload": {
+            "anonymous_id": request.anonymous_id,
+            "exam_id": request.exam_id,
+            "timestamp": request.timestamp,
+            "root_hash": request.root_hash
+        }
+    }
+
+@router.get("/api/exams/{exam_id}/gate-status")
+def get_gate_status(exam_id: str, db: Session = Depends(get_db)):
+    return verify_publication_gate(db, exam_id)

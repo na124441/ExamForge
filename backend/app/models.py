@@ -167,3 +167,12 @@ class AuditLog(Base):
     previous_hash = Column(String, nullable=False)
     current_hash = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class RiskSimulation(Base):
+    __tablename__ = "risk_simulations"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    vector = Column(String, nullable=False) # "early_release", "package_mismatch", "seat_change", "omr_swap", "db_tamper"
+    details = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

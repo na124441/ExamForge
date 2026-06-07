@@ -158,14 +158,26 @@ export default function ControllerPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       {/* Top Navigation */}
-      <header className="bg-card-bg border-b border-border-color p-4 flex justify-between items-center">
+      <header className="bg-card-bg border-b border-border-color p-4 flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-2">
           <span className="text-xl">🔐</span>
           <h1 className="text-lg font-bold text-white tracking-wide">
             ExamForge <span className="text-accent-emerald text-sm px-2 py-0.5 bg-accent-emerald/10 border border-accent-emerald/20 rounded">Controller</span>
           </h1>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.push("/risk-dashboard")}
+            className="text-xs px-3 py-1.5 bg-accent-red/10 border border-accent-red/30 text-accent-red rounded hover:bg-accent-red/20 transition cursor-pointer font-bold"
+          >
+            📡 TrustOps Control
+          </button>
+          <button
+            onClick={() => router.push("/publication-gate")}
+            className="text-xs px-3 py-1.5 bg-accent-emerald/10 border border-accent-emerald/30 text-accent-emerald rounded hover:bg-accent-emerald/20 transition cursor-pointer font-bold"
+          >
+            🚧 Publication Gate
+          </button>
           <span className="text-xs text-text-muted">Active: <span className="text-white">{userName}</span></span>
           <button
             onClick={handleLogout}
