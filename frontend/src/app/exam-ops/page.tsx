@@ -1,7 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { 
+  Radio, 
+  RefreshCw, 
+  ShieldAlert, 
+  ShieldCheck, 
+  HelpCircle,
+  Database,
+  Users,
+  AlertTriangle,
+  Play,
+  CheckCircle,
+  ChevronRight,
+  TrendingUp,
+  Inbox,
+  CheckSquare
+} from "lucide-react";
+import { StatusBadge } from "../../components/ui/StatusBadge";
 
 const BACKEND_URL = "http://localhost:8000";
 const EXAM_ID = "EXM-001";
@@ -58,6 +75,7 @@ export default function ExamOpsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [resolutionNotes, setResolutionNotes] = useState<Record<string, string>>({});
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("access_token");
@@ -68,7 +86,7 @@ export default function ExamOpsPage() {
     }
     setToken(storedToken);
     fetchData();
-    const interval = setInterval(fetchData, 4000);
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -89,7 +107,13 @@ export default function ExamOpsPage() {
       setError(err.message || "Failed to sync ops dashboard metrics.");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchData();
   };
 
   const handleTransition = async (nextState: string) => {
@@ -164,16 +188,15 @@ export default function ExamOpsPage() {
 
   if (loading && !summary) {
     return (
-      <div className="min-h-screen bg-background flex flex-col justify-center items-center text-foreground font-mono">
-        <div className="animate-spin text-4xl mb-4">🌀</div>
-        <div className="text-sm">INITIALIZING OPERATIONS CONTROLS...</div>
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 font-mono text-xs gap-3">
+        <span className="animate-spin text-xl">🛰️</span>
+        <span>CONNECTING TO LIVE EXAM DAY OPERATIONS FEED...</span>
       </div>
     );
   }
 
   const examState = summary?.exam_state ?? "DRAFT";
   
-  // Determine next valid states based on current state
   const nextStates: Record<string, string[]> = {
     "DRAFT": ["CONFIG_LOCKED"],
     "CONFIG_LOCKED": ["PAPER_GENERATED"],
@@ -191,243 +214,259 @@ export default function ExamOpsPage() {
   const possibleTransitions = nextStates[examState] || [];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
-      {/* Top Navbar */}
-      <header className="bg-card-bg border-b border-border-color p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl animate-pulse">🛰️</span>
-          <div>
-            <h1 className="text-lg font-bold text-white tracking-wide flex items-center gap-2">
-              ExamForge CenterOps <span className="text-xs px-2 py-0.5 bg-accent-emerald/10 border border-accent-emerald/30 text-accent-emerald font-mono rounded">Live Control</span>
-            </h1>
-            <p className="text-xs text-text-muted">Central authority monitoring room for time-locked exam release & check-ins</p>
+    <div className="space-y-6">
+      {/* Sub-Header */}
+      <div className="flex justify-between items-center bg-slate-900/40 p-4 rounded-xl border border-slate-900/60 backdrop-blur-md">
+        <div>
+          <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
+            <span>Live CenterOps Control</span>
+            <span className="text-[9px] px-2 py-0.5 bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 rounded uppercase font-mono font-bold tracking-widest animate-pulse">
+              Live Monitor
+            </span>
+          </h1>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            Operational dashboard tracking key releases, candidate verification status, and incident logs.
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="p-2 border border-slate-800 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5 text-xs font-mono"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+            <span>Sync</span>
+          </button>
+          <button
+            onClick={() => router.push("/authority")}
+            className="text-xs px-3 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white rounded-lg transition"
+          >
+            🏢 Authority Console
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="p-3 bg-red-950/10 border border-red-900/20 text-red-400 rounded-xl text-xs font-mono">
+          ⚠️ {error}
+        </div>
+      )}
+
+      {/* Row 1: Active State Control Banner */}
+      <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 flex flex-col md:flex-row justify-between items-center gap-6 shadow-lg">
+        <div>
+          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Exam State Controller</span>
+          <div className="text-xl font-black text-white flex items-center gap-2.5 mt-1 font-mono uppercase">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span>{examState}</span>
           </div>
+          <p className="text-[11px] text-slate-400 mt-1 max-w-lg leading-relaxed">
+            Advancing the lifecycle creates immutable cryptographically signed proof block records. Decryption packages are sealed until scheduled release.
+          </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <button onClick={() => router.push("/risk-dashboard")} className="text-xs px-3 py-1.5 bg-accent-amber/10 border border-accent-amber/30 text-accent-amber rounded hover:bg-accent-amber/20 transition cursor-pointer font-bold">
-            📡 Trust Dashboard
-          </button>
-          <button onClick={() => router.push("/publication-gate")} className="text-xs px-3 py-1.5 bg-accent-emerald/10 border border-accent-emerald/30 text-accent-emerald rounded hover:bg-accent-emerald/20 transition cursor-pointer font-bold">
-            🚧 Release Gate
-          </button>
-          <button onClick={() => router.push("/audit-timeline")} className="text-xs px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 rounded hover:bg-indigo-500/20 transition cursor-pointer font-bold">
-            🔬 Audit Evidence
-          </button>
-          <button onClick={() => router.push("/controller")} className="text-xs px-3 py-1.5 bg-border-color text-white rounded hover:bg-white/5 transition cursor-pointer font-bold">
-            📋 Paper builder
-          </button>
-          <button onClick={() => { localStorage.clear(); router.push("/"); }} className="text-xs px-3 py-1.5 bg-accent-red/10 border border-accent-red/30 text-accent-red rounded hover:bg-accent-red/20 transition cursor-pointer font-bold">
-            Logout
-          </button>
+        <div className="flex flex-col gap-2 w-full md:w-auto font-mono text-xs">
+          <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider text-center md:text-left">Commit Next Stage</span>
+          <div className="flex gap-2">
+            {possibleTransitions.length === 0 ? (
+              <span className="text-[11px] text-slate-500 bg-slate-950/50 px-4 py-2 border border-slate-850 rounded-lg">
+                STAGES FULLY CONCLUDED
+              </span>
+            ) : (
+              possibleTransitions.map(st => (
+                <button
+                  key={st}
+                  onClick={() => handleTransition(st)}
+                  className="px-4 py-2 bg-emerald-500 text-slate-950 font-black rounded-lg hover:bg-emerald-400 transition font-mono uppercase tracking-wider text-xs shadow-md shadow-emerald-500/5 cursor-pointer"
+                >
+                  ADVANCE TO {st.replace(/_/g, " ")}
+                </button>
+              ))
+            )}
+          </div>
         </div>
-      </header>
+      </div>
 
-      {/* Main ops cockpit */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 flex flex-col gap-6">
-        {error && (
-          <div className="p-4 bg-accent-red/10 border border-accent-red/30 text-accent-red rounded-xl text-xs font-mono">
-            ⚠️ {error}
-          </div>
-        )}
+      {/* Row 2: Status Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-slate-900 p-4 rounded-xl border border-slate-850 flex flex-col justify-between min-h-[90px]">
+          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Active Centers</span>
+          <span className="text-2xl font-black text-white mt-1 font-mono">{summary?.stats.total_centers ?? 0}</span>
+          <span className="text-[9px] text-emerald-400 font-medium">All servers synced</span>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-xl border border-slate-850 flex flex-col justify-between min-h-[90px]">
+          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Verified Check-ins</span>
+          <span className="text-2xl font-black text-white mt-1 font-mono">
+            {summary?.stats.verified_candidates ?? 0} <span className="text-xs text-slate-500">/ {summary?.stats.total_candidates ?? 0}</span>
+          </span>
+          <span className="text-[9px] text-slate-500 font-medium">
+            Candidate verification matching is active
+          </span>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-xl border border-slate-850 flex flex-col justify-between min-h-[90px]">
+          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Attendance Rate</span>
+          <span className="text-2xl font-black text-white mt-1 font-mono">
+            {summary?.stats.attendance_present ?? 0} <span className="text-xs text-slate-500">present</span>
+          </span>
+          <span className="text-[9px] text-amber-400 font-medium">
+            {summary?.stats.attendance_absent ?? 0} absent flags
+          </span>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-xl border border-slate-850 flex flex-col justify-between min-h-[90px]">
+          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Packages Keys</span>
+          <span className="text-2xl font-black text-emerald-400 mt-1 font-mono">
+            {summary?.stats.packages_released ?? 0} <span className="text-xs text-slate-500">released</span>
+          </span>
+          <span className="text-[9px] text-slate-500 font-medium">
+            {summary?.stats.packages_sealed ?? 0} sealed envelopes
+          </span>
+        </div>
+      </div>
 
-        {/* Lifecycle State Banner & Action row */}
-        <section className="bg-card-bg p-5 rounded-2xl border border-border-color shadow-lg flex flex-col md:flex-row justify-between items-center gap-6">
-          <div>
-            <div className="text-[10px] text-text-muted font-bold uppercase tracking-wider">Exam lifecycle stage</div>
-            <div className="text-2xl font-extrabold text-white flex items-center gap-2.5 mt-1 font-mono">
-              <span className="w-3.5 h-3.5 rounded-full bg-accent-emerald animate-pulse"></span>
-              {examState}
-            </div>
-            <p className="text-xs text-text-muted mt-1 max-w-md leading-normal">
-              State transitions log cryptographically chained block markers. Center packages cannot be unlocked until window time opens.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-2 w-full md:w-auto">
-            <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider text-center md:text-left">TRANSITION LIFE STAGE</span>
-            <div className="flex gap-2">
-              {possibleTransitions.length === 0 ? (
-                <span className="text-xs text-text-muted bg-border-color/30 px-4 py-2 border border-border-color rounded font-mono">
-                  LOCKED OR ARCHIVED
-                </span>
+      {/* Row 3: Center List Table */}
+      <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg">
+        <h2 className="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
+          <Radio className="w-4 h-4 text-emerald-400" />
+          <span>Center-by-Center Live Registries</span>
+        </h2>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="border-b border-slate-800 text-slate-500 font-mono">
+                <th className="py-3 px-3">Center Node</th>
+                <th className="py-3 px-3">Key State</th>
+                <th className="py-3 px-3">Candidates Checkin</th>
+                <th className="py-3 px-3">Total Logs</th>
+                <th className="py-3 px-3">Active Incidents</th>
+                <th className="py-3 px-3">Node Status</th>
+                <th className="py-3 px-3 text-right">Console</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-850/60 font-mono">
+              {summary?.centers.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-6 text-center text-slate-500 italic font-sans">
+                    No centers loaded. Seal packages to instantiate registries.
+                  </td>
+                </tr>
               ) : (
-                possibleTransitions.map(st => (
-                  <button
-                    key={st}
-                    onClick={() => handleTransition(st)}
-                    className="text-xs px-4 py-2 bg-accent-emerald text-background font-extrabold rounded hover:bg-accent-emerald/90 transition cursor-pointer shadow-md shadow-accent-emerald/10 font-mono"
-                  >
-                    ADVANCE TO {st}
-                  </button>
+                summary?.centers.map(c => (
+                  <tr key={c.center_id} className="hover:bg-slate-950/20 group">
+                    <td className="py-3 px-3 text-white font-bold">{c.center_id}</td>
+                    <td className="py-3 px-3">
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                        c.package_status === "RELEASED" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
+                        c.package_status === "REVOKED" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
+                        "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                      }`}>{c.package_status}</span>
+                    </td>
+                    <td className="py-3 px-3 text-slate-300 font-semibold">{c.verified_candidates} present</td>
+                    <td className="py-3 px-3 text-slate-500">{c.incidents_count} records</td>
+                    <td className="py-3 px-3">
+                      <span className={c.unresolved_incidents > 0 ? "text-red-400 font-bold animate-pulse" : "text-slate-500"}>
+                        {c.unresolved_incidents} active
+                      </span>
+                    </td>
+                    <td className="py-3 px-3">
+                      <StatusBadge status={c.status} />
+                    </td>
+                    <td className="py-3 px-3 text-right">
+                      <button
+                        onClick={() => router.push(`/center-console?center=${c.center_id}`)}
+                        className="text-[10px] px-2.5 py-1 bg-slate-950 border border-slate-850 text-slate-300 rounded hover:border-slate-700 transition"
+                      >
+                        Launch Officer Console
+                      </button>
+                    </td>
+                  </tr>
                 ))
               )}
-            </div>
-          </div>
-        </section>
-
-        {/* Aggregate Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-card-bg p-4 rounded-xl border border-border-color flex flex-col justify-between">
-            <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider">Centers Online</span>
-            <span className="text-3xl font-extrabold text-white mt-2 font-mono">{summary?.stats.total_centers ?? 0}</span>
-            <span className="text-[9px] text-accent-emerald">Sealed center packages</span>
-          </div>
-          <div className="bg-card-bg p-4 rounded-xl border border-border-color flex flex-col justify-between">
-            <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider">Candidates check-in</span>
-            <span className="text-3xl font-extrabold text-white mt-2 font-mono">
-              {summary?.stats.verified_candidates ?? 0} / {summary?.stats.total_candidates ?? 0}
-            </span>
-            <span className="text-[9px] text-text-muted">Verification Rate: {summary?.stats.total_candidates ? Math.round(((summary?.stats.verified_candidates ?? 0)/summary?.stats.total_candidates)*100) : 0}%</span>
-          </div>
-          <div className="bg-card-bg p-4 rounded-xl border border-border-color flex flex-col justify-between">
-            <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider">Attendance Rate</span>
-            <span className="text-3xl font-extrabold text-white mt-2 font-mono">
-              {summary?.stats.attendance_present ?? 0} present
-            </span>
-            <span className="text-[9px] text-accent-amber">{summary?.stats.attendance_absent ?? 0} absent checkins</span>
-          </div>
-          <div className="bg-card-bg p-4 rounded-xl border border-border-color flex flex-col justify-between">
-            <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider">Packages Unlocked</span>
-            <span className="text-3xl font-extrabold text-white mt-2 font-mono text-accent-emerald">
-              {summary?.stats.packages_released ?? 0} released
-            </span>
-            <span className="text-[9px] text-text-muted">{summary?.stats.packages_sealed ?? 0} sealed envelopes</span>
-          </div>
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        {/* Center Operations Details */}
-        <section className="bg-card-bg p-5 rounded-2xl border border-border-color shadow-lg">
-          <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-accent-emerald"></span> Center-by-Center Live Status
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-border-color text-text-muted">
-                  <th className="py-3 px-2">Center ID</th>
-                  <th className="py-3 px-2">Package status</th>
-                  <th className="py-3 px-2">Verified present</th>
-                  <th className="py-3 px-2">Total incidents</th>
-                  <th className="py-3 px-2">Unresolved incidents</th>
-                  <th className="py-3 px-2">Operational state</th>
-                  <th className="py-3 px-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border-color/50 font-mono">
-                {summary?.centers.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="py-4 text-center text-text-muted">No centers registered. Sealing packages...</td>
-                  </tr>
-                ) : (
-                  summary?.centers.map(c => (
-                    <tr key={c.center_id} className="hover:bg-white/2">
-                      <td className="py-3 px-2 text-white font-bold">{c.center_id}</td>
-                      <td className="py-3 px-2">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          c.package_status === "RELEASED" ? "bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20" :
-                          c.package_status === "REVOKED" ? "bg-accent-red/10 text-accent-red border border-accent-red/20" :
-                          "bg-accent-amber/10 text-accent-amber border border-accent-amber/20"
-                        }`}>{c.package_status}</span>
-                      </td>
-                      <td className="py-3 px-2 text-white">{c.verified_candidates} candidates</td>
-                      <td className="py-3 px-2 text-text-muted">{c.incidents_count} reports</td>
-                      <td className="py-3 px-2 text-accent-red">{c.unresolved_incidents} active</td>
-                      <td className="py-3 px-2">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          c.status === "ONLINE" ? "bg-accent-emerald text-background" :
-                          c.status === "READY" ? "bg-accent-amber text-background" :
-                          "bg-accent-red text-background animate-pulse"
-                        }`}>{c.status}</span>
-                      </td>
-                      <td className="py-3 px-2">
-                        <button
-                          onClick={() => router.push(`/center-console?center=${c.center_id}`)}
-                          className="text-[10px] px-2 py-0.5 bg-border-color text-white rounded hover:bg-white/5 transition cursor-pointer"
-                        >
-                          Drill center
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Incidents management feed */}
-        <section className="bg-card-bg p-5 rounded-2xl border border-border-color shadow-lg">
-          <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2 text-accent-red">
-            ⚠️ Live Incident Response Center
-          </h2>
-          <div className="flex flex-col gap-4">
-            {incidents.length === 0 ? (
-              <div className="text-center py-10 text-text-muted text-xs font-mono">
-                🟢 ALL EXAM CENTERS SECURE. NO ACTIVE INCIDENT CHANNELS.
-              </div>
-            ) : (
-              incidents.map(inc => (
+      {/* Row 4: Live Incidents Response Center */}
+      <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg">
+        <h2 className="text-xs font-bold text-red-400 uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
+          <AlertTriangle className="w-4 h-4 text-red-500 animate-pulse" />
+          <span>Live Security Incident Response Queue</span>
+        </h2>
+        
+        <div className="space-y-4">
+          {incidents.length === 0 ? (
+            <div className="text-center py-8 text-slate-500 text-xs font-mono border border-dashed border-slate-850 rounded-xl">
+              🟢 ALL NODES SECURE. NO ACTIVE INCIDENT WARNINGS IN QUEUE.
+            </div>
+          ) : (
+            incidents.map(inc => {
+              const isResolved = inc.status === "RESOLVED";
+              return (
                 <div
                   key={inc.incident_id}
-                  className={`p-4 rounded-xl border flex flex-col md:flex-row justify-between gap-4 items-start md:items-center ${
-                    inc.status === "RESOLVED"
-                      ? "border-border-color bg-background/20 opacity-75"
+                  className={`p-4 rounded-xl border flex flex-col md:flex-row justify-between gap-4 items-start md:items-center transition-all ${
+                    isResolved
+                      ? "border-slate-850 bg-slate-950/20 opacity-60"
                       : inc.severity === "P0_CRITICAL"
-                      ? "border-accent-red bg-accent-red/5"
-                      : "border-accent-amber/40 bg-accent-amber/5"
+                      ? "border-red-500 bg-red-950/5"
+                      : "border-amber-500/30 bg-amber-950/5"
                   }`}
                 >
                   <div className="flex-1 font-mono text-xs">
-                    <div className="flex items-center gap-2.5">
-                      <span className={`px-2 py-0.5 text-[9px] font-extrabold rounded ${
-                        inc.status === "RESOLVED" ? "bg-border-color text-white" :
-                        inc.severity === "P0_CRITICAL" ? "bg-accent-red text-background" : "bg-accent-amber text-background"
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <span className={`px-2 py-0.5 text-[9px] font-bold rounded-full border ${
+                        isResolved ? "bg-slate-900 text-slate-400 border-slate-800" :
+                        inc.severity === "P0_CRITICAL" ? "bg-red-500/10 text-red-400 border-red-500/25 animate-pulse" : "bg-amber-500/10 text-amber-400 border-amber-500/25"
                       }`}>{inc.severity}</span>
-                      <span className="text-white font-bold">{inc.incident_type}</span>
-                      <span className="text-text-muted">@ Center: {inc.center_id}</span>
+                      <span className="text-white font-extrabold">{inc.incident_type}</span>
+                      <span className="text-slate-500">Node: {inc.center_id}</span>
                     </div>
-                    <p className="text-xs text-text-primary mt-2 leading-relaxed">{inc.description}</p>
-                    <div className="text-[10px] text-text-muted mt-1">Incident ID: {inc.incident_id} | Reported at: {new Date(inc.created_at).toLocaleTimeString()}</div>
+                    <p className="text-xs text-slate-300 mt-2 leading-relaxed font-sans">{inc.description}</p>
+                    <div className="text-[10px] text-slate-500 mt-2">
+                      Event ID: {inc.incident_id} | Created at: {new Date(inc.created_at).toLocaleString()}
+                    </div>
                   </div>
 
-                  <div className="w-full md:w-auto flex flex-col gap-2">
-                    {inc.status === "OPEN" ? (
-                      <>
+                  <div className="w-full md:w-auto flex flex-col gap-2 shrink-0">
+                    {!isResolved ? (
+                      <div className="flex flex-col gap-2">
                         <input
                           type="text"
-                          placeholder="Resolution details..."
+                          placeholder="Log override remarks..."
                           value={resolutionNotes[inc.incident_id] || ""}
                           onChange={(e) => setResolutionNotes(prev => ({ ...prev, [inc.incident_id]: e.target.value }))}
-                          className="p-1.5 bg-background border border-border-color rounded text-xs text-white"
+                          className="p-2 bg-slate-950 border border-slate-850 rounded-lg text-xs text-white placeholder-slate-600 focus:outline-none focus:border-slate-700 font-mono w-48"
                         />
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 w-full">
                           <button
                             onClick={() => handleResolveIncident(inc.incident_id)}
-                            className="flex-1 text-xs py-1 px-3 bg-accent-emerald text-background font-bold rounded hover:bg-accent-emerald/90 transition cursor-pointer"
+                            className="flex-1 text-[11px] py-1 bg-emerald-500 text-slate-950 font-bold rounded hover:bg-emerald-400 transition cursor-pointer font-mono uppercase"
                           >
                             Resolve
                           </button>
                           <button
                             onClick={() => handleEscalateIncident(inc.incident_id, inc.severity)}
-                            className="flex-1 text-xs py-1 px-3 bg-accent-amber text-background font-bold rounded hover:bg-accent-amber/90 transition cursor-pointer"
+                            className="flex-1 text-[11px] py-1 bg-amber-500 text-slate-950 font-bold rounded hover:bg-amber-400 transition cursor-pointer font-mono uppercase"
                           >
                             Escalate
                           </button>
                         </div>
-                      </>
+                      </div>
                     ) : (
-                      <span className="text-accent-emerald font-bold text-xs uppercase flex items-center gap-1.5 font-mono">
-                        ✓ Resolved
+                      <span className="text-emerald-400 font-bold text-xs uppercase flex items-center gap-1.5 font-mono bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
+                        <CheckSquare className="w-3.5 h-3.5" />
+                        <span>Resolved</span>
                       </span>
                     )}
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </section>
-      </main>
+              );
+            })
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -231,9 +231,12 @@ def advance_pilot_stage(db: Session, run_id: str, stage_id: str) -> PilotStage:
             pkg = EncryptedPackage(
                 id=f"PKG-RUN-{suffix}",
                 exam_id=exam_id,
+                paper_id=f"PPR-RUN-{suffix}",
                 center_id="CNT-001",
+                encrypted_payload=json.dumps({"ciphertext": f"sealed_package_data_{suffix}"}),
                 package_hash=calculate_sha256(f"sealed_package_data_{suffix}"),
-                encrypted_key="pkg_key_run",
+                valid_from=datetime.now(timezone.utc) - timedelta(hours=1),
+                valid_until=datetime.now(timezone.utc) + timedelta(hours=3),
                 status="SEALED"
             )
             db.add(pkg)

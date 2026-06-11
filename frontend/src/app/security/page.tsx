@@ -1,7 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { 
+  Shield, 
+  ShieldAlert, 
+  ShieldCheck, 
+  Activity, 
+  AlertTriangle,
+  ChevronRight,
+  Database,
+  Lock,
+  EyeOff,
+  UserCheck,
+  CheckCircle,
+  Key
+} from "lucide-react";
+import { StatusBadge } from "../../components/ui/StatusBadge";
 
 const BACKEND_URL = "http://localhost:8000";
 
@@ -83,96 +98,126 @@ export default function SecurityOverviewPage() {
     }
   };
 
-  if (loading) {
+  if (loading || !stats) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[300px] text-text-muted font-mono text-xs">
-        <span className="animate-spin text-xl mb-3">⚙️</span>
-        DECRYPTING THREAT & COMPLIANCE TELEMETRY...
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 font-mono text-xs gap-3">
+        <span className="animate-spin text-xl">🛡️</span>
+        <span>AUDITING CRYPTOGRAPHIC THREAT MATRIX...</span>
       </div>
     );
   }
 
-  const score = stats?.readiness_score ?? 100;
+  const score = stats.readiness_score ?? 100;
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Title */}
-      <div>
-        <h2 className="text-xl font-black text-white tracking-tight">Security Overview</h2>
-        <p className="text-xs text-text-muted mt-1">Real-time status of cryptographic keys, threat mitigations, and platform compliance checks.</p>
+    <div className="space-y-6">
+      {/* Sub-Header */}
+      <div className="flex justify-between items-center bg-slate-900/40 p-4 rounded-xl border border-slate-900/60 backdrop-blur-md">
+        <div>
+          <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
+            <span>Security Command Center</span>
+            <span className="text-[9px] px-2 py-0.5 bg-red-600/10 border border-red-500/20 text-red-400 rounded uppercase font-mono font-bold tracking-widest">
+              Security Hub
+            </span>
+          </h1>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            Real-time verification of keyspaces, threat mitigation status, and compliance levels.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => router.push("/authority")}
+            className="text-xs px-3 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white rounded-lg transition"
+          >
+            🏢 Authority Console
+          </button>
+        </div>
       </div>
 
-      {/* Main Stats Row */}
+      {/* Row 1: High Level Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Readiness Score Card */}
-        <div className="bg-card-bg p-6 rounded-2xl border border-border-color shadow-lg flex flex-col justify-between min-h-[160px]">
+        {/* Compliance Readiness Card */}
+        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-850 flex flex-col justify-between min-h-[150px] shadow-lg">
           <div>
-            <div className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Compliance Readiness</div>
-            <div className="text-4xl font-extrabold text-white mt-2 font-mono">{score}%</div>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Compliance readiness</span>
+            <div className="text-3xl font-black text-white mt-1 font-mono">{score}%</div>
           </div>
-          <div className="flex items-center gap-2 mt-4">
-            <span className={`w-2 h-2 rounded-full ${score >= 90 ? "bg-accent-emerald" : score >= 70 ? "bg-accent-amber" : "bg-accent-red animate-ping"}`}></span>
-            <span className="text-[10px] font-bold uppercase tracking-wide text-white">{stats?.status || "EXCELLENT"}</span>
-          </div>
-        </div>
-
-        {/* Threat Registry Status */}
-        <div className="bg-card-bg p-6 rounded-2xl border border-border-color shadow-lg flex flex-col justify-between min-h-[160px]">
-          <div>
-            <div className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Active Threats</div>
-            <div className="text-4xl font-extrabold text-white mt-2 font-mono">
-              {stats?.threats.unmitigated} <span className="text-xs text-text-muted font-sans font-normal">/ {stats?.threats.total} total</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 mt-4">
-            <span className={`w-2 h-2 rounded-full ${stats?.threats.unmitigated === 0 ? "bg-accent-emerald" : "bg-accent-amber animate-pulse"}`}></span>
-            <span className="text-[10px] font-bold uppercase tracking-wide text-white">
-              {stats?.threats.unmitigated === 0 ? "All threats mitigated" : "Mitigations required"}
+          <div className="flex items-center gap-2.5 mt-4">
+            <span className={`w-2 h-2 rounded-full ${score >= 90 ? "bg-emerald-400 animate-pulse" : score >= 70 ? "bg-amber-400" : "bg-red-400 animate-ping"}`}></span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 font-mono">
+              Posture: {stats.status || "EXCELLENT"}
             </span>
           </div>
         </div>
 
-        {/* Incidents Ledger */}
-        <div className="bg-card-bg p-6 rounded-2xl border border-border-color shadow-lg flex flex-col justify-between min-h-[160px]">
+        {/* Threat Mitigation Card */}
+        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-850 flex flex-col justify-between min-h-[150px] shadow-lg">
           <div>
-            <div className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Open Incidents</div>
-            <div className="text-4xl font-extrabold text-white mt-2 font-mono text-accent-red">
-              {stats?.incidents.open} <span className="text-xs text-text-muted font-sans font-normal">/ {stats?.incidents.total} logged</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Mitigated Threat Nodes</span>
+            <div className="text-3xl font-black text-white mt-1 font-mono">
+              {stats.threats.total - stats.threats.unmitigated} <span className="text-xs text-slate-500">/ {stats.threats.total} mitigated</span>
             </div>
           </div>
           <div className="flex items-center gap-2 mt-4">
-            <span className={`w-2 h-2 rounded-full ${stats?.incidents.open === 0 ? "bg-accent-emerald" : "bg-accent-red animate-ping"}`}></span>
-            <span className="text-[10px] font-bold uppercase tracking-wide text-white">
-              {stats?.incidents.open === 0 ? "Zero unresolved breaches" : "Active incident response"}
+            <span className={`w-2 h-2 rounded-full ${stats.threats.unmitigated === 0 ? "bg-emerald-400 animate-pulse" : "bg-amber-400 animate-pulse"}`}></span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 font-mono">
+              {stats.threats.unmitigated === 0 ? "All mitigations active" : `${stats.threats.unmitigated} open vulnerabilities`}
+            </span>
+          </div>
+        </div>
+
+        {/* Open Incidents Card */}
+        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-850 flex flex-col justify-between min-h-[150px] shadow-lg">
+          <div>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Unmitigated Breaches</span>
+            <div className={`text-3xl font-black mt-1 font-mono ${stats.incidents.open === 0 ? "text-white" : "text-red-400 animate-pulse"}`}>
+              {stats.incidents.open} <span className="text-xs text-slate-500 font-sans font-normal">/ {stats.incidents.total} logged</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-4">
+            <span className={`w-2 h-2 rounded-full ${stats.incidents.open === 0 ? "bg-emerald-400" : "bg-red-400 animate-ping"}`}></span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 font-mono">
+              {stats.incidents.open === 0 ? "Platform status: secure" : "Active Incident response"}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Quick Links Grid */}
-      <div className="mt-4">
-        <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-4">Core Control Dashboards</h3>
+      {/* Row 2: Sub-Console Grid */}
+      <div className="space-y-4">
+        <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+          Security Sub-Control Modules
+        </h3>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
-            { name: "Threat Modeling", desc: "Define attack surfaces & document controls", path: "/security/threat-model", icon: "👾" },
-            { name: "Asset Classification", desc: "Define confidentiality levels & PII fields", path: "/security/assets", icon: "🏷️" },
-            { name: "PII & Privacy Controls", desc: "Audit access histories & redact safe exports", path: "/security/privacy", icon: "👁️‍🗨️" },
-            { name: "Dual-Control Approvals", desc: "Dual authorizing threshold execution logs", path: "/security/approvals", icon: "👥" },
-            { name: "OWASP Hardening", desc: "Run secure header & validation audits", path: "/security/hardening", icon: "🧱" },
-            { name: "Secrets & Key Lifecycle", desc: "Cryptographic keys generation & rotations", path: "/security/keys", icon: "🔑" },
-          ].map((item) => (
-            <div
-              key={item.path}
-              onClick={() => router.push(item.path)}
-              className="bg-card-bg/60 p-4 rounded-xl border border-border-color shadow-sm hover:border-accent-emerald/30 hover:bg-card-bg transition duration-200 cursor-pointer flex gap-4 items-start"
-            >
-              <span className="text-2xl mt-0.5">{item.icon}</span>
-              <div>
-                <h4 className="text-xs font-bold text-white tracking-wide">{item.name}</h4>
-                <p className="text-[11px] text-text-muted mt-1 leading-normal">{item.desc}</p>
+            { name: "Threat Modeling Matrix", desc: "Audit and classification of attack surface risks", path: "/security/threat-model", icon: Shield },
+            { name: "Resource Classifications", desc: "Configure confidentiality scopes and credentials", path: "/security/assets", icon: Database },
+            { name: "PII & Access Masking", desc: "Audit and redact Candidate PII fields before export", path: "/security/privacy", icon: EyeOff },
+            { name: "Dual-Custodian Signoffs", desc: "Configure dual controller approval key requirements", path: "/security/approvals", icon: UserCheck },
+            { name: "OWASP Hardening Checklist", desc: "Platform vulnerability compliance and audit checklists", path: "/security/hardening", icon: CheckCircle },
+            { name: "Secrets & Keyspace Vault", desc: "ECDSA signing keys generation and rotation history", path: "/security/keys", icon: Key },
+          ].map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.path}
+                onClick={() => router.push(item.path)}
+                className="bg-slate-900/40 p-4.5 rounded-xl border border-slate-850 shadow-sm hover:border-slate-750 hover:bg-slate-900 transition duration-150 cursor-pointer flex gap-4 items-start group"
+              >
+                <div className="p-2 bg-slate-950 border border-slate-850 text-slate-400 rounded-lg group-hover:text-blue-400 shrink-0">
+                  <Icon className="w-5 h-5 stroke-[2]" />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-xs font-bold text-slate-200 tracking-wide font-mono flex items-center justify-between">
+                    <span>{item.name}</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-slate-400 transition" />
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{item.desc}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

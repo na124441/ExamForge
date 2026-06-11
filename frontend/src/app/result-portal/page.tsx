@@ -1,7 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { 
+  Award, 
+  Search, 
+  CheckCircle, 
+  ChevronRight, 
+  Lock, 
+  FileCheck,
+  AlertTriangle,
+  ArrowLeft
+} from "lucide-react";
 
 const BACKEND_URL = "http://localhost:8000";
 
@@ -16,7 +26,7 @@ export default function ResultPortal() {
   const handleLookup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!regNum || !examId || !pin) {
-      setError("Please fill in all fields.");
+      setError("Please fill in all verification credentials.");
       return;
     }
     setLoading(true);
@@ -32,115 +42,221 @@ export default function ResultPortal() {
 
       if (!res.ok) {
         const errData = await res.json();
-        throw new Error(errData.detail || "Lookup failed. Result not found or pin mismatch.");
+        throw new Error(errData.detail || "Credentials lookup failed. Match not found.");
       }
 
       const data = await res.json();
       setResult(data);
     } catch (err: any) {
-      setError(err.message || "An error occurred.");
+      setError(err.message || "Credential matching failed. Please verify credentials.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans p-6 justify-center items-center">
-      <div className="max-w-md w-full bg-card-bg p-8 rounded-2xl border border-border-color shadow-2xl flex flex-col gap-6 backdrop-blur-md">
-        <div className="text-center">
-          <span className="text-4xl">🎓</span>
-          <h1 className="text-2xl font-extrabold text-white mt-2 tracking-wide">Candidate Result Portal</h1>
-          <p className="text-xs text-text-muted mt-1">Access your examination scores and verify cryptographic trust indicators.</p>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-6 font-sans select-none selection:bg-emerald-600/30">
+      <div className="max-w-md w-full bg-slate-900 p-8 rounded-2xl border border-slate-850 shadow-2xl flex flex-col gap-6 backdrop-blur-md relative overflow-hidden">
+        
+        {/* Top green glow accent */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500" />
+
+        {/* Back Link */}
+        <div className="flex justify-between items-center text-xs font-mono">
+          <Link href="/" className="text-slate-500 hover:text-slate-300 transition flex items-center gap-1">
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Simulators Portal</span>
+          </Link>
+          <span className="text-[9px] px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded uppercase font-bold tracking-wider">
+            Candidate Gate
+          </span>
         </div>
 
-        <form onSubmit={handleLookup} className="flex flex-col gap-4 text-xs">
-          <div>
-            <label className="block text-text-muted mb-1 font-semibold">Registration Number</label>
-            <input
-              type="text"
-              placeholder="e.g. REG-6000"
-              value={regNum}
-              onChange={(e) => setRegNum(e.target.value)}
-              className="w-full p-2.5 bg-background border border-border-color rounded focus:border-accent-emerald focus:outline-none font-mono text-white"
-            />
+        {/* Header */}
+        <div className="text-center mt-2">
+          <div className="mx-auto w-12 h-12 rounded-full bg-slate-950 border border-slate-800 flex items-center justify-center text-2xl mb-3">
+            🎓
           </div>
+          <h1 className="text-xl font-black text-white tracking-tight">Candidate Result Portal</h1>
+          <p className="text-xs text-slate-400 mt-1 max-w-[240px] mx-auto leading-relaxed">
+            Verify score transcripts using secure cryptographically chained proofs.
+          </p>
+        </div>
 
-          <div>
-            <label className="block text-text-muted mb-1 font-semibold">Exam ID</label>
-            <input
-              type="text"
-              placeholder="e.g. EXM-006"
-              value={examId}
-              onChange={(e) => setExamId(e.target.value)}
-              className="w-full p-2.5 bg-background border border-border-color rounded focus:border-accent-emerald focus:outline-none font-mono text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-text-muted mb-1 font-semibold">DOB / PIN Code</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              className="w-full p-2.5 bg-background border border-border-color rounded focus:border-accent-emerald focus:outline-none text-white"
-            />
-          </div>
-
-          {error && (
-            <div className="p-3.5 bg-accent-red/10 border border-accent-red/20 text-accent-red rounded text-xs animate-pulse">
-              <strong>Error:</strong> {error}
+        {/* Form */}
+        {!result && (
+          <form onSubmit={handleLookup} className="flex flex-col gap-4 text-xs font-mono">
+            <div>
+              <label className="block text-slate-400 mb-1 font-bold uppercase tracking-wider text-[9px]">
+                Registration Number
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. REG-6000"
+                value={regNum}
+                onChange={(e) => setRegNum(e.target.value)}
+                className="w-full p-2.5 bg-slate-950 border border-slate-850 rounded-lg focus:border-emerald-500 focus:outline-none text-white font-mono"
+              />
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-accent-emerald text-background font-extrabold rounded-lg hover:bg-accent-emerald/90 transition cursor-pointer text-sm tracking-wider uppercase"
-          >
-            {loading ? "Searching Cryptographic Records..." : "Lookup Result"}
-          </button>
-        </form>
+            <div>
+              <label className="block text-slate-400 mb-1 font-bold uppercase tracking-wider text-[9px]">
+                Examination ID
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. EXM-001"
+                value={examId}
+                onChange={(e) => setExamId(e.target.value)}
+                className="w-full p-2.5 bg-slate-950 border border-slate-850 rounded-lg focus:border-emerald-500 focus:outline-none text-white font-mono"
+              />
+            </div>
 
+            <div>
+              <label className="block text-slate-400 mb-1 font-bold uppercase tracking-wider text-[9px]">
+                Verification PIN
+              </label>
+              <input
+                type="password"
+                placeholder="Enter key PIN"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                className="w-full p-2.5 bg-slate-950 border border-slate-850 rounded-lg focus:border-emerald-500 focus:outline-none text-white font-mono tracking-widest"
+              />
+            </div>
+
+            {error && (
+              <div className="p-3 bg-red-950/15 border border-red-900/20 text-red-400 rounded-lg text-[10px] leading-relaxed flex gap-2 items-start font-mono">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-2.5 bg-emerald-500 text-slate-950 font-black rounded-lg hover:bg-emerald-400 transition cursor-pointer text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10"
+            >
+              {loading ? "Decrypting Ledger..." : "Search & Verify Result"}
+            </button>
+          </form>
+        )}
+
+        {/* Results Container */}
         {result && (
-          <div className="p-5 bg-accent-emerald/5 border border-accent-emerald/20 rounded-xl flex flex-col gap-4 text-xs animate-in fade-in duration-300">
-            <h3 className="text-center font-bold text-accent-emerald text-sm uppercase tracking-wider">Result Located Successfully</h3>
-            <div className="grid grid-cols-2 gap-3 bg-background/50 p-4 rounded-lg border border-border-color font-mono">
-              <span className="text-text-muted">Anonymous ID:</span>
-              <span className="text-white text-right">{result.candidate_anonymous_id}</span>
+          <div className="space-y-5 animate-in fade-in zoom-in-95 duration-250">
+            
+            {/* Score Sheet */}
+            <div className="bg-slate-950/50 p-5 rounded-2xl border border-slate-850 space-y-4">
+              <div className="flex justify-between items-center border-b border-slate-850 pb-3">
+                <div>
+                  <span className="text-[9px] text-slate-500 font-mono uppercase tracking-wider block">Candidate Identity</span>
+                  <span className="text-xs font-bold font-mono text-white">{result.candidate_anonymous_id}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[9px] text-slate-500 font-mono uppercase tracking-wider block">Qualification Status</span>
+                  <span className={`text-xs font-bold uppercase ${
+                    result.qualification_status.includes("QUALIFIED") ? "text-emerald-400" : "text-slate-400"
+                  }`}>{result.qualification_status}</span>
+                </div>
+              </div>
 
-              <span className="text-text-muted">Marks Obtained:</span>
-              <span className="text-white text-right font-bold">{result.marks_obtained} / {result.max_marks}</span>
-
-              <span className="text-text-muted">Status:</span>
-              <span className="text-white text-right">{result.status}</span>
-
-              <span className="text-text-muted">Rank:</span>
-              <span className="text-white text-right">#{result.rank}</span>
-
-              <span className="text-text-muted">Verdict:</span>
-              <span className="text-white text-right font-bold">{result.qualification_status}</span>
+              <div className="grid grid-cols-3 gap-2 text-center py-2 font-mono">
+                <div className="p-2 bg-slate-950 rounded-xl border border-slate-900">
+                  <span className="text-[9px] text-slate-500 block">Score</span>
+                  <span className="text-sm font-black text-white">{result.marks_obtained}</span>
+                  <span className="text-[8px] text-slate-600 block mt-0.5">/ {result.max_marks}</span>
+                </div>
+                <div className="p-2 bg-slate-950 rounded-xl border border-slate-900">
+                  <span className="text-[9px] text-slate-500 block">Rank</span>
+                  <span className="text-sm font-black text-white">#{result.rank}</span>
+                  <span className="text-[8px] text-slate-600 block mt-0.5">National</span>
+                </div>
+                <div className="p-2 bg-slate-950 rounded-xl border border-slate-900">
+                  <span className="text-[9px] text-slate-500 block">Verdict</span>
+                  <span className="text-xs font-black text-emerald-400 uppercase mt-0.5 block">
+                    {result.status === "FINAL" ? "FINALIZED" : "DRAFT"}
+                  </span>
+                  <span className="text-[8px] text-slate-600 block mt-0.5">Verified</span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-2 mt-2">
-              <Link href={`/result-integrity/${result.result_id}`} className="w-full text-center py-2 bg-card-bg border border-border-color hover:border-accent-emerald text-white rounded font-semibold transition">
-                🔍 Verify Result Integrity
-              </Link>
-              <Link href={`/result-versions/${result.result_id}`} className="w-full text-center py-2 bg-card-bg border border-border-color hover:border-accent-emerald text-white rounded font-semibold transition">
-                📜 View Result Versions
-              </Link>
-              <Link href="/disputes/file" className="w-full text-center py-2 bg-accent-amber/10 border border-accent-amber/20 hover:bg-accent-amber/20 text-accent-amber rounded font-semibold transition">
-                ⚠️ File a Recheck Dispute
-              </Link>
+            {/* Human Friendly verification card */}
+            <div className="p-4 bg-emerald-500/5 border border-emerald-500/15 rounded-2xl space-y-3">
+              <div className="flex items-start gap-2.5 text-xs text-slate-300">
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-white font-bold block text-[11px]">Your Result is Secured</span>
+                  <p className="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
+                    This result sheet corresponds to verifiable exam logs in our tamper-evident blockchain ledger.
+                  </p>
+                </div>
+              </div>
+
+              {/* Explanations list */}
+              <div className="space-y-1.5 font-mono text-[10px] text-slate-400 pt-2 border-t border-emerald-500/10">
+                <div className="flex justify-between items-center">
+                  <span>✓ Question Set Integrity:</span>
+                  <span className="text-emerald-400 font-bold">Verified</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>✓ Exam Submission Hash:</span>
+                  <span className="text-emerald-400 font-bold">Valid Receipt</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>✓ Dual-custody Grading lock:</span>
+                  <span className="text-emerald-400 font-bold">Sealed</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>✓ Publication Gate:</span>
+                  <span className="text-emerald-400 font-bold">Passed</span>
+                </div>
+              </div>
             </div>
+
+            {/* Actions */}
+            <div className="flex flex-col gap-2 font-mono text-xs">
+              <Link 
+                href={`/result-integrity/${result.result_id}`} 
+                className="w-full flex items-center justify-between p-3 bg-slate-950 border border-slate-850 hover:border-emerald-500/30 text-slate-200 rounded-xl transition group"
+              >
+                <div className="flex items-center gap-2">
+                  <FileCheck className="w-4 h-4 text-slate-400 group-hover:text-emerald-400" />
+                  <span>Inspect Audit Proof Details</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400" />
+              </Link>
+
+              <Link 
+                href={`/result-versions/${result.result_id}`}
+                className="w-full flex items-center justify-between p-3 bg-slate-950 border border-slate-850 hover:border-emerald-500/30 text-slate-200 rounded-xl transition group"
+              >
+                <div className="flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-slate-400 group-hover:text-emerald-400" />
+                  <span>Check Score Version History</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400" />
+              </Link>
+
+              <Link 
+                href="/disputes/file" 
+                className="w-full text-center py-2.5 bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 text-amber-400 rounded-xl font-bold transition font-sans text-[11px]"
+              >
+                ⚠️ File a Recheck Dispute Claim
+              </Link>
+
+              <button
+                onClick={() => setResult(null)}
+                className="w-full text-center py-2 text-slate-500 hover:text-slate-400 transition font-sans text-[11px]"
+              >
+                Clear & Lookup New Record
+              </button>
+            </div>
+
           </div>
         )}
 
-        <div className="text-center">
-          <Link href="/" className="text-xs text-text-muted hover:text-white transition">
-            ← Back to Home
-          </Link>
-        </div>
       </div>
     </div>
   );

@@ -1,27 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a192f;
-  --foreground: #ccd6f6;
-  --card-bg: #112240;
-  --text-primary: #ccd6f6;
-  --text-muted: #8892b0;
+  --background: #020617;
+  --foreground: #f8fafc;
+  --surface: #0f172a;
+  --surface-soft: #1e293b;
+  --border-color: #1e293b; /* subtle border matching slate-800 */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b; /* slate-500 */
+  
+  --primary: #2563eb;
+  --verified: #10b981;
+  --warning: #f59e0b;
+  --critical: #ef4444;
+  --locked: #8b5cf6;
+  --proof: #06b6d4;
+  
+  /* Compatibility aliases for old style */
   --accent-emerald: #10b981;
   --accent-amber: #f59e0b;
   --accent-red: #ef4444;
-  --border-color: #233554;
+  --card-bg: #0f172a;
+  --border-color-old: #1e293b;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-card-bg: var(--card-bg);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-border-color: var(--border-color);
   --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
+  
+  --color-primary: var(--primary);
+  --color-verified: var(--verified);
+  --color-warning: var(--warning);
+  --color-critical: var(--critical);
+  --color-locked: var(--locked);
+  --color-proof: var(--proof);
+  
   --color-accent-emerald: var(--accent-emerald);
   --color-accent-amber: var(--accent-amber);
   --color-accent-red: var(--accent-red);
-  --color-border-color: var(--border-color);
+  --color-card-bg: var(--card-bg);
 }
 
 body {
@@ -29,4 +53,22 @@ body {
   color: var(--foreground);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar for control elements */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-soft);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-color);
 }
