@@ -9,6 +9,12 @@ from app.questions.routes import router as questions_router
 from app.candidates.routes import router as candidates_router
 from app.ingestion.routes import router as ingestion_router
 from app.results.routes import router as results_router
+from app.exams.lifecycle import router as lifecycle_router
+from app.packages.center_package import router as package_router
+from app.verification.routes import router as verification_router
+from app.incidents.routes import router as incidents_router
+from app.ops.routes import router as ops_router
+from app.audit.timeline import router as timeline_router
 
 # Initialize SQLite tables on startup
 Base.metadata.create_all(bind=engine)
@@ -34,6 +40,12 @@ app.include_router(questions_router)
 app.include_router(candidates_router)
 app.include_router(ingestion_router)
 app.include_router(results_router)
+app.include_router(lifecycle_router)
+app.include_router(package_router)
+app.include_router(verification_router)
+app.include_router(incidents_router)
+app.include_router(ops_router)
+app.include_router(timeline_router)
 
 @app.get("/api/health")
 def health_check():

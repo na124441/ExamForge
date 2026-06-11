@@ -69,7 +69,9 @@ class EncryptedPackage(Base):
     package_hash = Column(String, nullable=False)
     valid_from = Column(DateTime(timezone=True), nullable=False)
     valid_until = Column(DateTime(timezone=True), nullable=False)
-    status = Column(String, default="SEALED") # SEALED, RELEASED
+    status = Column(String, default="SEALED") # SEALED, RELEASED, REVOKED
+    released_by = Column(String, nullable=True)
+    release_signature = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class Candidate(Base):
@@ -176,3 +178,54 @@ class RiskSimulation(Base):
     details = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class ExamState(Base):
+    __tablename__ = "exam_states"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    exam_id = Column(String, unique=True, nullable=False)
+    state = Column(String, default="DRAFT") # e.g. DRAFT, CONFIG_LOCKED, PAPER_GENERATED, etc.
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+class CandidateVerification(Base):
+    __tablename__ = "candidate_verifications"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    candidate_id = Column(String, ForeignKey("candidates.id"), nullable=False)
+    anonymous_id = Column(String, nullable=False)
+    exam_id = Column(String, nullable=False)
+    center_id = Column(String, nullable=False)
+    seat_id = Column(String, nullable=True)
+    verification_status = Column(String, default="VERIFIED") # VERIFIED, FAILED, SUSPICIOUS
+    verified_by = Column(String, ForeignKey("users.id"), nullable=False)
+    verification_hash = Column(String, nullable=False)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+class SeatAssignment(Base):
+    __tablename__ = "seat_assignments"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    exam_id = Column(String, nullable=False)
+    center_id = Column(String, nullable=False)
+    candidate_id = Column(String, ForeignKey("candidates.id"), nullable=False)
+    seat_id = Column(String, nullable=False)
+    status = Column(String, default="ASSIGNED") # ASSIGNED, VERIFIED, ABSENT, FLAGGED
+    assignment_hash = Column(String, nullable=False)
+    locked = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class IncidentReport(Base):
+    __tablename__ = "incident_reports"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    exam_id = Column(String, nullable=False)
+    center_id = Column(String, nullable=False)
+    reported_by = Column(String, ForeignKey("users.id"), nullable=False)
+    incident_type = Column(String, nullable=False) # e.g. SUSPICIOUS_BEHAVIOR, LATE_ENTRY, OMR_DAMAGE, etc.
+    severity = Column(String, nullable=False) # e.g. INFO, LOW, MEDIUM, HIGH, P0_CRITICAL
+    description = Column(Text, nullable=True)
+    evidence_hash = Column(String, nullable=True)
+    status = Column(String, default="OPEN") # OPEN, RESOLVED
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
+    resolution_notes = Column(Text, nullable=True)

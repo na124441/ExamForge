@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.audit.ledger import verify_audit_chain
 from app.results.verification import verify_candidate_integrity, verify_evaluation_integrity
-from app.models import Candidate
+from app.models import Candidate, AuditLog, IncidentReport
 from app.risk.center_risk import (
     detect_evaluator_conflicts, 
     get_omr_scans_by_band, 
@@ -11,7 +11,8 @@ from app.risk.center_risk import (
 def calculate_exam_trust_score(db: Session, exam_id: str) -> dict:
     """
     Computes a composite Trust/Integrity Score (0-100) for an exam
-    by evaluating audit trails, grading conflicts, scan quality, and system anomalies.
+    by evaluating audit trails, grading conflicts, scan quality, system anomalies,
+    and center operations indicators.
     """
     critical_issues = []
     warnings = []
@@ -111,8 +112,79 @@ def calculate_exam_trust_score(db: Session, exam_id: str) -> dict:
             
     anomaly_penalty = min(60.0, anomaly_penalty)
     
+    # 6. Center Operations & Incident Risks (v0.4)
+    ops_penalty = 0.0
+    
+    # Check unresolved incidents
+    open_incidents = db.query(IncidentReport).filter(IncidentReport.exam_id == exam_id, IncidentReport.status == "OPEN").all()
+    for inc in open_incidents:
+        if inc.severity == "P0_CRITICAL":
+            ops_penalty += 50.0
+            critical_issues.append({
+                "code": f"INCIDENT_CRITICAL_{inc.incident_type}",
+                "message": f"Unresolved P0 Critical incident reported: {inc.description}",
+                "details": f"Reported at center {inc.center_id}."
+            })
+        elif inc.severity == "HIGH":
+            ops_penalty += 15.0
+            critical_issues.append({
+                "code": f"INCIDENT_HIGH_{inc.incident_type}",
+                "message": f"Unresolved High incident reported: {inc.description}",
+                "details": f"Reported at center {inc.center_id}."
+            })
+        elif inc.severity == "MEDIUM":
+            ops_penalty += 5.0
+            warnings.append({
+                "code": f"INCIDENT_MEDIUM_{inc.incident_type}",
+                "message": f"Unresolved Medium incident reported: {inc.description}",
+                "details": f"Reported at center {inc.center_id}."
+            })
+            
+    # Scan Audit Ledger for specific operational threats
+    logs = db.query(AuditLog).all()
+    early_attempts = sum(1 for l in logs if l.action == "EARLY_PACKAGE_DECRYPTION_ATTEMPT")
+    wrong_access = sum(1 for l in logs if l.action == "WRONG_CENTER_PACKAGE_ACCESS")
+    unauth_seat = sum(1 for l in logs if l.action == "UNAUTHORIZED_SEAT_CHANGE")
+    unauth_role = sum(1 for l in logs if l.action == "UNAUTHORIZED_ACCESS_ATTEMPT")
+    sig_mismatch = sum(1 for l in logs if l.action == "ADMIT_CARD_SIGNATURE_MISMATCH")
+    
+    ops_penalty += (early_attempts * 40.0) + (wrong_access * 35.0) + (unauth_seat * 25.0) + (unauth_role * 10.0) + (sig_mismatch * 10.0)
+    
+    if early_attempts > 0:
+        critical_issues.append({
+            "code": "EARLY_PACKAGE_DECRYPTION",
+            "message": f"Suspicious activity: {early_attempts} early package decryption attempts detected.",
+            "details": "Time-lock release policies violated."
+        })
+    if wrong_access > 0:
+        critical_issues.append({
+            "code": "WRONG_CENTER_ACCESS",
+            "message": f"Suspicious activity: {wrong_access} wrong center package accesses detected.",
+            "details": "Authorized keys tried to open foreign packages."
+        })
+    if unauth_seat > 0:
+        critical_issues.append({
+            "code": "UNAUTHORIZED_SEAT_TAMPER",
+            "message": f"Anomaly detected: {unauth_seat} unauthorized seat modifications after layout lock.",
+            "details": "Post-session seat mapping edits detected in audit trail."
+        })
+    if unauth_role > 0:
+        warnings.append({
+            "code": "UNAUTHORIZED_API_ATTEMPT",
+            "message": f"Access warnings: {unauth_role} unauthorized API guard denials registered in ledger.",
+            "details": "Users attempted restricted role actions."
+        })
+    if sig_mismatch > 0:
+        warnings.append({
+            "code": "ADMIT_CARD_VERIFY_FAILURE",
+            "message": f"Verification alert: {sig_mismatch} candidate admit card signature mismatches detected.",
+            "details": "Check-in checks rejected forged card templates."
+        })
+        
+    ops_penalty = min(75.0, ops_penalty)
+    
     # Calculate composite score
-    composite_score = 100.0 - (audit_penalty + candidate_penalty + conflict_penalty + omr_penalty + anomaly_penalty)
+    composite_score = 100.0 - (audit_penalty + candidate_penalty + conflict_penalty + omr_penalty + anomaly_penalty + ops_penalty)
     composite_score = max(0.0, min(100.0, composite_score))
     
     return {
@@ -124,7 +196,8 @@ def calculate_exam_trust_score(db: Session, exam_id: str) -> dict:
             "candidate_chains": candidate_penalty,
             "evaluator_conflicts": conflict_penalty,
             "omr_confidence": omr_penalty,
-            "system_anomalies": anomaly_penalty
+            "system_anomalies": anomaly_penalty,
+            "center_operations": ops_penalty
         },
         "critical_issues": critical_issues,
         "warnings": warnings,
@@ -134,6 +207,6 @@ def calculate_exam_trust_score(db: Session, exam_id: str) -> dict:
             "tampered_candidates": tampered_cands_count,
             "grading_conflicts": len(conflicts),
             "omr_review_required": len(omr_report["MANUAL_REVIEW"]) + len(omr_report["LOW_CONFIDENCE"]),
-            "system_anomalies_count": len(anomalies)
+            "system_anomalies_count": len(anomalies) + len(open_incidents) + early_attempts + wrong_access + unauth_seat
         }
     }

@@ -22,6 +22,14 @@ DEMO_USERS = {
         "name": "Exam Controller",
         "role": "CONTROLLER"
     },
+    "officer@example.com": {
+        "name": "Center Officer User",
+        "role": "OFFICER"
+    },
+    "invigilator@example.com": {
+        "name": "Exam Invigilator User",
+        "role": "INVIGILATOR"
+    },
     "candidate@example.com": {
         "name": "Candidate User",
         "role": "CANDIDATE"

@@ -10,10 +10,28 @@ const DEMO_ROLES = [
     role: "CONTROLLER",
     name: "Exam Controller",
     email: "controller@example.com",
-    desc: "Create exams, define blueprints, generate secure papers, and verify final audit trails.",
+    desc: "Create exams, define blueprints, generate secure papers, and monitor live exam day operations.",
     icon: "🔐",
     color: "border-accent-emerald text-accent-emerald bg-accent-emerald/5 hover:bg-accent-emerald/10",
-    redirect: "/controller"
+    redirect: "/exam-ops"
+  },
+  {
+    role: "OFFICER",
+    name: "Center Officer",
+    email: "officer@example.com",
+    desc: "Lock center seat layouts, verify candidate admit cards, release package keys, and file incidents.",
+    icon: "🏢",
+    color: "border-accent-amber text-accent-amber bg-accent-amber/5 hover:bg-accent-amber/10",
+    redirect: "/center-console"
+  },
+  {
+    role: "INVIGILATOR",
+    name: "Exam Invigilator",
+    email: "invigilator@example.com",
+    desc: "Confirm candidate check-ins, verify seat layouts, and log suspect behaviors.",
+    icon: "🛡️",
+    color: "border-indigo-400 text-indigo-400 bg-indigo-400/5 hover:bg-indigo-400/10",
+    redirect: "/center-console"
   },
   {
     role: "CANDIDATE",
@@ -21,7 +39,7 @@ const DEMO_ROLES = [
     email: "candidate@example.com",
     desc: "Register, verify identity, and attempt timing-locked exams with chained event hashing.",
     icon: "📝",
-    color: "border-accent-amber text-accent-amber bg-accent-amber/5 hover:bg-accent-amber/10",
+    color: "border-sky-400 text-sky-400 bg-sky-400/5 hover:bg-sky-400/10",
     redirect: "/candidate"
   },
   {
@@ -30,17 +48,17 @@ const DEMO_ROLES = [
     email: "evaluator@example.com",
     desc: "Grade descriptive written page uploads anonymously against rubrics.",
     icon: "⚖️",
-    color: "border-indigo-400 text-indigo-400 bg-indigo-400/5 hover:bg-indigo-400/10",
+    color: "border-fuchsia-400 text-fuchsia-400 bg-fuchsia-400/5 hover:bg-fuchsia-400/10",
     redirect: "/evaluator"
   },
   {
     role: "AUDITOR",
     name: "System Auditor",
     email: "auditor@example.com",
-    desc: "Explore append-only hash chains and test tamper simulation controls.",
+    desc: "Explore append-only hash chains and inspect visual audit evidence timelines.",
     icon: "🔬",
     color: "border-accent-red text-accent-red bg-accent-red/5 hover:bg-accent-red/10",
-    redirect: "/auditor"
+    redirect: "/audit-timeline"
   }
 ];
 

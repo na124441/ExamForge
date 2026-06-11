@@ -38,7 +38,11 @@ def verify_publication_gate(db: Session, exam_id: str) -> dict:
         
     # 3. Critical System Anomalies
     # Find if there are critical anomalies in critical issues
-    has_critical_anomaly = any(issue["code"].startswith("SYSTEM_CRITICAL_") for issue in report["critical_issues"])
+    has_critical_anomaly = any(
+        issue["code"].startswith("SYSTEM_CRITICAL_") or
+        issue["code"].startswith("INCIDENT_CRITICAL_")
+        for issue in report["critical_issues"]
+    )
     checklist.append({
         "name": "Zero System Intrusion Signatures",
         "passed": not has_critical_anomaly,
