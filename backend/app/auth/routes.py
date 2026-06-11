@@ -38,6 +38,10 @@ DEMO_USERS = {
         "name": "Evaluator User",
         "role": "EVALUATOR"
     },
+    "evaluator2@example.com": {
+        "name": "Evaluator Two",
+        "role": "EVALUATOR"
+    },
     "auditor@example.com": {
         "name": "System Auditor",
         "role": "AUDITOR"

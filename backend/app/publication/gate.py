@@ -61,10 +61,96 @@ def verify_publication_gate(db: Session, exam_id: str) -> dict:
         "details": f"Current Exam Integrity Trust Score is {report['trust_score']}/100."
     })
     if not score_passed:
-        blocking_reasons.append("TRUST_SCORE_BELOW_THRESHOLD")
+        # Trust score is non-critical, so it does not block publication
+        pass
         
-    # Publishing is allowed only if all critical checks pass and the trust score meets threshold
-    allowed = (audit_passed and cands_ok and not has_critical_anomaly and score_passed)
+    # 5. v0.5 Evaluation Specifics
+    from app.models import WrittenBooklet, OMRManualReview, EvaluationMark, EvaluationConflict, Rubric, EvaluationLock
+    from app.evaluation.marks_lock import verify_marks_lock_integrity
+    
+    # Check all booklets locked
+    booklets = db.query(WrittenBooklet).filter(WrittenBooklet.exam_id == exam_id).all()
+    all_booklets_locked = len(booklets) > 0 and all(b.status == "LOCKED" for b in booklets)
+    checklist.append({
+        "name": "All Written Booklet Pages Locked",
+        "passed": all_booklets_locked,
+        "critical": True,
+        "details": "All scanned answer booklet pages locked." if all_booklets_locked else "Some booklets have not been fully uploaded or locked."
+    })
+    if not all_booklets_locked:
+        blocking_reasons.append("UNLOCKED_WRITTEN_BOOKLETS")
+        
+    # Check OMR reviews
+    pending_omr_count = db.query(OMRManualReview).filter(OMRManualReview.review_status == "PENDING").count()
+    omr_ok = pending_omr_count == 0
+    checklist.append({
+        "name": "All OMR Manual Reviews Finalized & Locked",
+        "passed": omr_ok,
+        "critical": True,
+        "details": "All ambiguous OMR answer bubble reviews resolved." if omr_ok else f"{pending_omr_count} ambiguous OMR review questions pending."
+    })
+    if not omr_ok:
+        blocking_reasons.append("PENDING_OMR_MANUAL_REVIEWS")
+        
+    # Check evaluation marks lock state
+    unlocked_marks_count = db.query(EvaluationMark).filter(EvaluationMark.status == "SUBMITTED").count()
+    evals_locked_ok = unlocked_marks_count == 0
+    checklist.append({
+        "name": "All Assigned Evaluations Sealed & Locked",
+        "passed": evals_locked_ok,
+        "critical": True,
+        "details": "All marks locked by evaluators." if evals_locked_ok else f"{unlocked_marks_count} evaluation marks submitted but not locked."
+    })
+    if not evals_locked_ok:
+        blocking_reasons.append("UNLOCKED_EVALUATIONS")
+        
+    # Check conflicts
+    unresolved_conflicts = db.query(EvaluationConflict).filter(
+        EvaluationConflict.status != "RESOLVED",
+        EvaluationConflict.resolution_required == True
+    ).count()
+    conflicts_ok = unresolved_conflicts == 0
+    checklist.append({
+        "name": "Zero Unresolved Double-Evaluation Conflicts",
+        "passed": conflicts_ok,
+        "critical": True,
+        "details": "All grading conflicts resolved by senior reviewers." if conflicts_ok else f"{unresolved_conflicts} grading conflicts pending resolution."
+    })
+    if not conflicts_ok:
+        blocking_reasons.append("UNRESOLVED_EVALUATOR_CONFLICTS")
+        
+    # Check MarksChain
+    all_locks = db.query(EvaluationLock).all()
+    marks_chain_valid = all(verify_marks_lock_integrity(db, l.evaluation_id) for l in all_locks)
+    checklist.append({
+        "name": "MarksChain Integrity Validated",
+        "passed": marks_chain_valid,
+        "critical": True,
+        "details": "No manual modifications in sealed database records detected." if marks_chain_valid else "MarksChain hash verification failed."
+    })
+    if not marks_chain_valid:
+        blocking_reasons.append("MARKS_CHAIN_TAMPERED")
+        
+    # Check Rubrics
+    rubrics = db.query(Rubric).filter(Rubric.exam_id == exam_id).all()
+    all_rubrics_locked = len(rubrics) > 0 and all(r.status == "LOCKED" for r in rubrics)
+    has_rubric_violation = any(issue["code"] == "RUBRIC_LOCK_VIOLATION" for issue in report["critical_issues"])
+    rubric_ok = all_rubrics_locked and not has_rubric_violation
+    checklist.append({
+        "name": "All Rubrics Locked & Intact",
+        "passed": rubric_ok,
+        "critical": True,
+        "details": "All grading rubrics locked without post-lock edits." if rubric_ok else "Rubrics have unlocked parameters or lock violations."
+    })
+    if not rubric_ok:
+        blocking_reasons.append("RUBRIC_LOCK_VIOLATION")
+        
+    # Publishing is allowed only if all critical checks pass
+    allowed = (
+        audit_passed and cands_ok and not has_critical_anomaly and 
+        all_booklets_locked and omr_ok and evals_locked_ok and conflicts_ok and 
+        marks_chain_valid and rubric_ok
+    )
     
     return {
         "exam_id": exam_id,

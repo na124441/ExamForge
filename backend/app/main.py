@@ -15,6 +15,11 @@ from app.verification.routes import router as verification_router
 from app.incidents.routes import router as incidents_router
 from app.ops.routes import router as ops_router
 from app.audit.timeline import router as timeline_router
+from app.written.routes import router as written_router
+from app.rubrics.routes import router as rubrics_router
+from app.evaluation.routes import router as evaluation_router
+from app.omr_review.routes import router as omr_review_router
+from app.evaluation_analytics.routes import router as evaluation_analytics_router
 
 # Initialize SQLite tables on startup
 Base.metadata.create_all(bind=engine)
@@ -46,6 +51,11 @@ app.include_router(verification_router)
 app.include_router(incidents_router)
 app.include_router(ops_router)
 app.include_router(timeline_router)
+app.include_router(written_router)
+app.include_router(rubrics_router)
+app.include_router(evaluation_router)
+app.include_router(omr_review_router)
+app.include_router(evaluation_analytics_router)
 
 @app.get("/api/health")
 def health_check():

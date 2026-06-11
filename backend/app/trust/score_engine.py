@@ -183,8 +183,162 @@ def calculate_exam_trust_score(db: Session, exam_id: str) -> dict:
         
     ops_penalty = min(75.0, ops_penalty)
     
+    # 7. Evaluation & Marks Integrity (v0.5)
+    eval_penalty = 0.0
+    
+    # Check missing written pages
+    from app.models import WrittenBooklet, WrittenPage
+    from app.written.page_ingestion import detect_missing_pages
+    booklets = db.query(WrittenBooklet).filter(WrittenBooklet.exam_id == exam_id).all()
+    missing_pages_count = 0
+    for b in booklets:
+        missing = detect_missing_pages(db, b.id)
+        if missing:
+            missing_pages_count += len(missing)
+            critical_issues.append({
+                "code": "WRITTEN_PAGE_MISSING",
+                "message": f"Written booklet {b.id} has missing page numbers {missing}.",
+                "details": f"Missing pages: {len(missing)}."
+            })
+    eval_penalty += missing_pages_count * 20.0
+    
+    # Check page hash mismatches
+    from app.written.page_hashing import compute_booklet_hash
+    for b in booklets:
+        pages = db.query(WrittenPage).filter(WrittenPage.booklet_id == b.id).order_by(WrittenPage.page_number).all()
+        page_hashes = [p.page_hash for p in pages if p.page_hash]
+        if page_hashes:
+            current_hash = compute_booklet_hash(page_hashes)
+            if current_hash != b.booklet_hash and b.status == "LOCKED":
+                eval_penalty += 40.0
+                critical_issues.append({
+                    "code": "WRITTEN_BOOKLET_HASH_MISMATCH",
+                    "message": f"Written booklet {b.id} integrity verification failed: hash mismatch.",
+                    "details": f"Stored: {b.booklet_hash[:16]}... Recalculated: {current_hash[:16]}..."
+                })
+                
+    # Check evaluator unassigned copy access
+    unauth_copy_access = sum(1 for l in logs if l.action == "UNAUTHORIZED_ACCESS_ATTEMPT" and l.resource_type == "AnonymousCopy")
+    eval_penalty += unauth_copy_access * 25.0
+    if unauth_copy_access > 0:
+        critical_issues.append({
+            "code": "EVALUATOR_UNAUTHORIZED_ACCESS",
+            "message": f"Security warning: {unauth_copy_access} evaluator unauthorized accesses to unassigned copies detected.",
+            "details": "Evaluator attempted to grade/view booklets not assigned to them."
+        })
+        
+    # Check candidate identity exposed
+    identity_exposed = sum(1 for l in logs if l.action == "IDENTITY_EXPOSED")
+    eval_penalty += identity_exposed * 50.0
+    if identity_exposed > 0:
+        critical_issues.append({
+            "code": "CANDIDATE_IDENTITY_EXPOSED",
+            "message": f"Anonymity warning: {identity_exposed} candidate identity exposure events logged in ledger.",
+            "details": "Candidate identity was exposed to evaluators."
+        })
+        
+    # Check rubric edited after lock
+    rubric_edit_after_lock = sum(1 for l in logs if l.action == "RUBRIC_EDIT_AFTER_LOCK")
+    eval_penalty += rubric_edit_after_lock * 30.0
+    if rubric_edit_after_lock > 0:
+        critical_issues.append({
+            "code": "RUBRIC_LOCK_VIOLATION",
+            "message": f"Rubric warning: {rubric_edit_after_lock} rubric edits after lock detected.",
+            "details": "Rubrics cannot be mutated after locking."
+        })
+        
+    # Check marks changed after lock
+    marks_edit_after_lock = sum(1 for l in logs if l.action == "MARKS_EDIT_AFTER_LOCK")
+    eval_penalty += marks_edit_after_lock * 50.0
+    if marks_edit_after_lock > 0:
+        critical_issues.append({
+            "code": "MARKS_LOCK_VIOLATION",
+            "message": f"Marks tampering: {marks_edit_after_lock} locked marks edit attempts detected.",
+            "details": "Marks locked cannot be changed."
+        })
+        
+    # Check unresolved conflicts
+    from app.models import EvaluationConflict, OMRManualReview
+    open_conflicts = db.query(EvaluationConflict).filter(
+        EvaluationConflict.status == "OPEN",
+        EvaluationConflict.resolution_required == True
+    ).all()
+    eval_penalty += len(open_conflicts) * 20.0
+    for c in open_conflicts:
+        critical_issues.append({
+            "code": f"CONFLICT_UNRESOLVED_{c.id}",
+            "message": f"Unresolved evaluator conflict for copy {c.anonymous_id} on question {c.question_id}.",
+            "details": f"Variance: {c.variance}. Evaluator A: {c.marks_a}, Evaluator B: {c.marks_b}."
+        })
+        
+    # Check high variance conflicts
+    high_variance_conflicts = db.query(EvaluationConflict).filter(
+        EvaluationConflict.status == "SENIOR_REVIEW",
+        EvaluationConflict.variance > 5.0
+    ).all()
+    eval_penalty += len(high_variance_conflicts) * 30.0
+    for c in high_variance_conflicts:
+        critical_issues.append({
+            "code": f"CONFLICT_HIGH_VARIANCE_{c.id}",
+            "message": f"High variance conflict (>5 marks) requiring senior review for copy {c.anonymous_id}.",
+            "details": f"Variance: {c.variance}. Evaluator A: {c.marks_a}, Evaluator B: {c.marks_b}."
+        })
+        
+    # Check OMR manual reviews pending
+    pending_omr = db.query(OMRManualReview).filter(
+        OMRManualReview.review_status == "PENDING"
+    ).all()
+    eval_penalty += len(pending_omr) * 10.0
+    for r in pending_omr:
+        critical_issues.append({
+            "code": f"OMR_REVIEW_PENDING_{r.id}",
+            "message": f"OMR manual review pending for scan {r.scan_id} question {r.question_no}.",
+            "details": f"Confidence: {int(r.confidence * 100)}%."
+        })
+        
+    # Check OMR review edited after lock
+    omr_edit_after_lock = sum(1 for l in logs if l.action == "OMR_REVIEW_EDIT_AFTER_LOCK")
+    eval_penalty += omr_edit_after_lock * 40.0
+    if omr_edit_after_lock > 0:
+        critical_issues.append({
+            "code": "OMR_REVIEW_LOCK_VIOLATION",
+            "message": f"OMR review warning: {omr_edit_after_lock} OMR reviews modified after lock.",
+            "details": "OMR review decisions locked cannot be mutated."
+        })
+        
+    # Check evaluator speed and conflict rate warnings
+    from app.evaluation_analytics.service import get_all_evaluator_analytics
+    try:
+        eval_analytics = get_all_evaluator_analytics(db)
+        susp_speed = 0
+        abn_rate = 0
+        for ev in eval_analytics:
+            for w in ev["warnings"]:
+                if w["code"] == "ABNORMAL_EVALUATION_SPEED":
+                    susp_speed += 1
+                elif w["code"] == "ABNORMAL_CONFLICT_RATE":
+                    abn_rate += 1
+        eval_penalty += susp_speed * 10.0
+        eval_penalty += abn_rate * 15.0
+        if susp_speed > 0:
+            warnings.append({
+                "code": "ABNORMAL_EVALUATION_SPEED",
+                "message": f"Performance alert: {susp_speed} evaluators checking booklets with abnormal speed.",
+                "details": "Evaluators checking faster than 10 seconds per booklet."
+            })
+        if abn_rate > 0:
+            warnings.append({
+                "code": "ABNORMAL_CONFLICT_RATE",
+                "message": f"Leniency alert: {abn_rate} evaluators with abnormal conflict rate (>30%).",
+                "details": "Evaluators whose conflict rate exceeds 30% threshold."
+            })
+    except Exception as e:
+        pass
+        
+    eval_penalty = min(75.0, eval_penalty)
+    
     # Calculate composite score
-    composite_score = 100.0 - (audit_penalty + candidate_penalty + conflict_penalty + omr_penalty + anomaly_penalty + ops_penalty)
+    composite_score = 100.0 - (audit_penalty + candidate_penalty + conflict_penalty + omr_penalty + anomaly_penalty + ops_penalty + eval_penalty)
     composite_score = max(0.0, min(100.0, composite_score))
     
     return {
@@ -197,7 +351,8 @@ def calculate_exam_trust_score(db: Session, exam_id: str) -> dict:
             "evaluator_conflicts": conflict_penalty,
             "omr_confidence": omr_penalty,
             "system_anomalies": anomaly_penalty,
-            "center_operations": ops_penalty
+            "center_operations": ops_penalty,
+            "evaluation_integrity": eval_penalty
         },
         "critical_issues": critical_issues,
         "warnings": warnings,

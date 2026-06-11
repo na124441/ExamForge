@@ -95,51 +95,7 @@ def upload_omr_scan(
         "status": scan.status
     }
 
-@router.post("/api/written/booklets/create")
-def upload_written_pages(
-    request: WrittenBookletCreateRequest,
-    db: Session = Depends(get_db),
-    current_user: UserResponse = Depends(get_current_user)
-):
-    if current_user.role not in ["CONTROLLER", "OFFICER"]:
-        pass
-        
-    cand = db.query(Candidate).filter(Candidate.id == request.candidate_id).first()
-    if not cand:
-        raise HTTPException(status_code=404, detail="Candidate not found")
-        
-    booklet_id = f"WBK-{calculate_sha256(cand.anonymous_id)[:8].upper()}"
-    
-    # Insert mock pages
-    for i in range(1, request.total_pages + 1):
-        page_hash = calculate_sha256(f"MOCK_IMAGE_PAGE_{i}_{booklet_id}")
-        wp = WrittenPage(
-            booklet_id=booklet_id,
-            page_number=i,
-            image_hash=page_hash
-        )
-        db.add(wp)
-        
-    db.commit()
-    
-    log_event(
-        db=db,
-        actor_id=current_user.id,
-        action="WRITTEN_BOOKLET_CREATED",
-        resource_type="WrittenBooklet",
-        resource_id=booklet_id,
-        payload_data=json.dumps({
-            "booklet_id": booklet_id,
-            "anonymous_id": cand.anonymous_id,
-            "total_pages": request.total_pages
-        })
-    )
-    
-    return {
-        "booklet_id": booklet_id,
-        "anonymous_id": cand.anonymous_id,
-        "total_pages": request.total_pages
-    }
+
 
 @router.post("/api/evaluations/submit")
 def submit_evaluation(

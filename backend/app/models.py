@@ -118,6 +118,9 @@ class WrittenPage(Base):
     booklet_id = Column(String, nullable=False)
     page_number = Column(Integer, nullable=False)
     image_hash = Column(String, nullable=False)
+    image_url = Column(String, nullable=True)
+    page_hash = Column(String, nullable=True)
+    upload_status = Column(String, default="LOCKED") # PENDING, LOCKED
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class Evaluation(Base):
@@ -229,3 +232,185 @@ class IncidentReport(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     resolved_at = Column(DateTime(timezone=True), nullable=True)
     resolution_notes = Column(Text, nullable=True)
+
+class WrittenBooklet(Base):
+    __tablename__ = "written_booklets"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    exam_id = Column(String, nullable=False)
+    candidate_id = Column(String, ForeignKey("candidates.id"), nullable=False)
+    anonymous_id = Column(String, unique=True, nullable=False)
+    center_id = Column(String, nullable=False)
+    total_pages = Column(Integer, nullable=False)
+    booklet_hash = Column(String, nullable=False)
+    status = Column(String, default="SCANNED") # SCANNED, LOCKED
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class AnonymousCopy(Base):
+    __tablename__ = "anonymous_copies"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    anonymous_id = Column(String, unique=True, nullable=False)
+    booklet_id = Column(String, ForeignKey("written_booklets.id"), nullable=False)
+    exam_id = Column(String, nullable=False)
+    assigned_evaluator_id = Column(String, ForeignKey("users.id"), nullable=True)
+    identity_visible = Column(Boolean, default=False)
+    status = Column(String, default="ANONYMIZED") # ANONYMIZED, ASSIGNED, EVALUATING, COMPLETED
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class Rubric(Base):
+    __tablename__ = "rubrics"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    exam_id = Column(String, nullable=False)
+    question_id = Column(String, ForeignKey("questions.id"), nullable=False)
+    max_marks = Column(Float, nullable=False)
+    status = Column(String, default="DRAFT") # DRAFT, LOCKED
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class RubricCriterion(Base):
+    __tablename__ = "rubric_criteria"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    rubric_id = Column(String, ForeignKey("rubrics.id"), nullable=False)
+    title = Column(String, nullable=False)
+    max_marks = Column(Float, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class EvaluationAssignment(Base):
+    __tablename__ = "evaluation_assignments"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    anonymous_id = Column(String, nullable=False)
+    evaluator_id = Column(String, ForeignKey("users.id"), nullable=False)
+    exam_id = Column(String, nullable=False)
+    assigned_at = Column(DateTime(timezone=True), server_default=func.now())
+    status = Column(String, default="ASSIGNED") # ASSIGNED, COMPLETED, REASSIGNED
+    reassigned_from = Column(String, nullable=True)
+    reassignment_reason = Column(Text, nullable=True)
+
+class EvaluationDraft(Base):
+    __tablename__ = "evaluation_drafts"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    anonymous_id = Column(String, nullable=False)
+    question_id = Column(String, ForeignKey("questions.id"), nullable=False)
+    evaluator_id = Column(String, ForeignKey("users.id"), nullable=False)
+    criteria_scores = Column(Text, nullable=False) # JSON string mapping criterion_id -> Float
+    total_marks = Column(Float, nullable=False)
+    notes = Column(Text, nullable=True)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+class EvaluationMark(Base):
+    __tablename__ = "evaluation_marks"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    anonymous_id = Column(String, nullable=False)
+    question_id = Column(String, ForeignKey("questions.id"), nullable=False)
+    evaluator_id = Column(String, ForeignKey("users.id"), nullable=False)
+    criteria_scores = Column(Text, nullable=False) # JSON string mapping criterion_id -> Float
+    total_marks = Column(Float, nullable=False)
+    rubric_id = Column(String, ForeignKey("rubrics.id"), nullable=False)
+    notes = Column(Text, nullable=True)
+    evaluation_hash = Column(String, nullable=False)
+    status = Column(String, default="SUBMITTED") # SUBMITTED, LOCKED
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class EvaluationLock(Base):
+    __tablename__ = "evaluation_locks"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    evaluation_id = Column(String, ForeignKey("evaluation_marks.id"), nullable=False)
+    anonymous_id = Column(String, nullable=False)
+    marks_hash = Column(String, nullable=False)
+    locked_by = Column(String, ForeignKey("users.id"), nullable=False)
+    locked_at = Column(DateTime(timezone=True), server_default=func.now())
+    signature = Column(String, nullable=False)
+    status = Column(String, default="LOCKED")
+
+class DoubleEvaluation(Base):
+    __tablename__ = "double_evaluations"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    exam_id = Column(String, nullable=False)
+    anonymous_id = Column(String, nullable=False)
+    question_id = Column(String, ForeignKey("questions.id"), nullable=False)
+    evaluator_a = Column(String, ForeignKey("users.id"), nullable=False)
+    evaluator_b = Column(String, ForeignKey("users.id"), nullable=False)
+    status = Column(String, default="ASSIGNED") # ASSIGNED, COMPLETED
+
+class EvaluationConflict(Base):
+    __tablename__ = "evaluation_conflicts"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    anonymous_id = Column(String, nullable=False)
+    question_id = Column(String, ForeignKey("questions.id"), nullable=False)
+    evaluator_a = Column(String, ForeignKey("users.id"), nullable=False)
+    marks_a = Column(Float, nullable=False)
+    evaluator_b = Column(String, ForeignKey("users.id"), nullable=False)
+    marks_b = Column(Float, nullable=False)
+    variance = Column(Float, nullable=False)
+    status = Column(String, default="OPEN") # OPEN, RESOLVED, SENIOR_REVIEW
+    resolution_required = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class ConflictResolution(Base):
+    __tablename__ = "conflict_resolutions"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    conflict_id = Column(String, ForeignKey("evaluation_conflicts.id"), nullable=False)
+    resolved_by = Column(String, ForeignKey("users.id"), nullable=False)
+    resolved_at = Column(DateTime(timezone=True), server_default=func.now())
+    resolution_policy = Column(String, nullable=False) # e.g. AVERAGE, SENIOR_DECISION, THIRD_EVALUATION
+    final_marks = Column(Float, nullable=False)
+    notes = Column(Text, nullable=False)
+
+class SeniorReview(Base):
+    __tablename__ = "senior_reviews"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    conflict_id = Column(String, ForeignKey("evaluation_conflicts.id"), nullable=False)
+    senior_evaluator_id = Column(String, ForeignKey("users.id"), nullable=False)
+    final_marks = Column(Float, nullable=False)
+    decision_notes = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class OMRManualReview(Base):
+    __tablename__ = "omr_manual_reviews"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    scan_id = Column(String, ForeignKey("omr_scans.id"), nullable=False)
+    candidate_id = Column(String, ForeignKey("candidates.id"), nullable=False)
+    question_no = Column(Integer, nullable=False)
+    detected_answer = Column(String, nullable=False)
+    confidence = Column(Float, nullable=False)
+    reviewer_final_answer = Column(String, nullable=True)
+    review_status = Column(String, default="PENDING") # PENDING, LOCKED
+    review_hash = Column(String, nullable=True)
+    reviewed_by = Column(String, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class MarksChainEvent(Base):
+    __tablename__ = "marks_chain_events"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    anonymous_id = Column(String, nullable=False)
+    event_type = Column(String, nullable=False) # MARKS_LOCKED, CONFLICT_RESOLVED, OMR_REVIEW_LOCKED
+    details = Column(Text, nullable=False)
+    previous_hash = Column(String, nullable=False)
+    current_hash = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class EvaluatorMetric(Base):
+    __tablename__ = "evaluator_metrics"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    evaluator_id = Column(String, ForeignKey("users.id"), unique=True, nullable=False)
+    total_assigned = Column(Integer, default=0)
+    total_completed = Column(Integer, default=0)
+    average_marks_given = Column(Float, default=0.0)
+    conflict_rate = Column(Float, default=0.0)
+    average_speed_seconds = Column(Float, default=0.0)
+    lock_delay_seconds = Column(Float, default=0.0)
+    reopen_requests = Column(Integer, default=0)
+
