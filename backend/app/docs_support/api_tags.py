@@ -1,0 +1,22 @@
+TAGS_METADATA = [
+    {"name": "auth", "description": "Authentication and user session management."},
+    {"name": "institutions", "description": "Multi-tenant institution operations and scope controls."},
+    {"name": "policies", "description": "Integrity policy template rules configurations."},
+    {"name": "exams", "description": "Exam lifecycle stages and state parameters."},
+    {"name": "questions", "description": "Question banks and blueprints seeding."},
+    {"name": "papers", "description": "Secure, timing-locked question papers sets."},
+    {"name": "packages", "description": "Decryption package sealing and distribution."},
+    {"name": "centers", "description": "Center on-boarding, seats and check-ins registries."},
+    {"name": "candidates", "description": "Candidates enrollment and verification maps."},
+    {"name": "omr", "description": "OMR manual reviewing and bubble density analysis."},
+    {"name": "written", "description": "Descriptive booklets uploads and OCR scanning."},
+    {"name": "evaluation", "description": "Double evaluator grading and conflict resolving."},
+    {"name": "results", "description": "Marks calculation and revision version control."},
+    {"name": "disputes", "description": "Candidates filing and dispute resolutoins logs."},
+    {"name": "certificates", "description": "Result certificate validation registries."},
+    {"name": "audit", "description": "Chained events audit timelines."},
+    {"name": "security", "description": "Threat models registry, PII redaction and approvals."},
+    {"name": "ops", "description": "Deep system infrastructure health checkers."},
+    {"name": "pilot", "description": "E2E pilot-run simulations and evidence binders."},
+    {"name": "authority", "description": "Executive executive telemetry aggregators."}
+]

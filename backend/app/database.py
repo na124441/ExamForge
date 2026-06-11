@@ -1,24 +1,15 @@
-from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from app.config import settings
+from sqlalchemy import Column, String
+from sqlalchemy.ext.declarative import declared_attr
 
-# For SQLite, check_same_thread is set to False to allow multi-threaded FastAPI handlers
-connect_args = {}
-if settings.DATABASE_URL.startswith("sqlite"):
-    connect_args = {"check_same_thread": False}
+# Import from unified session settings
+from app.db.session import engine, SessionLocal, get_db
 
-engine = create_engine(
-    settings.DATABASE_URL, connect_args=connect_args
-)
+class CustomBase:
+    @declared_attr
+    def institution_id(cls):
+        if hasattr(cls, "__tablename__") and cls.__tablename__:
+            return Column(String, default="INS-GENESIS", nullable=True)
+        return None
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+Base = declarative_base(cls=CustomBase)

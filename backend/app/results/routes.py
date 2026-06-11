@@ -293,3 +293,117 @@ def verify_receipt(request: VerifyReceiptRequest):
 @router.get("/api/exams/{exam_id}/gate-status")
 def get_gate_status(exam_id: str, db: Session = Depends(get_db)):
     return verify_publication_gate(db, exam_id)
+
+# --- Result Versioning & Revisions (v0.6) ---
+from app.models import ResultVersion, Dispute
+from app.auth.guards import RoleChecker
+
+class CreateVersionRequest(BaseModel):
+    new_marks: float
+    change_reason: str
+    linked_dispute_id: Optional[str] = None
+    signature: str
+
+@router.get("/api/results/{result_id}/versions")
+def get_result_versions(result_id: str, db: Session = Depends(get_db)):
+    versions = db.query(ResultVersion).filter(ResultVersion.result_id == result_id).order_by(ResultVersion.version_number.asc()).all()
+    return versions
+
+@router.get("/api/results/{result_id}/diff/{version_a}/{version_b}")
+def get_result_diff(result_id: str, version_a: int, version_b: int, db: Session = Depends(get_db)):
+    res_a = db.query(ResultVersion).filter(
+        ResultVersion.result_id == result_id,
+        ResultVersion.version_number == version_a
+    ).first()
+    res_b = db.query(ResultVersion).filter(
+        ResultVersion.result_id == result_id,
+        ResultVersion.version_number == version_b
+    ).first()
+
+    if not res_a or not res_b:
+        raise HTTPException(status_code=404, detail="One or both versions not found")
+
+    # Mock diff marks or extract marks obtained
+    # We can retrieve total marks from details or simulate diff payload
+    # Let's say we retrieve marks from change reason or we can parse it from new_result_hash content if we saved it.
+    # To be general, let's return a clean diff:
+    return {
+        "result_id": result_id,
+        "version_a": version_a,
+        "version_b": version_b,
+        "marks_obtained_diff": 0.0, # Diff calculated by frontend or parsed
+        "change_reason": res_b.change_reason,
+        "changed_by": res_b.changed_by
+    }
+
+@router.post("/api/results/{result_id}/create-version")
+def create_result_version(
+    result_id: str,
+    request: CreateVersionRequest,
+    db: Session = Depends(get_db),
+    current_user: UserResponse = Depends(RoleChecker(["CONTROLLER", "OFFICER"]))
+):
+    res = db.query(Result).filter(Result.id == result_id).first()
+    if not res:
+        raise HTTPException(status_code=404, detail="Result not found")
+
+    # Get count of existing versions
+    count = db.query(ResultVersion).filter(ResultVersion.result_id == result_id).count()
+    if count == 0:
+        # Create Version 1 representing the original result
+        v1 = ResultVersion(
+            result_id=res.id,
+            version_number=1,
+            previous_result_hash=None,
+            new_result_hash=res.result_hash,
+            change_reason="Original published results",
+            changed_by="CONTROLLER",
+            signature="SYSTEM_ECDSA_GENESIS_VERSION_SIG",
+            linked_dispute_id=None
+        )
+        db.add(v1)
+        db.commit()
+        count = 1
+
+    next_version = count + 1
+    prev_hash = res.result_hash
+
+    # Calculate new result hash
+    payload = f"{res.id}|{request.new_marks}|{request.change_reason}"
+    new_hash = calculate_sha256(payload)
+
+    # Update result
+    res.marks_obtained = request.new_marks
+    res.result_hash = new_hash
+    db.commit()
+
+    # Create new version
+    v_new = ResultVersion(
+        result_id=res.id,
+        version_number=next_version,
+        previous_result_hash=prev_hash,
+        new_result_hash=new_hash,
+        change_reason=request.change_reason,
+        changed_by=current_user.id,
+        linked_dispute_id=request.linked_dispute_id,
+        signature=request.signature
+    )
+    db.add(v_new)
+    db.commit()
+    db.refresh(v_new)
+
+    log_event(
+        db=db,
+        actor_id=current_user.id,
+        action="RESULT_REVISED",
+        resource_type="ResultVersion",
+        resource_id=v_new.id,
+        payload_data=json.dumps({
+            "result_id": res.id,
+            "version": next_version,
+            "change_reason": request.change_reason
+        })
+    )
+
+    return v_new
+

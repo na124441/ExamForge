@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -18,10 +19,15 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 # Predefined Demo Users & Roles mapping
 DEMO_USERS = {
+    "platform_admin@example.com": {
+        "name": "Platform Super Admin",
+        "role": "PLATFORM_SUPER_ADMIN"
+    },
     "controller@example.com": {
         "name": "Exam Controller",
         "role": "CONTROLLER"
     },
+
     "officer@example.com": {
         "name": "Center Officer User",
         "role": "OFFICER"
@@ -65,6 +71,7 @@ class UserResponse(BaseModel):
     email: str
     role: str
     status: str
+    institution_id: Optional[str] = None
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> UserResponse:
     credentials_exception = HTTPException(
@@ -92,7 +99,8 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         name=user.name,
         email=user.email,
         role=role,
-        status=user.status
+        status=user.status,
+        institution_id=user.institution_id
     )
 
 @router.post("/login", response_model=TokenResponse)
@@ -144,9 +152,11 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         data={
             "sub": user.id,
             "email": user.email,
-            "role": demo_meta["role"]
+            "role": demo_meta["role"],
+            "institution_id": user.institution_id
         }
     )
+
     
     # Log successful login event
     log_event(
