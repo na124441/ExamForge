@@ -282,28 +282,28 @@ export default function PilotRunPage() {
   return (
     <div className="space-y-6">
       {/* Sub-Header */}
-      <div className="flex justify-between items-center bg-slate-900/40 p-4 rounded-xl border border-slate-900/60 backdrop-blur-md">
+      <div className="flex justify-between items-center bg-glass border border-slate-900/60 p-5 rounded-2xl backdrop-blur-md shadow-glow-blue/5">
         <div>
-          <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2 font-outfit">
             <span>Pilot Simulator Flow</span>
-            <span className="text-[9px] px-2 py-0.5 bg-blue-600/10 border border-blue-500/20 text-blue-400 rounded uppercase font-mono font-bold tracking-widest animate-pulse">
+            <span className="text-[9px] px-2.5 py-0.5 bg-blue-600/10 border border-blue-500/20 text-blue-450 rounded uppercase font-mono font-bold tracking-widest animate-pulse">
               Interactive Deck
             </span>
           </h1>
-          <p className="text-[11px] text-slate-500 mt-0.5">
+          <p className="text-[11px] text-slate-400 mt-0.5">
             Advance step-by-step to simulate a full examination lifecycle and verify ledger entries.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/authority")}
-            className="text-xs px-3 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white rounded-lg transition"
+            className="text-xs px-3.5 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white rounded-xl transition cursor-pointer"
           >
             🏢 Authority Console
           </button>
           <button
             onClick={handleResetDatabase}
-            className="text-xs px-3 py-2 bg-red-950/20 border border-red-900/30 hover:bg-red-950/40 text-red-400 rounded-lg transition font-mono"
+            className="text-xs px-3.5 py-2 bg-red-950/20 border border-red-900/30 hover:bg-red-950/40 text-red-400 rounded-xl transition font-mono cursor-pointer"
           >
             🚨 Clean Reset DB
           </button>
@@ -325,13 +325,16 @@ export default function PilotRunPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left: Workflow Stepper (4 cols) */}
-        <div className="lg:col-span-4 bg-slate-900 p-5 rounded-2xl border border-slate-850 flex flex-col justify-between min-h-[480px]">
+        <div className="lg:col-span-4 bg-glass border border-slate-850 p-5 rounded-2xl flex flex-col justify-between min-h-[480px]">
           <div>
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-4 font-mono">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-5 font-mono px-1">
               Workflow timeline
             </h3>
             
-            <div className="overflow-y-auto max-h-[380px] pr-1 space-y-2">
+            <div className="relative pl-6 pr-1 py-1 space-y-4 max-h-[380px] overflow-y-auto scrollbar-thin">
+              {/* Vertical connecting line */}
+              <div className="absolute left-[7px] top-3 bottom-3 w-0.5 bg-slate-800/80" />
+              
               {activeRun ? (
                 activeRun.stages.map((stage) => {
                   const isActive = currentStage?.id === stage.id;
@@ -341,29 +344,40 @@ export default function PilotRunPage() {
                   return (
                     <div
                       key={stage.id}
-                      className={`p-2.5 rounded-xl border text-xs flex justify-between items-center transition-all duration-200 ${
-                        isActive
-                          ? "bg-blue-600/10 border-blue-500/30 text-white"
-                          : isCompleted
-                          ? "bg-slate-950/20 border-slate-850 text-slate-400/80"
-                          : "bg-slate-950/40 border-slate-900 text-slate-500"
-                      }`}
+                      className="relative flex items-center"
                     >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className={`w-4 h-4 rounded-full flex items-center justify-center font-mono text-[9px] font-bold shrink-0 ${
-                          isCompleted ? "bg-emerald-500 text-slate-950" : isFailed ? "bg-red-500 text-white" : isActive ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400"
+                      {/* Timeline dot wrapper */}
+                      <div className="absolute -left-[24.5px] z-10 flex items-center justify-center">
+                        <span className={`w-5.5 h-5.5 rounded-full flex items-center justify-center font-mono text-[9px] font-bold shrink-0 transition-all duration-300 border ${
+                          isCompleted 
+                            ? "bg-emerald-500 border-emerald-400 text-slate-950 shadow-glow-emerald/30 scale-105" 
+                            : isFailed 
+                            ? "bg-red-500 border-red-400 text-white shadow-glow-red/30 animate-pulse" 
+                            : isActive 
+                            ? "bg-blue-600 border-blue-400 text-white shadow-glow-blue/40 ring-4 ring-blue-500/15" 
+                            : "bg-slate-950 border-slate-850 text-slate-500"
                         }`}>
                           {stage.sequence}
                         </span>
-                        <span className="font-bold tracking-wide truncate">
+                      </div>
+
+                      {/* Content Box */}
+                      <div className={`w-full p-2.5 pl-5 rounded-xl border text-xs flex justify-between items-center transition-all duration-200 ${
+                        isActive
+                          ? "bg-blue-950/20 border-blue-500/40 text-white shadow-glow-blue/5 font-bold"
+                          : isCompleted
+                          ? "bg-slate-900/10 border-slate-900/40 text-slate-400/85"
+                          : "bg-glass-card border-slate-950 text-slate-500"
+                      }`}>
+                        <span className="font-bold tracking-wide truncate pr-2 font-outfit">
                           {stage.stage_name.replace(/_/g, " ")}
                         </span>
+                        <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded font-mono shrink-0 ${
+                          isCompleted ? "bg-emerald-500/10 text-emerald-400" : isFailed ? "bg-red-500/10 text-red-400" : isActive ? "bg-blue-500/10 text-blue-400 animate-pulse" : "bg-slate-900/40 text-slate-600"
+                        }`}>
+                          {stage.status}
+                        </span>
                       </div>
-                      <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded font-mono ${
-                        isCompleted ? "bg-emerald-500/10 text-emerald-400" : isFailed ? "bg-red-500/10 text-red-400" : isActive ? "bg-blue-500/10 text-blue-400" : "bg-slate-850 text-slate-500"
-                      }`}>
-                        {stage.status}
-                      </span>
                     </div>
                   );
                 })
@@ -379,7 +393,7 @@ export default function PilotRunPage() {
             <button
               onClick={handleStartRun}
               disabled={actioning}
-              className="w-full py-2.5 mt-4 bg-blue-600 text-white font-black rounded-lg hover:bg-blue-500 transition text-xs uppercase cursor-pointer tracking-wider"
+              className="w-full py-2.5 mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-xl transition text-xs uppercase cursor-pointer tracking-wider shadow-md shadow-blue-500/10 active:scale-95"
             >
               Start Pilot Run
             </button>
@@ -391,25 +405,25 @@ export default function PilotRunPage() {
           
           {/* Active control block */}
           {activeRun && currentStage && (
-            <div className="bg-slate-900 p-6 rounded-2xl border border-slate-850 flex flex-col justify-between gap-5 shadow-lg">
+            <div className="bg-glass border border-slate-850 p-6 rounded-2xl flex flex-col justify-between gap-5 shadow-lg shadow-glow-blue/2">
               <div>
                 <span className="text-[9px] font-bold text-blue-400 uppercase tracking-widest font-mono">
                   Stage {currentStage.sequence} / 15 • Active Operations
                 </span>
-                <h2 className="text-base font-black text-white tracking-tight mt-1 uppercase font-mono">
+                <h2 className="text-base font-black text-white tracking-tight mt-1 uppercase font-outfit">
                   {currentStage.stage_name.replace(/_/g, " ")}
                 </h2>
-                <div className="grid grid-cols-2 gap-4 mt-3 py-3 border-y border-slate-800 text-xs font-mono">
+                <div className="grid grid-cols-2 gap-4 mt-3.5 py-3.5 border-y border-slate-900 text-xs font-mono">
                   <div>
-                    <span className="text-slate-500 block text-[9px] uppercase font-bold">Acting Authority</span>
+                    <span className="text-slate-550 block text-[9px] uppercase font-bold">Acting Authority</span>
                     <span className="text-slate-300 font-semibold">{ACTORS[currentStage.stage_name] || "Security Module"}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[9px] uppercase font-bold">Action Details</span>
+                    <span className="text-slate-550 block text-[9px] uppercase font-bold">Action Details</span>
                     <span className="text-slate-300 font-semibold">Verify and seal secure ledger entries</span>
                   </div>
                 </div>
-                <p className="text-xs text-slate-400 mt-3 leading-relaxed">
+                <p className="text-xs text-slate-400 mt-3.5 leading-relaxed font-sans">
                   {STAGE_DESCRIPTIONS[currentStage.stage_name] || "Secure operational checklist."}
                 </p>
               </div>
@@ -417,7 +431,7 @@ export default function PilotRunPage() {
               <button
                 onClick={() => handleAdvanceStage(currentStage)}
                 disabled={actioning}
-                className="w-max px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition text-xs uppercase tracking-wider flex items-center gap-2 shadow-md shadow-blue-600/10 cursor-pointer"
+                className="w-max px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl transition-all text-xs uppercase tracking-wider flex items-center gap-2 shadow-md shadow-blue-550/10 cursor-pointer active:scale-95"
               >
                 {actioning ? (
                   <>
@@ -436,10 +450,10 @@ export default function PilotRunPage() {
 
           {/* Evidence Binder Compiling */}
           {activeRun && activeRun.status === "COMPLETED" && (
-            <div className="bg-slate-900 p-6 rounded-2xl border border-emerald-500/25 flex flex-col gap-5 shadow-lg animate-in fade-in zoom-in-95 duration-250">
+            <div className="bg-glass border border-emerald-500/20 p-6 rounded-2xl flex flex-col gap-5 shadow-lg shadow-glow-emerald/5 animate-in fade-in zoom-in-95 duration-250">
               <div>
-                <h2 className="text-base font-black text-white flex items-center gap-2 tracking-tight">
-                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                <h2 className="text-base font-black text-white flex items-center gap-2 tracking-tight font-outfit">
+                  <CheckCircle className="w-5 h-5 text-emerald-400 animate-bounce" />
                   <span>Interactive Run Completed</span>
                 </h2>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed">
@@ -451,23 +465,23 @@ export default function PilotRunPage() {
                 <button
                   onClick={handleGenerateBinder}
                   disabled={actioning}
-                  className="w-max px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-lg transition text-xs uppercase tracking-wider cursor-pointer"
+                  className="w-max px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl transition text-xs uppercase tracking-wider cursor-pointer active:scale-95 shadow-md shadow-emerald-500/10"
                 >
                   {actioning ? "Compiling..." : "Generate Signed Evidence Binder"}
                 </button>
               ) : (
-                <div className="font-mono text-xs border border-emerald-500/20 bg-slate-950 p-4 rounded-xl flex flex-col gap-2.5">
-                  <div className="flex justify-between border-b border-slate-900 pb-2">
+                <div className="font-mono text-xs border border-emerald-500/20 bg-slate-950/80 p-4 rounded-xl flex flex-col gap-2.5">
+                  <div className="flex justify-between border-b border-slate-900/60 pb-2">
                     <span className="text-slate-500">Binder ID</span>
                     <span className="text-white font-bold">{binder.id}</span>
                   </div>
-                  <div className="flex justify-between border-b border-slate-900 pb-2">
+                  <div className="flex justify-between border-b border-slate-900/60 pb-2">
                     <span className="text-slate-500">SHA-256 Checksum</span>
                     <span className="text-emerald-400 font-bold truncate max-w-[200px]" title={binder.binder_hash}>{binder.binder_hash}</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block mb-1">ECDSA Signature (Base64)</span>
-                    <div className="p-2.5 bg-slate-950 border border-slate-850 rounded text-[9px] text-emerald-400 break-all select-all leading-normal">
+                    <div className="p-2.5 bg-slate-950 border border-slate-900 rounded text-[9px] text-emerald-400 break-all select-all leading-normal">
                       {binder.signature}
                     </div>
                   </div>
@@ -478,21 +492,21 @@ export default function PilotRunPage() {
 
           {/* Cryptographic Inspector (Shows last event details) */}
           {activeRun && lastCompletedStage && lastCompletedStage.events.length > 0 && (
-            <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 font-mono text-xs space-y-3">
+            <div className="bg-glass border border-slate-850 p-5 rounded-2xl font-mono text-xs space-y-3">
               <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
                 <Fingerprint className="w-3.5 h-3.5 text-cyan-400" />
                 <span>Last Cryptographic Proof Details</span>
               </h4>
               
               {lastCompletedStage.events.map((event) => (
-                <div key={event.id} className="p-3 bg-slate-950 rounded-xl space-y-2 text-[11px]">
-                  <div className="flex justify-between font-bold text-slate-200">
+                <div key={event.id} className="p-3.5 bg-slate-950/70 border border-slate-900 rounded-xl space-y-2 text-[11px] shadow-sm">
+                  <div className="flex justify-between font-bold text-slate-200 font-outfit">
                     <span>{event.event_name}</span>
                     <span className="text-emerald-400 uppercase font-semibold text-[9px]">{event.status}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-[10px] text-slate-500">
-                    <span>Actor: <span className="text-slate-300">{event.actor}</span></span>
-                    <span>Action: <span className="text-slate-300">{event.action}</span></span>
+                    <span>Actor: <span className="text-slate-350">{event.actor}</span></span>
+                    <span>Action: <span className="text-slate-350">{event.action}</span></span>
                   </div>
                   {event.proof_hash && (
                     <div className="pt-2 border-t border-slate-900/60">
@@ -512,15 +526,15 @@ export default function PilotRunPage() {
           )}
 
           {/* Live Terminal logs */}
-          <div className="bg-slate-950 rounded-2xl border border-slate-900 flex flex-col h-[220px] overflow-hidden">
-            <div className="bg-slate-900 px-4 py-2 border-b border-slate-900 flex justify-between items-center shrink-0">
-              <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                <Terminal className="w-3 h-3 text-slate-400" />
+          <div className="bg-slate-950/80 rounded-2xl border border-slate-900 flex flex-col h-[220px] overflow-hidden shadow-inner">
+            <div className="bg-slate-950/40 px-4 py-2.5 border-b border-slate-900 flex justify-between items-center shrink-0">
+              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Terminal className="w-3 h-3 text-blue-550" />
                 <span>Pilot Execution Telemetry Console</span>
               </span>
             </div>
             
-            <div className="flex-1 p-4 font-mono text-[10px] text-[#00ff66]/85 overflow-y-auto space-y-1 select-text leading-normal">
+            <div className="flex-1 p-4 font-mono text-[10px] text-emerald-400 overflow-y-auto space-y-1.5 select-text leading-normal bg-black/40">
               {terminalLogs.length === 0 ? (
                 <div className="text-slate-600 italic flex items-center justify-center h-full">
                   No active telemetry logs. Run a stage to print ledger entries.
