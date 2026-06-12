@@ -32,7 +32,10 @@ import {
   FileCheck,
   RefreshCw,
   TrendingUp,
-  Skull
+  Skull,
+  Plus,
+  Minus,
+  X
 } from "lucide-react";
 
 // Types
@@ -266,6 +269,36 @@ export default function WarRoomPage() {
     }, 250);
   };
 
+  // Tab 1: Generate Single Paper Encryption Set simulator
+  const handleGeneratePaper = (paperId: string) => {
+    setPapers(prev => prev.map(p => {
+      if (p.id === paperId) {
+        return { ...p, progress: 0, status: "ENCRYPTING", hash: "GENERATING..." };
+      }
+      return p;
+    }));
+
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress += 20;
+      setPapers(prev => prev.map(p => {
+        if (p.id === paperId) {
+          if (progress < 100) {
+            return { ...p, progress };
+          } else {
+            clearInterval(progressInterval);
+            const finalHash = Math.random().toString(16).substring(2, 10).toUpperCase() + 
+                              Math.random().toString(16).substring(2, 10).toUpperCase() + 
+                              Math.random().toString(16).substring(2, 10).toUpperCase() + 
+                              "8A6E";
+            return { ...p, progress: 100, status: "SECURED", hash: finalHash };
+          }
+        }
+        return p;
+      }));
+    }, 200);
+  };
+
   // Tab 1: Toggle Test Center nodes PENDING/VERIFIED
   const toggleCenterNode = (id: string) => {
     setCenterNodes(prev => prev.map(n => {
@@ -315,6 +348,39 @@ export default function WarRoomPage() {
     }
   };
 
+  // Tab 3: Toggle descriptive grading rubric items
+  const toggleRubric = (id: string) => {
+    setRubrics(prev => prev.map(r => {
+      if (r.id === id) {
+        const nextChecked = !r.checked;
+        return {
+          ...r,
+          checked: nextChecked,
+          score: nextChecked ? r.max : 0,
+          issue: nextChecked ? undefined : (id === "R3" ? "MISSING THESIS ARGUMENT" : undefined)
+        };
+      }
+      return r;
+    }));
+  };
+
+  // Tab 3: Keyboard shortcuts handler for AI suggestion panel penalty adjustments
+  useEffect(() => {
+    const handleTab3Shortcuts = (e: KeyboardEvent) => {
+      if (activeTab === 3) {
+        if (e.shiftKey && e.key === "1") {
+          setScorePenalty(1.0);
+        } else if (e.shiftKey && e.key === "2") {
+          setScorePenalty(2.5);
+        } else if (e.shiftKey && e.key.toLowerCase() === "w") {
+          setScorePenalty(0.0);
+        }
+      }
+    };
+    window.addEventListener("keydown", handleTab3Shortcuts);
+    return () => window.removeEventListener("keydown", handleTab3Shortcuts);
+  }, [activeTab]);
+
   // Tab 4: SQL Backdoor Mutation Injected
   const handleInjectMutation = () => {
     setSqlInjected(true);
@@ -331,6 +397,14 @@ export default function WarRoomPage() {
   const diffEasy = Math.max(10, Math.floor((100 - difficulty) * 0.6));
   const diffMedium = 100 - difficulty - diffEasy;
   const diffHard = difficulty;
+
+  // Countdown timer variables
+  const totalTime = 300;
+  const progressRatio = timeLeft / totalTime;
+  const timerRadius = 52;
+  const timerCircumference = 2 * Math.PI * timerRadius;
+  const timerStrokeDashoffset = timerCircumference - (progressRatio * timerCircumference);
+  const isUnderTwoMinutes = timeLeft < 120;
 
   return (
     <div className="w-screen h-screen bg-[#02040a] flex items-center justify-center overflow-hidden p-2">
@@ -480,48 +554,110 @@ export default function WarRoomPage() {
                   </div>
                   
                   {/* Subject weight indicators */}
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between items-center text-xs font-mono mb-1">
-                        <span className="text-slate-400">MATHS WEIGHT</span>
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => setMathWeight(prev => Math.max(10, prev - 5))} className="px-1.5 py-0.2 bg-slate-900 border border-slate-850 hover:bg-slate-800 text-[10px] rounded cursor-pointer">-</button>
-                          <span className="font-bold text-white w-8 text-center">{mathWeight}%</span>
-                          <button onClick={() => setMathWeight(prev => Math.min(60, prev + 5))} className="px-1.5 py-0.2 bg-slate-900 border border-slate-850 hover:bg-slate-800 text-[10px] rounded cursor-pointer">+</button>
+                  <div className="space-y-3">
+                    
+                    {/* MATHS CONTROLLER */}
+                    <div className="flex items-center justify-between gap-4 p-2.5 bg-slate-950/40 border border-slate-900/60 rounded-xl hover:border-slate-800/80 transition duration-300">
+                      <div className="flex-1 flex flex-col gap-2">
+                        <div className="flex items-center justify-between text-[11px] font-mono tracking-wider font-bold">
+                          <span className="text-slate-400">MATHS</span>
+                          <div className="flex items-center gap-1.5">
+                            <button 
+                              onClick={() => setMathWeight(prev => Math.max(10, prev - 5))} 
+                              className="w-5.5 h-5.5 flex items-center justify-center bg-slate-900 border border-slate-800 hover:bg-slate-850 active:scale-90 text-blue-400 hover:border-blue-500/40 rounded-full cursor-pointer transition shadow-[0_0_8px_rgba(59,130,246,0.08)]"
+                              title="Decrease Maths Weight"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <button 
+                              onClick={() => setMathWeight(prev => Math.min(60, prev + 5))} 
+                              className="w-5.5 h-5.5 flex items-center justify-center bg-slate-900 border border-slate-800 hover:bg-slate-850 active:scale-90 text-blue-400 hover:border-blue-500/40 rounded-full cursor-pointer transition shadow-[0_0_8px_rgba(59,130,246,0.08)]"
+                              title="Increase Maths Weight"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800/40">
+                          <div className="h-full bg-blue-500 rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(59,130,246,0.4)]" style={{ width: `${mathWeight}%` }} />
                         </div>
                       </div>
-                      <div className="w-full h-2 bg-slate-950 rounded overflow-hidden">
-                        <div className="h-full bg-blue-500 transition-all duration-200" style={{ width: `${mathWeight}%` }} />
+                      <div className="text-right flex flex-col justify-center min-w-[3.2rem] border-l border-slate-800/30 pl-3">
+                        <div className="text-xl font-black font-mono text-blue-400 tracking-tight leading-none">
+                          {mathWeight}<span className="text-[10px] text-blue-500/60 font-bold ml-0.5">%</span>
+                        </div>
+                        <span className="text-[7.5px] font-mono text-slate-500 uppercase tracking-widest mt-1">WEIGHT</span>
                       </div>
                     </div>
 
-                    <div>
-                      <div className="flex justify-between items-center text-xs font-mono mb-1">
-                        <span className="text-slate-400">PHYSICS WEIGHT</span>
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => setPhysWeight(prev => Math.max(10, prev - 5))} className="px-1.5 py-0.2 bg-slate-900 border border-slate-850 hover:bg-slate-800 text-[10px] rounded cursor-pointer">-</button>
-                          <span className="font-bold text-white w-8 text-center">{physWeight}%</span>
-                          <button onClick={() => setPhysWeight(prev => Math.min(60, prev + 5))} className="px-1.5 py-0.2 bg-slate-900 border border-slate-850 hover:bg-slate-800 text-[10px] rounded cursor-pointer">+</button>
+                    {/* PHYSICS CONTROLLER */}
+                    <div className="flex items-center justify-between gap-4 p-2.5 bg-slate-950/40 border border-slate-900/60 rounded-xl hover:border-slate-800/80 transition duration-300">
+                      <div className="flex-1 flex flex-col gap-2">
+                        <div className="flex items-center justify-between text-[11px] font-mono tracking-wider font-bold">
+                          <span className="text-slate-400">PHYSICS</span>
+                          <div className="flex items-center gap-1.5">
+                            <button 
+                              onClick={() => setPhysWeight(prev => Math.max(10, prev - 5))} 
+                              className="w-5.5 h-5.5 flex items-center justify-center bg-slate-900 border border-slate-800 hover:bg-slate-850 active:scale-90 text-teal-400 hover:border-teal-500/40 rounded-full cursor-pointer transition shadow-[0_0_8px_rgba(20,184,166,0.08)]"
+                              title="Decrease Physics Weight"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <button 
+                              onClick={() => setPhysWeight(prev => Math.min(60, prev + 5))} 
+                              className="w-5.5 h-5.5 flex items-center justify-center bg-slate-900 border border-slate-800 hover:bg-slate-850 active:scale-90 text-teal-400 hover:border-teal-500/40 rounded-full cursor-pointer transition shadow-[0_0_8px_rgba(20,184,166,0.08)]"
+                              title="Increase Physics Weight"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800/40">
+                          <div className="h-full bg-teal-500 rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(20,184,166,0.4)]" style={{ width: `${physWeight}%` }} />
                         </div>
                       </div>
-                      <div className="w-full h-2 bg-slate-950 rounded overflow-hidden">
-                        <div className="h-full bg-indigo-500 transition-all duration-200" style={{ width: `${physWeight}%` }} />
+                      <div className="text-right flex flex-col justify-center min-w-[3.2rem] border-l border-slate-800/30 pl-3">
+                        <div className="text-xl font-black font-mono text-teal-400 tracking-tight leading-none">
+                          {physWeight}<span className="text-[10px] text-teal-500/60 font-bold ml-0.5">%</span>
+                        </div>
+                        <span className="text-[7.5px] font-mono text-slate-500 uppercase tracking-widest mt-1">WEIGHT</span>
                       </div>
                     </div>
 
-                    <div>
-                      <div className="flex justify-between items-center text-xs font-mono mb-1">
-                        <span className="text-slate-400">CHEMISTRY WEIGHT</span>
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => setChemWeight(prev => Math.max(10, prev - 5))} className="px-1.5 py-0.2 bg-slate-900 border border-slate-850 hover:bg-slate-800 text-[10px] rounded cursor-pointer">-</button>
-                          <span className="font-bold text-white w-8 text-center">{chemWeight}%</span>
-                          <button onClick={() => setChemWeight(prev => Math.min(60, prev + 5))} className="px-1.5 py-0.2 bg-slate-900 border border-slate-850 hover:bg-slate-800 text-[10px] rounded cursor-pointer">+</button>
+                    {/* CHEMISTRY CONTROLLER */}
+                    <div className="flex items-center justify-between gap-4 p-2.5 bg-slate-950/40 border border-slate-900/60 rounded-xl hover:border-slate-800/80 transition duration-300">
+                      <div className="flex-1 flex flex-col gap-2">
+                        <div className="flex items-center justify-between text-[11px] font-mono tracking-wider font-bold">
+                          <span className="text-slate-400">CHEMISTRY</span>
+                          <div className="flex items-center gap-1.5">
+                            <button 
+                              onClick={() => setChemWeight(prev => Math.max(10, prev - 5))} 
+                              className="w-5.5 h-5.5 flex items-center justify-center bg-slate-900 border border-slate-800 hover:bg-slate-850 active:scale-90 text-purple-400 hover:border-purple-500/40 rounded-full cursor-pointer transition shadow-[0_0_8px_rgba(168,85,247,0.08)]"
+                              title="Decrease Chemistry Weight"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <button 
+                              onClick={() => setChemWeight(prev => Math.min(60, prev + 5))} 
+                              className="w-5.5 h-5.5 flex items-center justify-center bg-slate-900 border border-slate-800 hover:bg-slate-850 active:scale-90 text-purple-400 hover:border-purple-500/40 rounded-full cursor-pointer transition shadow-[0_0_8px_rgba(168,85,247,0.08)]"
+                              title="Increase Chemistry Weight"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800/40">
+                          <div className="h-full bg-purple-500 rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(168,85,247,0.4)]" style={{ width: `${chemWeight}%` }} />
                         </div>
                       </div>
-                      <div className="w-full h-2 bg-slate-950 rounded overflow-hidden">
-                        <div className="h-full bg-violet-500 transition-all duration-200" style={{ width: `${chemWeight}%` }} />
+                      <div className="text-right flex flex-col justify-center min-w-[3.2rem] border-l border-slate-800/30 pl-3">
+                        <div className="text-xl font-black font-mono text-purple-400 tracking-tight leading-none">
+                          {chemWeight}<span className="text-[10px] text-purple-500/60 font-bold ml-0.5">%</span>
+                        </div>
+                        <span className="text-[7.5px] font-mono text-slate-500 uppercase tracking-widest mt-1">WEIGHT</span>
                       </div>
                     </div>
+
                   </div>
 
                   {/* Difficulty controls */}
@@ -538,6 +674,25 @@ export default function WarRoomPage() {
                       onChange={(e) => setDifficulty(parseInt(e.target.value))}
                       className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-blue-500 mb-4"
                     />
+                    
+                    {/* Segmented difficulty bar chart */}
+                    <div className="w-full h-3 bg-slate-950 rounded-full flex overflow-hidden border border-slate-900 p-0.5 mb-4 shadow-inner">
+                      <div 
+                        className="h-full bg-emerald-500 rounded-l-full transition-all duration-300 ease-out shadow-[0_0_8px_rgba(16,185,129,0.4)]"
+                        style={{ width: `${diffEasy}%` }}
+                        title={`Easy: ${diffEasy}%`}
+                      />
+                      <div 
+                        className="h-full bg-blue-500 transition-all duration-300 ease-out shadow-[0_0_8px_rgba(59,130,246,0.4)]"
+                        style={{ width: `${diffMedium}%` }}
+                        title={`Medium: ${diffMedium}%`}
+                      />
+                      <div 
+                        className="h-full bg-rose-500 rounded-r-full transition-all duration-300 ease-out shadow-[0_0_8px_rgba(244,63,94,0.4)]"
+                        style={{ width: `${diffHard}%` }}
+                        title={`Hard: ${diffHard}%`}
+                      />
+                    </div>
                     
                     {/* Ratio meters */}
                     <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono">
@@ -605,29 +760,52 @@ export default function WarRoomPage() {
                         <div className="flex justify-between items-center">
                           <span className="text-xs font-bold text-white font-mono">{paper.name}</span>
                           
+                          {/* Status badge with left-side colored dot */}
                           {paper.status === "IDLE" && (
-                            <span className="text-[9px] text-slate-500 font-mono font-bold uppercase">IDLE</span>
+                            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-500 text-[9px] font-mono font-bold uppercase">
+                              <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                              <span>IDLE</span>
+                            </span>
                           )}
                           {paper.status === "ENCRYPTING" && (
-                            <span className="text-[9px] text-amber-400 font-mono font-bold uppercase animate-pulse">ENCRYPTING...</span>
+                            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[9px] font-mono font-bold uppercase animate-pulse">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                              <span>ENCRYPTING</span>
+                            </span>
                           )}
                           {paper.status === "SECURED" && (
-                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-mono font-bold uppercase shadow-[0_0_10px_rgba(16,185,129,0.1)] flex items-center gap-1">
-                              <Lock className="w-2.5 h-2.5" />
-                              <span>AES-256-GCM LOCKED</span>
+                            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-mono font-bold uppercase shadow-[0_0_10px_rgba(16,185,129,0.08)]">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.8)]" />
+                              <span>SECURED</span>
                             </span>
                           )}
                         </div>
                         
-                        {/* Progress Bar / Hash output */}
+                        {/* Progress Bar / Hash output & Generate button */}
                         {paper.status === "ENCRYPTING" ? (
-                          <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
-                            <div className="h-full bg-amber-500 animate-pulse" style={{ width: `${paper.progress}%` }} />
+                          <div className="w-full bg-[#080c16] p-2 rounded border border-slate-900 flex items-center justify-between gap-3 min-h-[2.5rem]">
+                            <span className="text-[9px] text-slate-500 font-mono font-bold uppercase">SECURE WRAPPING:</span>
+                            <div className="flex-1 bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-800/40">
+                              <div className="h-full bg-amber-500 rounded-full animate-pulse animate-amber-border-pulse" style={{ width: `${paper.progress}%` }} />
+                            </div>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-1.5 bg-[#080c16] px-2 py-1.5 rounded border border-slate-900">
-                            <span className="text-[9px] text-slate-500 font-mono font-bold">SHA-256:</span>
-                            <span className="text-[10px] text-blue-450 font-mono font-bold tracking-wider">{paper.hash}</span>
+                          <div className="flex items-center justify-between gap-3 bg-[#080c16] px-2.5 py-1.5 rounded border border-slate-900 min-h-[2.5rem]">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[9px] text-slate-500/60 font-mono font-bold uppercase tracking-wider">SHA-256:</span>
+                              <span className="text-[10px] text-slate-500/80 font-mono font-medium tracking-wide">
+                                {paper.hash}
+                              </span>
+                            </div>
+                            
+                            {paper.status === "IDLE" && (
+                              <button
+                                onClick={() => handleGeneratePaper(paper.id)}
+                                className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-mono font-bold text-[9px] uppercase tracking-wider rounded cursor-pointer transition shadow-[0_0_10px_rgba(59,130,246,0.25)] border border-blue-500/30"
+                              >
+                                Generate
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
@@ -649,25 +827,93 @@ export default function WarRoomPage() {
                   </div>
 
                   {/* Countdown Timer */}
-                  <div className="text-center py-4 bg-slate-950/60 border border-slate-900 rounded-2xl mb-4 relative overflow-hidden">
-                    <div className="text-[10px] font-mono font-bold text-slate-500 tracking-widest uppercase mb-1">DECRYPTION UNLOCK TIMEOUT</div>
-                    <div className="text-4xl font-black text-amber-400 font-mono tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.06)]">
-                      {formatTime(timeLeft)}
+                  <div className={`text-center py-5 bg-slate-950/60 border ${
+                    isUnderTwoMinutes 
+                      ? "animate-amber-border-pulse border-amber-500/80" 
+                      : "border-slate-900"
+                  } rounded-2xl mb-4 relative overflow-hidden flex flex-col items-center justify-center transition-all duration-500`}>
+                    
+                    <style dangerouslySetInnerHTML={{ __html: `
+                      @keyframes amberBorderPulse {
+                        0%, 100% {
+                          border-color: rgba(245, 158, 11, 0.4);
+                          box-shadow: 0 0 10px rgba(245, 158, 11, 0.1);
+                        }
+                        50% {
+                          border-color: rgba(245, 158, 11, 0.95);
+                          box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+                        }
+                      }
+                      .animate-amber-border-pulse {
+                        animation: amberBorderPulse 1.5s infinite ease-in-out;
+                      }
+                    `}} />
+
+                    {/* Progress Arc & Timer Container */}
+                    <div className="relative w-32 h-32 flex items-center justify-center mt-1">
+                      {/* SVG Progress Ring */}
+                      <svg className="w-full h-full transform -rotate-90 absolute">
+                        {/* Background track circle */}
+                        <circle
+                          cx="64"
+                          cy="64"
+                          r={timerRadius}
+                          className="stroke-slate-900/60"
+                          strokeWidth="5"
+                          fill="transparent"
+                        />
+                        {/* Active progress arc circle */}
+                        <circle
+                          cx="64"
+                          cy="64"
+                          r={timerRadius}
+                          className="stroke-amber-500 transition-all duration-300 ease-out"
+                          strokeWidth="5"
+                          strokeDasharray={timerCircumference}
+                          strokeDashoffset={timerStrokeDashoffset}
+                          strokeLinecap="round"
+                          fill="transparent"
+                        />
+                      </svg>
+                      
+                      {/* Inner timer text */}
+                      <div className="z-10 flex flex-col items-center justify-center">
+                        <div className="text-2xl font-black text-amber-500 font-mono tracking-widest leading-none drop-shadow-[0_0_8px_rgba(245,158,11,0.25)]">
+                          {formatTime(timeLeft)}
+                        </div>
+                        <span className="text-[7.5px] font-mono text-slate-500 uppercase tracking-widest mt-1.5 font-bold">SECURE LOCK</span>
+                      </div>
+                    </div>
+
+                    {/* Label */}
+                    <div className="text-[9.5px] font-mono font-bold text-slate-400 tracking-wider uppercase mt-3.5 mb-1.5">
+                      Time until decryption unlock
                     </div>
                     
                     {/* Controls */}
-                    <div className="flex justify-center gap-3 mt-3">
+                    <div className="flex justify-center gap-2 mt-1 z-10">
                       <button 
                         onClick={() => setTimerRunning(!timerRunning)}
-                        className="p-1 bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-350 hover:text-white rounded cursor-pointer transition"
+                        className="px-2 py-0.5 bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-350 hover:text-white rounded cursor-pointer transition flex items-center gap-1 text-[9px] font-mono font-bold hover:border-amber-500/30"
                       >
-                        {timerRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 text-emerald-400" />}
+                        {timerRunning ? (
+                          <>
+                            <Pause className="w-2.5 h-2.5 text-amber-400" />
+                            <span>PAUSE</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-2.5 h-2.5 text-emerald-400" />
+                            <span>RESUME</span>
+                          </>
+                        )}
                       </button>
                       <button 
                         onClick={() => setTimeLeft(294)}
-                        className="p-1 bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-350 hover:text-white rounded cursor-pointer transition"
+                        className="px-2 py-0.5 bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-350 hover:text-white rounded cursor-pointer transition flex items-center gap-1 text-[9px] font-mono font-bold hover:border-slate-700"
                       >
-                        <RotateCcw className="w-3.5 h-3.5" />
+                        <RotateCcw className="w-2.5 h-2.5 text-slate-400" />
+                        <span>RESET</span>
                       </button>
                     </div>
                   </div>
@@ -728,38 +974,77 @@ export default function WarRoomPage() {
                   {/* Calibration Canvas */}
                   <div className="flex-1 bg-slate-950/80 border border-slate-900 rounded-xl relative overflow-hidden flex items-center justify-center terminal-scanline">
                     
-                    {/* Targeting Crosshairs at corners */}
-                    <div className="absolute top-3 left-3 text-red-500 font-mono text-xs font-bold leading-none">[+] CAL_TL</div>
-                    <div className="absolute top-3 right-3 text-red-500 font-mono text-xs font-bold leading-none">CAL_TR [+]</div>
-                    <div className="absolute bottom-3 left-3 text-red-500 font-mono text-xs font-bold leading-none">[+] CAL_BL</div>
-                    <div className="absolute bottom-3 right-3 text-red-500 font-mono text-xs font-bold leading-none">CAL_BR [+]</div>
+                    {/* Targeting Crosshairs at corners in green (calibration confirmed) */}
+                    <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5 font-mono text-[9px] font-bold text-emerald-400">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="5" strokeDasharray="2" />
+                        <line x1="12" y1="2" x2="12" y2="22" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                      </svg>
+                      <span>CAL_TL</span>
+                    </div>
+                    <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 font-mono text-[9px] font-bold text-emerald-400">
+                      <span>CAL_TR</span>
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="5" strokeDasharray="2" />
+                        <line x1="12" y1="2" x2="12" y2="22" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                      </svg>
+                    </div>
+                    <div className="absolute bottom-3.5 left-3.5 flex items-center gap-1.5 font-mono text-[9px] font-bold text-emerald-400">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="5" strokeDasharray="2" />
+                        <line x1="12" y1="2" x2="12" y2="22" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                      </svg>
+                      <span>CAL_BL</span>
+                    </div>
+                    <div className="absolute bottom-3.5 right-3.5 flex items-center gap-1.5 font-mono text-[9px] font-bold text-emerald-400">
+                      <span>CAL_BR</span>
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="5" strokeDasharray="2" />
+                        <line x1="12" y1="2" x2="12" y2="22" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                      </svg>
+                    </div>
                     
-                    {/* Centered grid and graphic bubbles sheet */}
-                    <div className="w-[85%] h-[80%] border border-slate-850 p-4 flex flex-col justify-between relative bg-[#070b14]/50 rounded">
+                    {/* Centered grid and graphic bubbles sheet on #111825 lighter surface */}
+                    <div className="w-[85%] h-[80%] border border-slate-800 p-4 flex flex-col justify-between relative bg-[#111825] rounded-xl shadow-lg">
                       
                       {/* Sweep scan line */}
                       <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_10px_#3b82f6] animate-pulse" style={{
                         animation: "scanline 4s linear infinite",
                         top: "30%"
                       }} />
-
+ 
                       {/* Header metrics on sheets */}
-                      <div className="flex justify-between border-b border-slate-900 pb-2 text-[9px] font-mono text-slate-500">
+                      <div className="flex justify-between border-b border-slate-900/60 pb-2 text-[9px] font-mono text-slate-500">
                         <span>TEMPLATE: OMR_STANDARD_X8</span>
                         <span>UID: #OMR-489C</span>
                       </div>
-
+ 
                       {/* Bubbles visualization */}
-                      <div className="flex-1 flex flex-col justify-center gap-3 py-3">
+                      <div className="flex-1 flex flex-col justify-center gap-2 py-3 px-1.5">
                         {[11, 12, 13, 14, 15, 16, 17, 18].map((qNum, idx) => {
                           const omrMatch = omrList.find(q => q.id === qNum);
+                          const isAmbiguous = omrMatch?.status === "AMBIGUOUS";
+                          const isVerifiedOrResolved = omrMatch?.status === "VERIFIED" || omrMatch?.status === "RESOLVED";
+                          
                           return (
-                            <div key={qNum} className="flex items-center justify-between text-xs font-mono">
-                              <span className="text-slate-500 w-8">Q{qNum}:</span>
+                            <div 
+                              key={qNum} 
+                              className={`flex items-center justify-between text-xs font-mono px-3 py-1.5 rounded transition-all duration-300 ${
+                                isAmbiguous
+                                  ? "border-l-4 border-l-amber-500 bg-amber-500/10 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.05)]"
+                                  : isVerifiedOrResolved
+                                    ? "border-l-4 border-l-emerald-500 bg-emerald-500/5 text-slate-300"
+                                    : "border-l-4 border-l-transparent text-slate-400 pl-4"
+                              }`}
+                            >
+                              <span className={`w-8 font-bold ${isAmbiguous ? "text-amber-400" : isVerifiedOrResolved ? "text-emerald-450" : "text-slate-500"}`}>Q{qNum}:</span>
                               <div className="flex-1 flex justify-around px-8 max-w-[280px]">
                                 {["A", "B", "C", "D"].map((opt) => {
                                   const isSelected = omrMatch?.ans.includes(opt);
-                                  const isAmbiguous = omrMatch?.status === "AMBIGUOUS";
                                   return (
                                     <div 
                                       key={opt}
@@ -768,7 +1053,7 @@ export default function WarRoomPage() {
                                           ? isAmbiguous
                                             ? "bg-rose-500/20 border-rose-500 text-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.3)]"
                                             : "bg-blue-500/20 border-blue-500 text-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.3)]"
-                                          : "border-slate-800 bg-slate-950 text-slate-650"
+                                          : "border-slate-800 bg-slate-950 text-slate-600"
                                       }`}
                                     >
                                       {opt}
@@ -776,7 +1061,7 @@ export default function WarRoomPage() {
                                   );
                                 })}
                               </div>
-                              <span className={`text-[9px] w-16 text-right font-bold ${omrMatch?.status === "AMBIGUOUS" ? "text-rose-400 animate-pulse" : "text-emerald-450"}`}>
+                              <span className={`text-[9px] w-16 text-right font-bold tracking-wider ${isAmbiguous ? "text-amber-400 animate-pulse" : "text-emerald-400"}`}>
                                 {omrMatch?.status}
                               </span>
                             </div>
@@ -807,34 +1092,42 @@ export default function WarRoomPage() {
                     </div>
 
                     <div className="space-y-1">
-                      {omrList.map((q) => (
-                        <div 
-                          key={q.id}
-                          className={`grid grid-cols-12 items-center text-xs font-mono px-2 py-1.5 rounded border ${
-                            q.status === "AMBIGUOUS" 
-                              ? "bg-rose-500/5 border-rose-500/20 text-rose-350" 
-                              : q.status === "RESOLVED"
-                                ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-350"
-                                : "bg-slate-950/40 border-slate-900 text-slate-300"
-                          }`}
-                        >
-                          <div className="col-span-2 font-bold text-slate-400">Q{q.id}</div>
-                          <div className={`col-span-2 text-center font-bold ${q.status === "AMBIGUOUS" ? "text-rose-400" : "text-white"}`}>{q.ans}</div>
-                          
-                          <div className="col-span-5 pr-4">
-                            <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
-                              <div 
-                                className={`h-full ${q.status === "AMBIGUOUS" ? "bg-rose-500" : "bg-blue-500"}`} 
-                                style={{ width: `${q.density}%` }} 
-                              />
+                      {omrList.map((q) => {
+                        // Confidence color coding
+                        let confColorClass = "text-slate-450";
+                        if (q.conf >= 95) confColorClass = "text-emerald-400";
+                        else if (q.conf >= 60) confColorClass = "text-blue-400";
+                        else confColorClass = "text-rose-500";
+
+                        return (
+                          <div 
+                            key={q.id}
+                            className={`grid grid-cols-12 items-center text-xs font-mono px-2 py-1.5 rounded border transition duration-300 ${
+                              q.status === "AMBIGUOUS" 
+                                ? "bg-amber-500/10 border-amber-500/35 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.05)] font-medium" 
+                                : q.status === "RESOLVED"
+                                  ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-350"
+                                  : "bg-slate-950/40 border-slate-900/60 text-slate-300"
+                            }`}
+                          >
+                            <div className="col-span-2 font-bold text-slate-400">Q{q.id}</div>
+                            <div className={`col-span-2 text-center font-bold ${q.status === "AMBIGUOUS" ? "text-amber-400" : "text-white"}`}>{q.ans}</div>
+                            
+                            <div className="col-span-5 pr-4">
+                              <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full ${q.status === "AMBIGUOUS" ? "bg-rose-500" : "bg-blue-500"}`} 
+                                  style={{ width: `${q.density}%` }} 
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className={`col-span-3 text-right font-bold ${confColorClass}`}>
+                              {q.conf}%
                             </div>
                           </div>
-                          
-                          <div className={`col-span-3 text-right font-bold ${q.status === "AMBIGUOUS" ? "text-rose-400" : "text-slate-450"}`}>
-                            {q.conf}%
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -863,43 +1156,54 @@ export default function WarRoomPage() {
                                 </div>
                               </div>
                               
-                              <div className="flex gap-1.5">
+                              <div className="flex gap-2 items-center flex-wrap">
                                 {q.id === 14 ? (
                                   <>
                                     <button 
                                       onClick={() => resolveOMRQuestion(14, "C")}
-                                      className="px-2.5 py-1 bg-slate-900 border border-slate-800 hover:border-blue-500 text-white rounded text-[10px] font-bold cursor-pointer transition"
+                                      className="px-3 py-1.5 bg-slate-900 border border-blue-500/35 hover:border-blue-500 text-blue-400 rounded-lg text-[10px] font-bold cursor-pointer transition flex items-center gap-1.5 hover:bg-blue-500/5"
                                     >
-                                      Force C
+                                      <Check className="w-3.5 h-3.5" />
+                                      <span>Force C</span>
                                     </button>
                                     <button 
                                       onClick={() => resolveOMRQuestion(14, "D")}
-                                      className="px-2.5 py-1 bg-slate-900 border border-slate-800 hover:border-blue-500 text-white rounded text-[10px] font-bold cursor-pointer transition"
+                                      className="px-3 py-1.5 bg-slate-900 border border-blue-500/35 hover:border-blue-500 text-blue-400 rounded-lg text-[10px] font-bold cursor-pointer transition flex items-center gap-1.5 hover:bg-blue-500/5"
                                     >
-                                      Force D
+                                      <Check className="w-3.5 h-3.5" />
+                                      <span>Force D</span>
                                     </button>
                                   </>
                                 ) : (
                                   <>
                                     <button 
                                       onClick={() => resolveOMRQuestion(17, "A")}
-                                      className="px-2.5 py-1 bg-slate-900 border border-slate-800 hover:border-blue-500 text-white rounded text-[10px] font-bold cursor-pointer transition"
+                                      className="px-3 py-1.5 bg-slate-900 border border-blue-500/35 hover:border-blue-500 text-blue-400 rounded-lg text-[10px] font-bold cursor-pointer transition flex items-center gap-1.5 hover:bg-blue-500/5"
                                     >
-                                      Force A
+                                      <Check className="w-3.5 h-3.5" />
+                                      <span>Force A</span>
                                     </button>
                                     <button 
                                       onClick={() => resolveOMRQuestion(17, "B")}
-                                      className="px-2.5 py-1 bg-slate-900 border border-slate-800 hover:border-blue-500 text-white rounded text-[10px] font-bold cursor-pointer transition"
+                                      className="px-3 py-1.5 bg-slate-900 border border-blue-500/35 hover:border-blue-500 text-blue-400 rounded-lg text-[10px] font-bold cursor-pointer transition flex items-center gap-1.5 hover:bg-blue-500/5"
                                     >
-                                      Force B
+                                      <Check className="w-3.5 h-3.5" />
+                                      <span>Force B</span>
                                     </button>
                                   </>
                                 )}
                                 <button 
                                   onClick={() => resolveOMRQuestion(q.id, "VOID")}
-                                  className="px-2 py-1 bg-red-950/20 border border-red-900/30 hover:bg-red-900/20 text-red-400 rounded text-[10px] font-bold cursor-pointer transition"
+                                  className="px-3 py-1.5 bg-slate-900 border border-red-500/35 hover:border-red-500 text-red-400 rounded-lg text-[10px] font-bold cursor-pointer transition flex items-center gap-1.5 hover:bg-red-500/5"
                                 >
-                                  Invalidate
+                                  <X className="w-3.5 h-3.5" />
+                                  <span>Invalidate</span>
+                                </button>
+                                <button 
+                                  onClick={() => alert(`Question #${q.id} review deferred. Decrypt node locks will remain active.`)}
+                                  className="px-3 py-1.5 bg-slate-900 border border-slate-700 hover:border-slate-500 text-slate-400 rounded-lg text-[10px] font-bold cursor-pointer transition flex items-center gap-1.5 hover:bg-slate-800"
+                                >
+                                  <span>Review Later</span>
                                 </button>
                               </div>
                             </div>
@@ -951,93 +1255,96 @@ export default function WarRoomPage() {
                   </div>
 
                   {/* Booklet image viewer */}
-                  <div className="flex-1 bg-slate-950/80 border border-slate-900 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between">
+                  <div className="flex-1 flex flex-col justify-between overflow-hidden">
                     
-                    {/* Unique page immutable hash pin */}
-                    <div className="absolute top-2 left-2 text-[8px] bg-slate-900 px-1.5 py-0.5 border border-slate-850 text-slate-500 font-mono rounded">
-                      PAGE HASH: 8A4C2E09B4F817A38D4F...
-                    </div>
-
-                    {/* Image visual layers */}
-                    <div className="flex-1 flex flex-col justify-center items-center relative py-6">
-                      
-                      {baseLayer && (
-                        <div className="w-[85%] bg-slate-900/30 border border-slate-850 rounded p-4 font-mono text-[10px] text-slate-350 space-y-3 shadow-md">
-                          <div className="border-b border-slate-900 pb-1 font-bold text-slate-400 uppercase text-[9px] flex justify-between">
-                            <span>SUBJECT: THEORETICAL COMPUTER SCIENCE</span>
-                            <span>PAGE: {activePage} / 3</span>
-                          </div>
-                          
-                          {activePage === 1 && (
-                            <div className="space-y-2.5">
-                              <p className="italic text-slate-200">"Let L be a language recognizable by a Turing Machine M. We define the configuration sequence C_1, C_2, ... C_k to be a valid trace of computations..."</p>
-                              <div className="h-0.5 w-full bg-slate-900 my-2" />
-                              <p className="italic text-slate-200">"By applying Rice's Theorem, any non-trivial semantic property of the partial function calculated by M is undecidable. Therefore, verification bounds must be established via zero-knowledge interactive proofs..."</p>
-                            </div>
-                          )}
-
-                          {activePage === 2 && (
-                            <div className="space-y-2.5">
-                              <p className="italic text-slate-200">"We prove the error bounds by setting delta as the completeness parameter. Given the witness string w, the verifier checks if the polynomial equation holds modulo q..."</p>
-                              <div className="p-2.5 bg-slate-950 border border-slate-900 text-center font-bold text-slate-400 rounded">
-                                V(x) = C(x) * H(x) + E(x)
-                              </div>
-                              <p className="italic text-slate-500 border-l-2 border-red-500 pl-2 text-[9px] bg-red-950/5 p-1 rounded">
-                                [AI Alert: Missing margin definition for E(x) completeness bounds here]
-                              </p>
-                            </div>
-                          )}
-
-                          {activePage === 3 && (
-                            <div className="space-y-2.5">
-                              <p className="italic text-slate-200">"Consequently, the security parameter lambda holds for all adversary algorithms running in polynomial time. Hence, the transaction integrity remains intact."</p>
-                              <div className="border border-slate-850 p-2 rounded bg-slate-950/40 text-[8px] text-slate-500">
-                                SIGNATURE_CHAIN: e8a4f9b2d01e...
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* AI Highlighter marks */}
-                      {aiOverlay && (
-                        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                          {activePage === 2 && (
-                            <div className="border border-rose-500/40 bg-rose-500/5 px-2.5 py-1.5 rounded-lg text-[9px] font-mono text-rose-400 font-bold max-w-[200px] shadow-lg absolute right-16 top-24 animate-pulse">
-                              ▲ CRITICAL GAP: NO ERROR MARGIN SPECIFIED FOR CO-DOMAIN TRANSIT
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Rubric highlight box */}
-                      {rubricHighlights && (
-                        <div className="absolute inset-0 pointer-events-none">
-                          <div className="absolute left-14 bottom-14 border border-emerald-500/40 bg-emerald-500/5 px-2 py-1 rounded text-[8px] font-mono text-emerald-400 font-bold">
-                            ✔ Checked against Rubric #R1 // #R2
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Page Switcher Row */}
-                    <div className="flex justify-center gap-1.5 shrink-0">
+                    {/* Paper tabs row overlapping the page container */}
+                    <div className="flex gap-1.5 shrink-0 z-10 pl-3">
                       {[1, 2, 3].map((pNum) => (
                         <button
                           key={pNum}
                           onClick={() => setActivePage(pNum)}
-                          className={`w-7 h-7 rounded border font-mono text-[11px] font-bold cursor-pointer transition ${
+                          className={`px-4 py-1.5 rounded-t-lg font-serif text-[11px] font-bold cursor-pointer transition border-t border-x ${
                             activePage === pNum
-                              ? "bg-blue-500/10 border-blue-500 text-blue-400"
-                              : "bg-slate-900 border-slate-900 text-slate-400 hover:text-slate-200"
+                              ? "bg-[#f8f4ec] border-slate-300 text-slate-850 shadow-[0_-2px_6px_rgba(0,0,0,0.06)]"
+                              : "bg-[#0b0f1a] border-slate-800 text-slate-500 hover:text-slate-350 hover:bg-[#0f1424]/60"
                           }`}
                         >
-                          {pNum}
+                          Page {pNum}
                         </button>
                       ))}
                     </div>
 
-                  </div>
+                    {/* Booklet Page Surface - Warm Off-White Paper */}
+                    <div className="flex-1 bg-[#f8f4ec] border border-slate-300 rounded-b-xl rounded-tr-xl p-4 relative flex flex-col justify-between shadow-xl min-h-[220px]">
+                      
+                      {/* Unique page immutable hash pin */}
+                      <div className="absolute top-2.5 right-2.5 text-[8.5px] bg-[#ece8df] px-1.5 py-0.5 border border-[#dfdad0] text-slate-500 font-mono rounded">
+                        PAGE HASH: 8A4C2E09B4F817A38D4F...
+                      </div>
+
+                      {/* Image visual layers */}
+                      <div className="flex-1 flex flex-col justify-center relative py-4">
+                        
+                        {baseLayer && (
+                          <div className="w-full space-y-3">
+                            <div className="border-b border-slate-200/80 pb-1 font-mono text-[9px] text-slate-500 uppercase tracking-widest flex justify-between">
+                              <span>SUBJECT: THEORETICAL COMPUTER SCIENCE</span>
+                              <span>INDEX: {activePage} / 3</span>
+                            </div>
+                            
+                            {activePage === 1 && (
+                              <div className="space-y-2 text-xs font-serif leading-relaxed text-slate-800 mt-2.5">
+                                <p>"Let L be a language recognizable by a Turing Machine M. We define the <mark className="bg-yellow-200/90 text-slate-950 font-bold px-1 rounded border-b border-yellow-400">configuration sequence</mark> C_1, C_2, ... C_k to be a valid trace of computations under machine limits."</p>
+                                <div className="h-px bg-slate-300/60 my-2" />
+                                <p>"By applying <mark className="bg-yellow-200/90 text-slate-955 font-bold px-1 rounded border-b border-yellow-400">Rice's Theorem</mark>, any non-trivial semantic property of the partial function calculated by M is undecidable. Therefore, verification bounds must be established via zero-knowledge interactive proofs."</p>
+                              </div>
+                            )}
+
+                            {activePage === 2 && (
+                              <div className="space-y-2 text-xs font-serif leading-relaxed text-slate-800 mt-2.5">
+                                <p>"We prove the error bounds by setting delta as the <mark className="bg-yellow-200/90 text-slate-955 font-bold px-1 rounded border-b border-yellow-400">completeness parameter</mark>. Given the witness string w, the verifier checks if the polynomial equation holds modulo q."</p>
+                                <div className="p-2 bg-[#ece8df]/60 border border-[#dfdad0] text-center font-bold font-mono text-[11px] text-slate-700 rounded-lg">
+                                  V(x) = C(x) * H(x) + E(x)
+                                </div>
+                                <p className="text-rose-700 border-l-2 border-rose-500 pl-2 text-[9px] bg-rose-100/40 p-1.5 rounded font-mono">
+                                  [AI Alert: Missing margin definition for E(x) completeness bounds here]
+                                </p>
+                              </div>
+                            )}
+
+                            {activePage === 3 && (
+                              <div className="space-y-2 text-xs font-serif leading-relaxed text-slate-800 mt-2.5">
+                                <p>"Consequently, the security parameter lambda holds for all adversary algorithms running in polynomial time. Hence, the transaction <mark className="bg-yellow-200/90 text-slate-955 font-bold px-1 rounded border-b border-yellow-400">integrity</mark> remains intact."</p>
+                                <div className="border border-[#dfdad0] p-2 rounded bg-[#ece8df]/30 text-[9px] text-slate-500 font-mono">
+                                  SIGNATURE_CHAIN: e8a4f9b2d01e...
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* AI Highlighter marks */}
+                        {aiOverlay && (
+                          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                            {activePage === 2 && (
+                              <div className="border border-rose-500/40 bg-rose-500/10 px-2.5 py-1.5 rounded-lg text-[9px] font-mono text-rose-600 font-bold max-w-[200px] shadow-lg absolute right-4 top-16 animate-pulse">
+                                ▲ CRITICAL GAP: NO ERROR MARGIN SPECIFIED FOR CO-DOMAIN TRANSIT
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Rubric highlight box */}
+                        {rubricHighlights && (
+                          <div className="absolute inset-0 pointer-events-none">
+                            <div className="absolute left-8 bottom-2 border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 rounded text-[8px] font-mono text-emerald-600 font-bold">
+                              ✔ Checked against Rubric #R1 // #R2
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                    </div>
                 </div>
               </div>
 
@@ -1055,95 +1362,144 @@ export default function WarRoomPage() {
                     {/* Rubric verification checklist */}
                     <div className="space-y-2">
                       <span className="text-[10px] font-bold font-mono text-slate-500 block uppercase">RUBRICS EVALUATION CHECKLIST</span>
-                      <div className="space-y-1.5">
-                        {rubrics.map((r) => (
-                          <div 
-                            key={r.id}
-                            className={`px-3 py-2 border rounded-xl flex items-center justify-between text-xs font-mono transition ${
-                              r.issue 
-                                ? "bg-amber-500/5 border-amber-500/20 text-amber-300"
-                                : "bg-slate-950/40 border-slate-900 text-slate-300"
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              {r.issue ? (
-                                <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                              ) : (
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-450 shrink-0" />
-                              )}
-                              <span>{r.label}</span>
+                      <div className="space-y-2">
+                        {rubrics.map((r) => {
+                          const isWarning = r.issue !== undefined;
+                          return (
+                            <div 
+                              key={r.id}
+                              onClick={() => toggleRubric(r.id)}
+                              className={`px-3.5 py-2.5 border rounded-xl flex items-center justify-between text-xs font-mono transition duration-300 cursor-pointer ${
+                                isWarning 
+                                  ? "bg-amber-500/10 border-amber-500/35 border-l-4 border-l-amber-500 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.06)]"
+                                  : "bg-slate-950/40 border-slate-900/60 text-slate-400 hover:border-slate-800/60 hover:text-slate-200"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                {isWarning ? (
+                                  <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 animate-pulse" />
+                                ) : (
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-450 shrink-0" />
+                                )}
+                                <span className={isWarning ? "font-bold text-amber-250" : ""}>{r.label}</span>
+                              </div>
+                              
+                              <div className="flex items-center gap-3">
+                                {isWarning && (
+                                  <span className="text-[8.5px] px-1.5 py-0.5 bg-amber-500/20 text-amber-400 font-bold uppercase rounded border border-amber-500/20">
+                                    {r.issue}
+                                  </span>
+                                )}
+                                <div className="min-w-[3.5rem] text-right font-bold font-mono">
+                                  <span className={isWarning ? "text-amber-400" : "text-emerald-450"}>
+                                    {r.score}/{r.max}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                            
-                            <div className="flex items-center gap-2">
-                              {r.issue ? (
-                                <span className="text-[9px] px-1.5 py-0.5 bg-amber-500/15 rounded text-amber-400 font-bold uppercase">{r.issue}</span>
-                              ) : (
-                                <span className="font-bold text-white">{r.score}/{r.max}</span>
-                              )}
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
 
-                    {/* Glowing AI suggestion box */}
-                    <div className="mt-4 bg-violet-500/5 border border-violet-500/15 p-3.5 rounded-xl shadow-[0_0_15px_rgba(139,92,246,0.04)] font-mono text-xs relative overflow-hidden">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-ping" />
-                        <span className="text-[10px] font-bold text-violet-400 tracking-wider">GEMINI RESPONSE PACKET</span>
+                    {/* Glowing AI suggestion box with purple left-border */}
+                    <div className="mt-4 bg-[#0d0e16] border border-slate-900 border-l-4 border-l-purple-500 p-4 rounded-xl shadow-lg relative overflow-hidden flex flex-col gap-2">
+                      <div className="flex items-center justify-between border-b border-slate-900/60 pb-2 mb-0.5 shrink-0 font-mono text-[10px]">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)] animate-pulse" />
+                          <span className="text-purple-400 font-bold tracking-widest uppercase">GEMINI RESPONSE PACKET</span>
+                        </div>
+                        <span className="text-slate-500 text-[8.5px]">MODEL: 1.5 FLASH</span>
                       </div>
                       
-                      <p className="text-slate-300 leading-normal text-[11px]">
-                        "The candidate failed to describe the completeness error margin parameter for the Witness equation on Page 2. A penalty of <span className="text-amber-400 font-bold">{scorePenalty} marks</span> is suggested based on the evaluation schema. Proposed total score: <span className="text-white font-bold">30 / 40</span>."
+                      <p className="text-slate-300 leading-relaxed text-[11px] font-mono">
+                        "The candidate failed to describe the completeness error margin parameter for the Witness equation on Page 2. A penalty of <mark className="bg-amber-500/15 border border-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-bold font-mono text-[10px]">{scorePenalty} marks</mark> is suggested based on the evaluation schema. Proposed total score: <span className="text-white font-bold font-mono">30 / 40</span>."
                       </p>
 
-                      {/* Interactive adjust penalty button */}
-                      <div className="mt-3 flex gap-2">
+                      {/* Interactive adjust penalty button - larger size with keyboard hints */}
+                      <div className="mt-2.5 flex gap-2">
                         <button 
                           onClick={() => setScorePenalty(1.0)} 
-                          className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition ${scorePenalty === 1.0 ? "bg-violet-600 border border-violet-500 text-white" : "bg-slate-900 border-slate-850 text-slate-400 hover:text-slate-200"}`}
+                          className={`px-3 py-2.5 rounded-lg border font-mono font-bold text-[10px] uppercase transition cursor-pointer text-center flex-1 ${
+                            scorePenalty === 1.0 
+                              ? "bg-purple-600 border-purple-500 text-white shadow-[0_0_8px_rgba(168,85,247,0.2)]" 
+                              : "bg-slate-900 border-slate-800 text-slate-450 hover:text-slate-200 hover:border-slate-700"
+                          }`}
+                          title="Set Penalty to 1.0 mark"
                         >
-                          Set -1.0
+                          <div>-1.0 Marks</div>
+                          <div className="text-[7.5px] text-slate-500 font-normal mt-0.5 font-sans lowercase">Shift+1</div>
                         </button>
                         <button 
                           onClick={() => setScorePenalty(2.5)} 
-                          className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition ${scorePenalty === 2.5 ? "bg-violet-600 border border-violet-500 text-white shadow-[0_0_8px_rgba(139,92,246,0.2)]" : "bg-slate-900 border-slate-850 text-slate-400 hover:text-slate-200"}`}
+                          className={`px-3 py-2.5 rounded-lg border font-mono font-bold text-[10px] uppercase transition cursor-pointer text-center flex-1 ${
+                            scorePenalty === 2.5 
+                              ? "bg-purple-600 border-purple-500 text-white shadow-[0_0_8px_rgba(168,85,247,0.2)]" 
+                              : "bg-slate-900 border-slate-800 text-slate-450 hover:text-slate-200 hover:border-slate-700"
+                          }`}
+                          title="Set Recommended Penalty to 2.5 marks"
                         >
-                          Set -2.5 (Rec)
+                          <div>-2.5 Marks (Rec)</div>
+                          <div className="text-[7.5px] text-slate-350 font-normal mt-0.5 font-sans lowercase">Shift+2</div>
                         </button>
                         <button 
                           onClick={() => setScorePenalty(0.0)} 
-                          className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition ${scorePenalty === 0.0 ? "bg-violet-600 border border-violet-500 text-white" : "bg-slate-900 border-slate-850 text-slate-400 hover:text-slate-200"}`}
+                          className={`px-3 py-2.5 rounded-lg border font-mono font-bold text-[10px] uppercase transition cursor-pointer text-center flex-1 ${
+                            scorePenalty === 0.0 
+                              ? "bg-purple-600 border-purple-500 text-white shadow-[0_0_8px_rgba(168,85,247,0.2)]" 
+                              : "bg-slate-900 border-slate-800 text-slate-450 hover:text-slate-200 hover:border-slate-700"
+                          }`}
+                          title="Waive Penalty"
                         >
-                          Waive Penalty
+                          <div>Waive Penalty</div>
+                          <div className="text-[7.5px] text-slate-500 font-normal mt-0.5 font-sans lowercase">Shift+W</div>
                         </button>
                       </div>
                     </div>
                   </div>
 
-                  {/* Lock Signature to Ledger button */}
+                  {/* Lock Signature to Ledger button with warnings-check and lock-icon layout */}
                   <div className="mt-4 pt-3.5 border-t border-slate-800/40 shrink-0">
-                    <button
-                      onClick={handleLockGrade}
-                      disabled={gradeLocked}
-                      className={`w-full py-3.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider transition duration-300 flex items-center justify-center gap-2 cursor-pointer ${
-                        gradeLocked
-                          ? "bg-slate-900 border border-slate-850 text-slate-500"
-                          : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-500/10 active:scale-98"
-                      }`}
-                    >
-                      {gradeLocked ? (
-                        <>
-                          <Lock className="w-4 h-4 text-slate-550" />
+                    {gradeLocked ? (
+                      <button
+                        disabled
+                        className="w-full py-3.5 bg-slate-950 border border-slate-900 text-emerald-450 rounded-xl font-mono text-xs font-bold uppercase tracking-wider flex flex-col items-center justify-center gap-1.5 cursor-not-allowed transition duration-300"
+                      >
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                           <span>ECDSA GRADE SECURED ON-CHAIN // LOCKED</span>
-                        </>
-                      ) : (
-                        <>
-                          <FileCheck className="w-4 h-4 text-emerald-350" />
+                        </div>
+                        <span className="text-[8.5px] text-slate-500 normal-case font-mono font-medium">
+                          Block hash successfully verified in consensus engine
+                        </span>
+                      </button>
+                    ) : rubrics.some(r => r.issue !== undefined) ? (
+                      <button
+                        disabled
+                        className="w-full py-3.5 bg-slate-900/40 border border-slate-900 text-slate-500 rounded-xl font-mono text-xs font-bold uppercase tracking-wider flex flex-col items-center justify-center gap-1.5 cursor-not-allowed opacity-60"
+                      >
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-amber-500 animate-pulse" />
+                          <span>RESOLVE OUTSTANDING WARNINGS TO SIGN</span>
+                        </div>
+                        <span className="text-[8.5px] text-slate-650 normal-case font-mono font-medium">
+                          Chain consensus ledger requires all grading warnings resolved
+                        </span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleLockGrade}
+                        className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 flex flex-col items-center justify-center gap-1 cursor-pointer active:scale-98 shadow-md shadow-emerald-500/10"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Lock className="w-4 h-4 text-emerald-250 animate-bounce" />
                           <span>Lock Signature to Ledger</span>
-                        </>
-                      )}
-                    </button>
+                        </div>
+                        <span className="text-[8.5px] text-emerald-300/80 normal-case font-mono font-medium">
+                          Cryptographic signature will be appended
+                        </span>
+                      </button>
+                    )}
                   </div>
 
                 </div>
