@@ -126,6 +126,7 @@ export function RoleAwareSidebar() {
           title: "Main Flow",
           links: [
             { label: "Home", path: "/authority", icon: Compass },
+            { label: "v0.2 War Room Console", path: "/war-room", icon: Terminal },
             { label: "Create Exam", path: "/create-exam", icon: FilePlus },
             { label: "Exam Control Room", path: "/exams/EXM-001/control-room", icon: Radio },
             { label: "Evidence Timeline", path: "/audit-timeline", icon: History }
@@ -145,6 +146,7 @@ export function RoleAwareSidebar() {
           title: "Main Operations",
           links: [
             { label: "Home Launcher", path: "/authority", icon: Compass },
+            { label: "v0.2 War Room Console", path: "/war-room", icon: Terminal },
             { label: "Create Exam Wizard", path: "/create-exam", icon: FilePlus },
             { label: "Exam Control Room", path: "/exams/EXM-001/control-room", icon: Radio },
             { label: "Pilot Guided run", path: "/pilot-run", icon: Terminal }

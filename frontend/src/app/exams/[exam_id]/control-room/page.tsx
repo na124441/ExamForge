@@ -92,6 +92,10 @@ export default function ExamControlRoom({ params }: { params: any }) {
   // Drawer states
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedProof, setSelectedProof] = useState<ProofData | null>(null);
+  
+  // Custom interactive telemetry states
+  const [selectedCenter, setSelectedCenter] = useState("CTR-LKO-01");
+  const [hoveredSeat, setHoveredSeat] = useState<any>(null);
 
   // Unwrap params safely
   useEffect(() => {
@@ -567,47 +571,169 @@ export default function ExamControlRoom({ params }: { params: any }) {
 
         {/* Tab 3: Centers & Seating */}
         {activeTab === "centers" && (
-          <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg space-y-6 animate-in fade-in duration-200">
-            <div>
-              <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-blue-400" />
-                <span>Center Nodes & Seating Registries</span>
-              </h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Review key release status and candidate attendance per center.
-              </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-200">
+            {/* Left: Centers Table (7 cols) */}
+            <div className="lg:col-span-7 bg-glass p-5 rounded-2xl border border-slate-900/60 shadow-lg space-y-4">
+              <div>
+                <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
+                  <Users className="w-4 h-4 text-blue-400" />
+                  <span>Center Nodes & Seating Registries</span>
+                </h2>
+                <p className="text-xs text-slate-400 mt-1">
+                  Select a center node to inspect its live physical seating map.
+                </p>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs font-mono">
+                  <thead>
+                    <tr className="border-b border-slate-900/60 text-slate-500">
+                      <th className="py-2.5 px-3">Center ID</th>
+                      <th className="py-2.5 px-3">Key Release</th>
+                      <th className="py-2.5 px-3">Verified Present</th>
+                      <th className="py-2.5 px-3">Incidents</th>
+                      <th className="py-2.5 px-3 text-right">Node status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-900/50 text-slate-350">
+                    {summary?.centers.map((c: any) => {
+                      const isSelected = selectedCenter === c.center_id;
+                      return (
+                        <tr 
+                          key={c.center_id} 
+                          onClick={() => {
+                            setSelectedCenter(c.center_id);
+                            setHoveredSeat(null);
+                          }}
+                          className={`hover:bg-slate-900/20 cursor-pointer transition ${
+                            isSelected ? "bg-blue-950/20 border-l-2 border-blue-500 font-bold" : ""
+                          }`}
+                        >
+                          <td className="py-3.5 px-3 text-white">{c.center_id}</td>
+                          <td className="py-3.5 px-3">
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                              c.package_status === "RELEASED" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
+                              "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                            }`}>{c.package_status}</span>
+                          </td>
+                          <td className="py-3.5 px-3 text-slate-300">{c.verified_candidates} present</td>
+                          <td className="py-3.5 px-3 text-red-400">{c.unresolved_incidents} active</td>
+                          <td className="py-3.5 px-3 text-right">
+                            <StatusBadge status={c.status} />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs font-mono">
-                <thead>
-                  <tr className="border-b border-slate-850 text-slate-500">
-                    <th className="py-2.5 px-3">Center ID</th>
-                    <th className="py-2.5 px-3">Key Release</th>
-                    <th className="py-2.5 px-3">Verified Present</th>
-                    <th className="py-2.5 px-3">Active Incidents</th>
-                    <th className="py-2.5 px-3 text-right">Node status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-850/60 text-slate-300">
-                  {summary?.centers.map((c: any) => (
-                    <tr key={c.center_id} className="hover:bg-slate-950/20">
-                      <td className="py-3 px-3 text-white font-bold">{c.center_id}</td>
-                      <td className="py-3 px-3">
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
-                          c.package_status === "RELEASED" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
-                          "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                        }`}>{c.package_status}</span>
-                      </td>
-                      <td className="py-3 px-3 text-slate-200">{c.verified_candidates} present</td>
-                      <td className="py-3 px-3 text-red-400">{c.unresolved_incidents} active</td>
-                      <td className="py-3 px-3 text-right">
-                        <StatusBadge status={c.status} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* Right: Seating Map Grid (5 cols) */}
+            <div className="lg:col-span-5 bg-glass p-5 rounded-2xl border border-slate-900/60 shadow-lg flex flex-col justify-between min-h-[420px]">
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">Live telemetry feed</span>
+                  <span className="text-[10px] text-cyan-405 font-mono font-bold uppercase">{selectedCenter} Map</span>
+                </div>
+                
+                <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono mb-4">
+                  Physical Seating Grid Layout
+                </h3>
+
+                {/* Grid */}
+                <div className="grid grid-cols-8 gap-2 bg-slate-950/60 p-4 border border-slate-900 rounded-2xl">
+                  {Array.from({ length: 48 }).map((_, i) => {
+                    // Deterministic state generator for mock layout
+                    const val = (i * 7 + selectedCenter.charCodeAt(selectedCenter.length - 1)) % 10;
+                    let status: "verified" | "inprogress" | "anomaly" | "absent" = "verified";
+                    if (val < 1) status = "anomaly";
+                    else if (val < 3) status = "absent";
+                    else if (val < 4.5) status = "inprogress";
+
+                    const seatInfo = {
+                      id: i + 1,
+                      status,
+                      candidate: {
+                        name: `Candidate #${2400 + i}`,
+                        roll: `EXM-26-${selectedCenter}-${100 + i}`,
+                        biometrics: status === "verified" ? "MATCHED (100%)" : status === "anomaly" ? "FAILED (DESYNC)" : status === "inprogress" ? "PENDING MATCH" : "N/A (ABSENT)",
+                        ip: `10.12.${selectedCenter.charCodeAt(selectedCenter.length - 1)}.${10 + i}`
+                      }
+                    };
+
+                    let dotColor = "bg-slate-800 border-slate-900";
+                    if (status === "verified") dotColor = "bg-emerald-500 shadow-glow-emerald border-emerald-400/30";
+                    else if (status === "inprogress") dotColor = "bg-blue-500 shadow-glow-blue border-blue-400/30";
+                    else if (status === "anomaly") dotColor = "bg-red-500 shadow-glow-red animate-pulse border-red-400/30";
+
+                    return (
+                      <div 
+                        key={i}
+                        onMouseEnter={() => setHoveredSeat(seatInfo)}
+                        className={`w-full aspect-square rounded-lg border flex items-center justify-center transition-all cursor-crosshair hover:scale-115 ${dotColor}`}
+                        title={`Seat ${i + 1} - ${status}`}
+                      >
+                        <span className="text-[7px] text-slate-950 font-black font-mono">{i + 1}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Legend */}
+                <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[9px] text-slate-500 px-1 border-b border-slate-900/60 pb-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-glow-emerald" />
+                    <span>Verified</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-blue-500 shadow-glow-blue" />
+                    <span>Verifying</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-red-500 shadow-glow-red animate-pulse" />
+                    <span>Anomaly</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-slate-800" />
+                    <span>Absent</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Inspector Card */}
+              <div className="mt-4 bg-slate-950/40 border border-slate-900 p-4.5 rounded-xl min-h-[105px] flex flex-col justify-center font-mono">
+                {hoveredSeat ? (
+                  <div className="text-[10px] space-y-1 animate-in fade-in duration-150">
+                    <div className="flex justify-between border-b border-slate-900 pb-1">
+                      <span className="text-slate-500">Seat Node:</span>
+                      <span className="text-white font-bold">#{hoveredSeat.id}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-900 pb-1">
+                      <span className="text-slate-500">Candidate:</span>
+                      <span className="text-slate-250 font-semibold">{hoveredSeat.candidate.name}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-900 pb-1">
+                      <span className="text-slate-500">Roll Reg:</span>
+                      <span className="text-slate-250">{hoveredSeat.candidate.roll}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-900 pb-1">
+                      <span className="text-slate-500">Biometrics:</span>
+                      <span className={`font-bold ${hoveredSeat.status === "verified" ? "text-emerald-450" : hoveredSeat.status === "anomaly" ? "text-red-400" : "text-blue-400"}`}>
+                        {hoveredSeat.candidate.biometrics}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Machine IP:</span>
+                      <span className="text-slate-400 font-bold">{hoveredSeat.candidate.ip}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center text-slate-600 text-[10px] leading-relaxed">
+                    ⚙️ HOVER A SEAT NODE ON THE MAP GRID TO INSPECT REAL-TIME CANDIDATE TELEMETRY
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

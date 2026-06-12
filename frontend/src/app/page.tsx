@@ -163,13 +163,22 @@ export default function RootEntryPage() {
               </p>
             </div>
           </div>
-          <button
-            onClick={() => router.push("/create-exam")}
-            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 flex items-center gap-1.5 uppercase font-mono tracking-wider cursor-pointer active:scale-95"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Create New Exam</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push("/war-room")}
+              className="px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-violet-500/15 flex items-center gap-1.5 uppercase font-mono tracking-wider cursor-pointer active:scale-95"
+            >
+              <Radio className="w-4 h-4 animate-pulse" />
+              <span>v0.2 War Room</span>
+            </button>
+            <button
+              onClick={() => router.push("/create-exam")}
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 flex items-center gap-1.5 uppercase font-mono tracking-wider cursor-pointer active:scale-95"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Create New Exam</span>
+            </button>
+          </div>
         </div>
 
         {/* Section 1: Choose exam category */}
@@ -327,6 +336,18 @@ export default function RootEntryPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col justify-center items-center p-6 text-slate-100 font-sans selection:bg-blue-600/30">
       <div className="max-w-4xl w-full flex flex-col items-center">
+        {/* War room banner */}
+        <div 
+          onClick={() => router.push("/war-room")}
+          className="mb-6 px-4 py-2 bg-violet-500/10 border border-violet-500/20 hover:border-violet-500/40 rounded-full text-xs font-mono font-bold text-violet-400 cursor-pointer flex items-center gap-2 shadow-[0_0_15px_rgba(139,92,246,0.1)] transition duration-200 active:scale-98"
+        >
+          <span className="flex h-2 w-2 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+          </span>
+          <span>LAUNCH SYSTEM v0.2 CYBER WAR ROOM CONSOLE (JUDGES VIEW) →</span>
+        </div>
+
         {/* Top badge */}
         <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-950/20 border border-blue-900/20 rounded-full text-[10px] font-mono font-bold tracking-widest text-blue-400 uppercase mb-4 shadow-glow-blue/5 animate-pulse">
           <Lock className="w-3 h-3 text-blue-500" />

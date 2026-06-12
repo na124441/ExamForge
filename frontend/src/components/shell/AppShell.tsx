@@ -66,10 +66,11 @@ export function AppShell({ children }: AppShellProps) {
     (pathname === "/" && !isAuthenticated) || 
     pathname.startsWith("/result-portal") || 
     pathname.startsWith("/candidate") || 
-    pathname.startsWith("/disputes");
+    pathname.startsWith("/disputes") ||
+    pathname.startsWith("/war-room");
 
   if (isCandidatePage) {
-    return <div className="min-h-screen bg-slate-950 flex flex-col">{children}</div>;
+    return <div className="min-h-screen bg-[#060913] flex flex-col">{children}</div>;
   }
 
   return (
