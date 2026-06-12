@@ -151,30 +151,30 @@ export default function AuthorityDashboard() {
   return (
     <div className="space-y-6">
       {/* Page Sub-Header Details */}
-      <div className="flex justify-between items-center bg-slate-900/40 p-4 rounded-xl border border-slate-900/60 backdrop-blur-md">
+      <div className="flex justify-between items-center bg-glass border border-slate-900/60 p-5 rounded-2xl backdrop-blur-md shadow-glow-blue/5">
         <div>
-          <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2 font-outfit">
             <span>Authority Command Center</span>
-            <span className="text-[9px] px-2 py-0.5 bg-blue-600/10 border border-blue-500/20 text-blue-400 rounded uppercase font-mono font-bold tracking-widest">
+            <span className="text-[9px] px-2.5 py-0.5 bg-blue-600/10 border border-blue-500/20 text-blue-450 rounded uppercase font-mono font-bold tracking-widest animate-pulse">
               Live Telemetry
             </span>
           </h1>
-          <p className="text-[11px] text-slate-500 mt-0.5">
-            Cryptographic audit chains and operational status for <span className="text-slate-300 font-semibold">{metrics?.institution.name}</span>
+          <p className="text-[11px] text-slate-400 mt-0.5 font-sans">
+            Cryptographic audit chains and operational status for <span className="text-white font-bold">{metrics?.institution.name}</span>
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={fetchMetrics}
             disabled={refreshing}
-            className="p-2 border border-slate-800 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5 text-xs font-mono"
+            className="p-2 px-3 border border-slate-800 hover:bg-slate-900 rounded-xl text-slate-400 hover:text-white transition flex items-center gap-1.5 text-xs font-mono cursor-pointer active:scale-95"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
             <span>Sync Stats</span>
           </button>
           <button
             onClick={() => router.push("/pilot-run")}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-500 transition shadow-md shadow-blue-600/10 uppercase tracking-wide"
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-xs font-bold hover:from-blue-500 hover:to-indigo-500 transition shadow-md shadow-blue-550/10 uppercase tracking-wide cursor-pointer active:scale-95"
           >
             🚀 Run Demo Simulator
           </button>
@@ -189,15 +189,15 @@ export default function AuthorityDashboard() {
         </div>
 
         {/* Center: Stepper (6 cols) */}
-        <div className="lg:col-span-6 bg-slate-900 p-5 rounded-2xl border border-slate-850 flex flex-col justify-between">
+        <div className="lg:col-span-6 bg-glass border border-slate-850 p-5 rounded-2xl flex flex-col justify-between">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono px-1">
               Exam Lifecycle Stepper
             </h3>
             <StatusBadge status={metrics?.exam_lifecycle.state || "DRAFT"} />
           </div>
           <LifecycleStepper stages={stages.slice(0, 5)} layout="horizontal" />
-          <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between text-[10px] font-mono text-slate-500">
+          <div className="mt-3 pt-3 border-t border-slate-900 flex justify-between text-[10px] font-mono text-slate-500 px-1">
             <span>Exam ID: {metrics?.exam_lifecycle.exam_id || "EXM-PILOT-001"}</span>
             <span>Current Stage Sequence: {currentSeq} / 15</span>
           </div>
@@ -205,30 +205,30 @@ export default function AuthorityDashboard() {
 
         {/* Right: Gate & Ops Health (3 cols) */}
         <div className="lg:col-span-3 flex flex-col gap-4">
-          <div className="bg-slate-900 p-4 rounded-xl border border-slate-850 flex flex-col justify-between flex-1">
+          <div className="bg-glass border border-slate-850 p-4.5 rounded-2xl flex flex-col justify-between flex-1 shadow-sm">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Publication Gate</span>
-            <div className="mt-2">
-              <span className={`text-lg font-black ${metrics?.trust_ops.gate_allowed ? "text-emerald-400" : "text-red-400"}`}>
+            <div className="mt-2.5">
+              <span className={`text-lg font-black flex items-center gap-1.5 ${metrics?.trust_ops.gate_allowed ? "text-emerald-400" : "text-red-400"}`}>
                 {metrics?.trust_ops.gate_allowed ? "🔓 ALLOWED" : "🔒 LOCKED"}
               </span>
-              <p className="text-[10px] text-slate-500 mt-1 leading-normal">
+              <p className="text-[10px] text-slate-400 mt-1 leading-normal">
                 {metrics?.trust_ops.gate_allowed ? "All safety parameters passed verification." : "Blocked by security policies."}
               </p>
             </div>
             <button 
               onClick={() => router.push("/publication-gate")}
-              className="mt-3 w-full py-1 text-center bg-slate-800 hover:bg-slate-750 text-white rounded text-[10px] font-bold transition font-mono uppercase"
+              className="mt-3.5 w-full py-1.5 text-center bg-slate-905 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-white rounded-xl text-[10px] font-bold transition font-mono uppercase cursor-pointer"
             >
               Verify Checklist
             </button>
           </div>
 
-          <div className="bg-slate-900 p-4 rounded-xl border border-slate-850 flex flex-col justify-between flex-1">
+          <div className="bg-glass border border-slate-850 p-4.5 rounded-2xl flex flex-col justify-between flex-1 shadow-sm">
             <div className="flex justify-between items-center">
               <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Deployment Health</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-glow-emerald" />
             </div>
-            <div className="mt-2 text-xs font-mono space-y-1.5">
+            <div className="mt-2.5 text-xs font-mono space-y-2">
               <div className="flex justify-between">
                 <span className="text-slate-500">Postgres DB:</span>
                 <span className="text-emerald-400 font-bold">{metrics?.deployment_ops.db_status}</span>
@@ -246,114 +246,154 @@ export default function AuthorityDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* CenterOps Card */}
-        <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-850 flex flex-col justify-between gap-4">
+        <div className="bg-glass-card p-5 rounded-2xl border border-slate-850 flex flex-col justify-between gap-4.5 shadow-sm hover:shadow-glow-blue/2 transition duration-200">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">CenterOps telemetry</span>
-              <h3 className="text-sm font-black text-white mt-0.5">Seat & Releases</h3>
+              <h3 className="text-sm font-black text-white mt-0.5 font-outfit">Seat & Releases</h3>
             </div>
             <StatusBadge status={metrics?.center_ops.released_packages === metrics?.center_ops.total_packages ? "VERIFIED" : "PROCESSING"} />
           </div>
-          <div className="text-xs font-mono space-y-2">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Decryption Releases:</span>
-              <span className="text-white font-bold">{metrics?.center_ops.released_packages} / {metrics?.center_ops.total_packages}</span>
+          <div className="text-xs font-mono space-y-2.5">
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Decryption Releases:</span>
+                <span className="text-white font-bold">{metrics?.center_ops.released_packages} / {metrics?.center_ops.total_packages}</span>
+              </div>
+              <div className="w-full bg-slate-950 rounded-full h-1 mt-1 overflow-hidden">
+                <div 
+                  className="bg-blue-500 h-1 rounded-full transition-all duration-500" 
+                  style={{ width: `${metrics?.center_ops.total_packages > 0 ? (metrics.center_ops.released_packages / metrics.center_ops.total_packages) * 100 : 0}%` }}
+                />
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Candidates Verified:</span>
-              <span className="text-white font-bold">{metrics?.center_ops.verified_candidates} / {metrics?.center_ops.total_candidates}</span>
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Candidates Verified:</span>
+                <span className="text-white font-bold">{metrics?.center_ops.verified_candidates} / {metrics?.center_ops.total_candidates}</span>
+              </div>
+              <div className="w-full bg-slate-950 rounded-full h-1 mt-1 overflow-hidden">
+                <div 
+                  className="bg-cyan-500 h-1 rounded-full transition-all duration-500" 
+                  style={{ width: `${metrics?.center_ops.total_candidates > 0 ? (metrics.center_ops.verified_candidates / metrics.center_ops.total_candidates) * 100 : 0}%` }}
+                />
+              </div>
             </div>
           </div>
           <button 
             onClick={() => router.push("/exam-ops")}
-            className="w-full py-1.5 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-lg text-xs font-bold transition font-mono uppercase tracking-wide text-center"
+            className="w-full py-1.5 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-bold transition font-mono uppercase tracking-wide text-center cursor-pointer"
           >
             Monitor Centers
           </button>
         </div>
 
         {/* EvaluationOps Card */}
-        <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-850 flex flex-col justify-between gap-4">
+        <div className="bg-glass-card p-5 rounded-2xl border border-slate-850 flex flex-col justify-between gap-4.5 shadow-sm hover:shadow-glow-emerald/2 transition duration-200">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">Grading telemetry</span>
-              <h3 className="text-sm font-black text-white mt-0.5">Double Evaluation</h3>
+              <h3 className="text-sm font-black text-white mt-0.5 font-outfit">Double Evaluation</h3>
             </div>
             <StatusBadge status={metrics.evaluation_ops.conflicts_total === metrics.evaluation_ops.conflicts_resolved ? "READY" : "WARNING"} />
           </div>
-          <div className="text-xs font-mono space-y-2">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Locked Booklets:</span>
-              <span className="text-white font-bold">{metrics.evaluation_ops.locked_booklets} / {metrics.evaluation_ops.total_booklets}</span>
+          <div className="text-xs font-mono space-y-2.5">
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-slate-550">Locked Booklets:</span>
+                <span className="text-white font-bold">{metrics.evaluation_ops.locked_booklets} / {metrics.evaluation_ops.total_booklets}</span>
+              </div>
+              <div className="w-full bg-slate-950 rounded-full h-1 mt-1 overflow-hidden">
+                <div 
+                  className="bg-emerald-500 h-1 rounded-full transition-all duration-500" 
+                  style={{ width: `${metrics.evaluation_ops.total_booklets > 0 ? (metrics.evaluation_ops.locked_booklets / metrics.evaluation_ops.total_booklets) * 100 : 0}%` }}
+                />
+              </div>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Unresolved Conflicts:</span>
-              <span className={`font-bold ${(metrics.evaluation_ops.conflicts_total - metrics.evaluation_ops.conflicts_resolved) > 0 ? "text-amber-400" : "text-emerald-400"}`}>
+              <span className="text-slate-550">Unresolved Conflicts:</span>
+              <span className={`font-bold ${(metrics.evaluation_ops.conflicts_total - metrics.evaluation_ops.conflicts_resolved) > 0 ? "text-amber-400" : "text-emerald-450"}`}>
                 {metrics.evaluation_ops.conflicts_total - metrics.evaluation_ops.conflicts_resolved} open
               </span>
             </div>
           </div>
           <button 
             onClick={() => router.push("/evaluation-ops")}
-            className="w-full py-1.5 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-lg text-xs font-bold transition font-mono uppercase tracking-wide text-center"
+            className="w-full py-1.5 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-bold transition font-mono uppercase tracking-wide text-center cursor-pointer"
           >
             Resolve Grading
           </button>
         </div>
 
         {/* DisputeOps Card */}
-        <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-850 flex flex-col justify-between gap-4">
+        <div className="bg-glass-card p-5 rounded-2xl border border-slate-850 flex flex-col justify-between gap-4.5 shadow-sm hover:shadow-glow-cyan/2 transition duration-200">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">Dispute ledger</span>
-              <h3 className="text-sm font-black text-white mt-0.5">Candidate Disputes</h3>
+              <h3 className="text-sm font-black text-white mt-0.5 font-outfit">Candidate Disputes</h3>
             </div>
             <StatusBadge status={metrics?.dispute_ops.open > 0 ? "WARNING" : "HEALTHY"} />
           </div>
-          <div className="text-xs font-mono space-y-2">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Pending Claims:</span>
-              <span className={`font-bold ${metrics?.dispute_ops.open > 0 ? "text-amber-400" : "text-slate-300"}`}>
-                {metrics?.dispute_ops.open} claims
-              </span>
+          <div className="text-xs font-mono space-y-2.5">
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-slate-505">Pending Claims:</span>
+                <span className={`font-bold ${metrics?.dispute_ops.open > 0 ? "text-amber-400" : "text-slate-300"}`}>
+                  {metrics?.dispute_ops.open} claims
+                </span>
+              </div>
+              <div className="w-full bg-slate-950 rounded-full h-1 mt-1 overflow-hidden">
+                <div 
+                  className="bg-amber-500 h-1 rounded-full transition-all duration-500" 
+                  style={{ width: `${(metrics?.dispute_ops.open + metrics?.dispute_ops.resolved) > 0 ? (metrics.dispute_ops.resolved / (metrics.dispute_ops.open + metrics.dispute_ops.resolved)) * 100 : 100}%` }}
+                />
+              </div>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Resolved disputes:</span>
-              <span className="text-emerald-400 font-bold">{metrics?.dispute_ops.resolved} closed</span>
+              <span className="text-slate-505">Resolved disputes:</span>
+              <span className="text-emerald-450 font-bold">{metrics?.dispute_ops.resolved} closed</span>
             </div>
           </div>
           <button 
             onClick={() => router.push("/dispute-ops")}
-            className="w-full py-1.5 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-lg text-xs font-bold transition font-mono uppercase tracking-wide text-center"
+            className="w-full py-1.5 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-bold transition font-mono uppercase tracking-wide text-center cursor-pointer"
           >
             Manage Claims
           </button>
         </div>
 
         {/* Security Readiness Card */}
-        <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-850 flex flex-col justify-between gap-4">
+        <div className="bg-glass-card p-5 rounded-2xl border border-slate-850 flex flex-col justify-between gap-4.5 shadow-sm hover:shadow-glow-violet/2 transition duration-200">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">Compliance Audit</span>
-              <h3 className="text-sm font-black text-white mt-0.5">Security posture</h3>
+              <h3 className="text-sm font-black text-white mt-0.5 font-outfit">Security posture</h3>
             </div>
             <StatusBadge status={metrics?.security_ops.compliance_verdict || "PASS"} />
           </div>
-          <div className="text-xs font-mono space-y-2">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Hardening Score:</span>
-              <span className="text-emerald-400 font-bold">{metrics?.security_ops.compliance_score}%</span>
+          <div className="text-xs font-mono space-y-2.5">
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-slate-505">Hardening Score:</span>
+                <span className="text-emerald-450 font-bold">{metrics?.security_ops.compliance_score}%</span>
+              </div>
+              <div className="w-full bg-slate-950 rounded-full h-1 mt-1 overflow-hidden">
+                <div 
+                  className="bg-violet-500 h-1 rounded-full transition-all duration-500" 
+                  style={{ width: `${metrics?.security_ops.compliance_score || 0}%` }}
+                />
+              </div>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Unmitigated Threats:</span>
-              <span className={`font-bold ${metrics?.security_ops.unmitigated_threats > 0 ? "text-red-400 animate-pulse" : "text-emerald-400"}`}>
+              <span className="text-slate-505">Unmitigated Threats:</span>
+              <span className={`font-bold ${metrics?.security_ops.unmitigated_threats > 0 ? "text-red-400 animate-pulse" : "text-emerald-450"}`}>
                 {metrics?.security_ops.unmitigated_threats} active
               </span>
             </div>
           </div>
           <button 
             onClick={() => router.push("/security")}
-            className="w-full py-1.5 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-lg text-xs font-bold transition font-mono uppercase tracking-wide text-center"
+            className="w-full py-1.5 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-bold transition font-mono uppercase tracking-wide text-center cursor-pointer"
           >
             Check Hardening
           </button>
@@ -374,47 +414,47 @@ export default function AuthorityDashboard() {
           )}
 
           {/* Risk Feed & Audit namespace */}
-          <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850">
-            <div className="flex justify-between items-center mb-4">
+          <div className="bg-glass border border-slate-850 p-5 rounded-2xl shadow-sm">
+            <div className="flex justify-between items-center mb-4.5 px-1">
               <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
-                <Activity className="w-4 h-4 text-cyan-400" />
+                <Activity className="w-4 h-4 text-cyan-455 animate-pulse" />
                 <span>Active Risk and Audit Feed</span>
               </h3>
               <span className="text-[10px] text-slate-500 font-mono">Namespace: nsb-audit-ns</span>
             </div>
 
             <div className="space-y-3 font-mono text-xs">
-              <div className="p-3 bg-slate-950/40 rounded-xl border border-slate-850 flex justify-between items-start gap-4">
+              <div className="p-3.5 bg-slate-950/40 rounded-xl border border-slate-900/60 flex justify-between items-start gap-4">
                 <div className="flex gap-2.5 items-start">
                   <span className="text-emerald-400 mt-0.5">✓</span>
                   <div>
-                    <span className="text-slate-200 font-bold block">Audit Chain Namespace Validated</span>
+                    <span className="text-slate-200 font-bold block font-outfit">Audit Chain Namespace Validated</span>
                     <p className="text-[10px] text-slate-500 mt-0.5">ECDSA signatures checked against all active key hashes.</p>
                   </div>
                 </div>
                 <span className="text-[9px] px-1.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded uppercase font-bold">Passed</span>
               </div>
 
-              <div className="p-3 bg-slate-950/40 rounded-xl border border-slate-850 flex justify-between items-start gap-4">
+              <div className="p-3.5 bg-slate-950/40 rounded-xl border border-slate-900/60 flex justify-between items-start gap-4">
                 <div className="flex gap-2.5 items-start">
                   <span className="text-emerald-400 mt-0.5">✓</span>
                   <div>
-                    <span className="text-slate-200 font-bold block">Center package release CTR-LKO-01 verified</span>
+                    <span className="text-slate-200 font-bold block font-outfit">Center package release CTR-LKO-01 verified</span>
                     <p className="text-[10px] text-slate-500 mt-0.5">Signature matches authorized Controller credentials.</p>
                   </div>
                 </div>
                 <span className="text-[9px] px-1.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded uppercase font-bold">Verified</span>
               </div>
 
-              <div className="p-3 bg-slate-950/40 rounded-xl border border-slate-850 flex justify-between items-start gap-4">
+              <div className="p-3.5 bg-slate-950/40 rounded-xl border border-slate-900/60 flex justify-between items-start gap-4">
                 <div className="flex gap-2.5 items-start">
                   <span className="text-amber-400 mt-0.5">!</span>
                   <div>
-                    <span className="text-slate-200 font-bold block">Double Evaluation conflict CNF-001 Resolved</span>
+                    <span className="text-slate-200 font-bold block font-outfit">Double Evaluation conflict CNF-001 Resolved</span>
                     <p className="text-[10px] text-slate-500 mt-0.5">Evaluator mismatch resolved via Controller override key signature.</p>
                   </div>
                 </div>
-                <span className="text-[9px] px-1.5 py-0.5 bg-amber-500/10 text-amber-400 rounded uppercase font-bold">Resolved</span>
+                <span className="text-[9px] px-1.5 py-0.5 bg-amber-500/10 text-amber-450 rounded uppercase font-bold">Resolved</span>
               </div>
             </div>
           </div>
@@ -422,29 +462,29 @@ export default function AuthorityDashboard() {
 
         {/* Sidebar panel: Audit Timeline Preview (4 cols, only visible if row is not full width) */}
         {status === "BLOCKED" && (
-          <div className="lg:col-span-4 bg-slate-900 p-5 rounded-2xl border border-slate-850 flex flex-col justify-between">
+          <div className="lg:col-span-4 bg-glass border border-slate-850 p-5 rounded-2xl flex flex-col justify-between shadow-sm">
             <div>
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5 mb-3">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5 mb-3.5 px-1">
                 <History className="w-4 h-4 text-violet-400" />
                 <span>Audit Timeline Preview</span>
               </h3>
-              <p className="text-[11px] text-slate-500 leading-relaxed font-sans mb-4">
+              <p className="text-[11px] text-slate-400 leading-relaxed font-sans mb-4.5 px-1">
                 Verify each step of the immutable cryptographic chain-of-custody ledger.
               </p>
 
-              <div className="space-y-3 font-mono text-[11px]">
+              <div className="space-y-3.5 font-mono text-[11px] px-1">
                 <div className="flex gap-2.5 items-center">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span className="text-slate-300 font-bold">SETUP</span>
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-glow-emerald" />
+                  <span className="text-slate-350 font-bold">SETUP</span>
                   <span className="text-slate-500 ml-auto">09:00 AM</span>
                 </div>
                 <div className="flex gap-2.5 items-center">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span className="text-slate-300 font-bold">POLICY LOCK</span>
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-glow-emerald" />
+                  <span className="text-slate-350 font-bold">POLICY LOCK</span>
                   <span className="text-slate-500 ml-auto">09:15 AM</span>
                 </div>
                 <div className="flex gap-2.5 items-center">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-glow-blue" />
                   <span className="text-blue-400 font-bold">EVALUATION</span>
                   <span className="text-slate-500 ml-auto">04:32 PM</span>
                 </div>
@@ -453,7 +493,7 @@ export default function AuthorityDashboard() {
 
             <button 
               onClick={() => router.push("/audit-timeline")}
-              className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-750 text-white rounded-lg text-xs font-bold transition font-mono uppercase tracking-wide"
+              className="mt-6 w-full py-2 bg-slate-905 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-white rounded-xl text-xs font-bold transition font-mono uppercase tracking-wide cursor-pointer"
             >
               Examine Full Timeline
             </button>
