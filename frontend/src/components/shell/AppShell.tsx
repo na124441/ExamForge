@@ -89,8 +89,9 @@ export function AppShell({ children }: AppShellProps) {
         />
         
         {/* Actual page content wrapper */}
-        <main className="flex-1 overflow-y-auto bg-[#070A14] p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto bg-[#070A14] p-6 relative">
+          <div className="glow-radial-canvas" />
+          <div className="max-w-7xl mx-auto space-y-6 relative z-10">
             {children}
           </div>
         </main>
