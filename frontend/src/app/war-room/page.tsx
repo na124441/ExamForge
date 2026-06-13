@@ -407,10 +407,10 @@ export default function WarRoomPage() {
   const isUnderTwoMinutes = timeLeft < 120;
 
   return (
-    <div className="w-screen h-screen bg-[#02040a] flex items-center justify-center overflow-hidden p-2">
+    <div className="w-screen h-screen bg-cyber-grid bg-[#070A14] flex items-center justify-center overflow-hidden p-2 animate-in fade-in duration-300">
       
       {/* 16:9 LOCKED CINEMATIC CONTAINER */}
-      <div className="w-full aspect-[16/9] max-h-screen max-w-[177.78vh] bg-[#060913] text-slate-100 flex flex-col overflow-hidden relative border border-slate-800/60 shadow-[0_0_50px_rgba(0,0,0,0.8)] rounded-xl select-none">
+      <div className="w-full aspect-[16/9] max-h-screen max-w-[177.78vh] bg-[#0A0E1A]/95 text-slate-100 flex flex-col overflow-hidden relative border border-white/[0.08] shadow-[0_0_60px_rgba(0,0,0,0.85)] rounded-2xl select-none">
         
         {/* TAMPER / FRACTURED BREACH WATERMARK PANEL overlay */}
         {isTampered && (
@@ -469,65 +469,65 @@ export default function WarRoomPage() {
         </header>
 
         {/* 2. SLEEK WORKSPACE SWITCHER */}
-        <section className="h-[8%] bg-[#080d1a] px-4 flex items-center justify-between shrink-0 border-b border-slate-900 z-30">
+        <section className="h-[8%] bg-[#080d1a] px-4 flex items-center justify-between shrink-0 border-b border-white/[0.06] z-30">
           <div className="flex items-center gap-1.5 h-full py-1.5">
             
             <button
               onClick={() => setActiveTab(1)}
               className={`h-full px-4 rounded-lg flex items-center gap-2 transition duration-200 text-xs font-mono font-bold cursor-pointer relative ${
                 activeTab === 1 
-                  ? "bg-[#131a31] border border-blue-500/45 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)]" 
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                  ? "bg-violet-500/[0.08] border border-violet-500/40 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.15)]" 
+                  : "text-slate-405 hover:text-slate-200 hover:bg-white/[0.04]"
               }`}
             >
-              <Sliders className="w-3.5 h-3.5 text-blue-400" />
+              <Sliders className={`w-3.5 h-3.5 ${activeTab === 1 ? "text-violet-400" : "text-slate-500"}`} />
               <span>[1] EXAM CONTROLLER</span>
-              {activeTab === 1 && <span className="absolute bottom-0 inset-x-4 h-0.5 bg-blue-500" />}
+              {activeTab === 1 && <span className="absolute bottom-0 inset-x-4 h-0.5 bg-violet-500" />}
             </button>
 
             <button
               onClick={() => setActiveTab(2)}
               className={`h-full px-4 rounded-lg flex items-center gap-2 transition duration-200 text-xs font-mono font-bold cursor-pointer relative ${
                 activeTab === 2 
-                  ? "bg-[#131a31] border border-blue-500/45 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)]" 
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                  ? "bg-violet-500/[0.08] border border-violet-500/40 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.15)]" 
+                  : "text-slate-450 hover:text-slate-200 hover:bg-white/[0.04]"
               }`}
             >
-              <Cpu className="w-3.5 h-3.5 text-blue-400" />
+              <Cpu className={`w-3.5 h-3.5 ${activeTab === 2 ? "text-violet-400" : "text-slate-500"}`} />
               <span>[2] OMR PIPELINE</span>
               {omrList.some(q => q.status === "AMBIGUOUS") && (
                 <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping absolute -top-0.5 -right-0.5" />
               )}
-              {activeTab === 2 && <span className="absolute bottom-0 inset-x-4 h-0.5 bg-blue-500" />}
+              {activeTab === 2 && <span className="absolute bottom-0 inset-x-4 h-0.5 bg-violet-500" />}
             </button>
 
             <button
               onClick={() => setActiveTab(3)}
               className={`h-full px-4 rounded-lg flex items-center gap-2 transition duration-200 text-xs font-mono font-bold cursor-pointer relative ${
                 activeTab === 3 
-                  ? "bg-[#131a31] border border-blue-500/45 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)]" 
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                  ? "bg-violet-500/[0.08] border border-violet-500/40 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.15)]" 
+                  : "text-slate-450 hover:text-slate-200 hover:bg-white/[0.04]"
               }`}
             >
-              <FileSignature className="w-3.5 h-3.5 text-blue-400" />
+              <FileSignature className={`w-3.5 h-3.5 ${activeTab === 3 ? "text-violet-400" : "text-slate-500"}`} />
               <span>[3] DESCRIPTIVE EVAL</span>
-              {activeTab === 3 && <span className="absolute bottom-0 inset-x-4 h-0.5 bg-blue-500" />}
+              {activeTab === 3 && <span className="absolute bottom-0 inset-x-4 h-0.5 bg-violet-500" />}
             </button>
 
             <button
               onClick={() => setActiveTab(4)}
               className={`h-full px-4 rounded-lg flex items-center gap-2 transition duration-200 text-xs font-mono font-bold cursor-pointer relative ${
                 activeTab === 4 
-                  ? "bg-[#131a31] border border-blue-500/45 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)]" 
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                  ? "bg-violet-500/[0.08] border border-violet-500/40 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.15)]" 
+                  : "text-slate-450 hover:text-slate-200 hover:bg-white/[0.04]"
               }`}
             >
-              <History className="w-3.5 h-3.5 text-blue-400" />
+              <History className={`w-3.5 h-3.5 ${activeTab === 4 ? "text-violet-400" : "text-slate-500"}`} />
               <span>[4] INTEGRITY LEDGER</span>
               {isTampered && (
                 <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse absolute -top-0.5 -right-0.5" />
               )}
-              {activeTab === 4 && <span className="absolute bottom-0 inset-x-4 h-0.5 bg-blue-500" />}
+              {activeTab === 4 && <span className="absolute bottom-0 inset-x-4 h-0.5 bg-violet-500" />}
             </button>
 
           </div>
@@ -744,7 +744,7 @@ export default function WarRoomPage() {
                   <button
                     onClick={handleGeneratePapers}
                     disabled={isGenerating}
-                    className="w-full py-4.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:from-blue-900/40 disabled:to-indigo-900/40 text-white rounded-xl text-xs font-bold font-mono tracking-widest uppercase transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-blue-500/10 active:scale-98"
+                    className="w-full py-4.5 bg-gradient-to-r from-violet-600 to-indigo-650 hover:from-violet-500 hover:to-indigo-550 disabled:from-violet-900/40 disabled:to-indigo-900/40 text-white rounded-xl text-xs font-bold font-mono tracking-widest uppercase transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-violet-500/10 active:scale-98"
                   >
                     <Key className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`} />
                     <span>Generate Cryptographic Paper Set</span>
@@ -801,7 +801,7 @@ export default function WarRoomPage() {
                             {paper.status === "IDLE" && (
                               <button
                                 onClick={() => handleGeneratePaper(paper.id)}
-                                className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-mono font-bold text-[9px] uppercase tracking-wider rounded cursor-pointer transition shadow-[0_0_10px_rgba(59,130,246,0.25)] border border-blue-500/30"
+                                className="px-2.5 py-1 bg-violet-600 hover:bg-violet-500 active:scale-95 text-white font-mono font-bold text-[9px] uppercase tracking-wider rounded cursor-pointer transition shadow-[0_0_10px_rgba(124,58,237,0.25)] border border-violet-500/30"
                               >
                                 Generate
                               </button>
@@ -1052,7 +1052,7 @@ export default function WarRoomPage() {
                                         isSelected
                                           ? isAmbiguous
                                             ? "bg-rose-500/20 border-rose-500 text-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.3)]"
-                                            : "bg-blue-500/20 border-blue-500 text-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.3)]"
+                                            : "bg-violet-500/20 border-violet-500 text-violet-305 shadow-[0_0_8px_rgba(139,92,246,0.3)]"
                                           : "border-slate-800 bg-slate-950 text-slate-600"
                                       }`}
                                     >
@@ -1114,9 +1114,15 @@ export default function WarRoomPage() {
                             <div className={`col-span-2 text-center font-bold ${q.status === "AMBIGUOUS" ? "text-amber-400" : "text-white"}`}>{q.ans}</div>
                             
                             <div className="col-span-5 pr-4">
-                              <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
+                              <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-white/[0.03]">
                                 <div 
-                                  className={`h-full ${q.status === "AMBIGUOUS" ? "bg-rose-500" : "bg-blue-500"}`} 
+                                  className={`h-full transition-all duration-300 ${
+                                    q.status === "AMBIGUOUS" 
+                                      ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]" 
+                                      : q.status === "RESOLVED"
+                                        ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"
+                                        : "bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.4)]"
+                                  }`} 
                                   style={{ width: `${q.density}%` }} 
                                 />
                               </div>
@@ -1265,7 +1271,7 @@ export default function WarRoomPage() {
                           onClick={() => setActivePage(pNum)}
                           className={`px-4 py-1.5 rounded-t-lg font-serif text-[11px] font-bold cursor-pointer transition border-t border-x ${
                             activePage === pNum
-                              ? "bg-[#f8f4ec] border-slate-300 text-slate-850 shadow-[0_-2px_6px_rgba(0,0,0,0.06)]"
+                              ? "bg-[#f8f4ec] border-slate-300 text-stone-900 shadow-[0_-2px_6px_rgba(0,0,0,0.06)]"
                               : "bg-[#0b0f1a] border-slate-800 text-slate-500 hover:text-slate-350 hover:bg-[#0f1424]/60"
                           }`}
                         >
@@ -1294,15 +1300,15 @@ export default function WarRoomPage() {
                             
                             {activePage === 1 && (
                               <div className="space-y-2 text-xs font-serif leading-relaxed text-slate-800 mt-2.5">
-                                <p>"Let L be a language recognizable by a Turing Machine M. We define the <mark className="bg-yellow-200/90 text-slate-950 font-bold px-1 rounded border-b border-yellow-400">configuration sequence</mark> C_1, C_2, ... C_k to be a valid trace of computations under machine limits."</p>
+                                <p>"Let L be a language recognizable by a Turing Machine M. We define the <mark className="bg-yellow-200/90 text-stone-900 font-bold px-1 rounded border-b border-yellow-400">configuration sequence</mark> C_1, C_2, ... C_k to be a valid trace of computations under machine limits."</p>
                                 <div className="h-px bg-slate-300/60 my-2" />
-                                <p>"By applying <mark className="bg-yellow-200/90 text-slate-955 font-bold px-1 rounded border-b border-yellow-400">Rice's Theorem</mark>, any non-trivial semantic property of the partial function calculated by M is undecidable. Therefore, verification bounds must be established via zero-knowledge interactive proofs."</p>
+                                <p>"By applying <mark className="bg-yellow-200/90 text-stone-900 font-bold px-1 rounded border-b border-yellow-400">Rice's Theorem</mark>, any non-trivial semantic property of the partial function calculated by M is undecidable. Therefore, verification bounds must be established via zero-knowledge interactive proofs."</p>
                               </div>
                             )}
 
                             {activePage === 2 && (
                               <div className="space-y-2 text-xs font-serif leading-relaxed text-slate-800 mt-2.5">
-                                <p>"We prove the error bounds by setting delta as the <mark className="bg-yellow-200/90 text-slate-955 font-bold px-1 rounded border-b border-yellow-400">completeness parameter</mark>. Given the witness string w, the verifier checks if the polynomial equation holds modulo q."</p>
+                                <p>"We prove the error bounds by setting delta as the <mark className="bg-yellow-200/90 text-stone-900 font-bold px-1 rounded border-b border-yellow-400">completeness parameter</mark>. Given the witness string w, the verifier checks if the polynomial equation holds modulo q."</p>
                                 <div className="p-2 bg-[#ece8df]/60 border border-[#dfdad0] text-center font-bold font-mono text-[11px] text-slate-700 rounded-lg">
                                   V(x) = C(x) * H(x) + E(x)
                                 </div>
@@ -1314,7 +1320,7 @@ export default function WarRoomPage() {
 
                             {activePage === 3 && (
                               <div className="space-y-2 text-xs font-serif leading-relaxed text-slate-800 mt-2.5">
-                                <p>"Consequently, the security parameter lambda holds for all adversary algorithms running in polynomial time. Hence, the transaction <mark className="bg-yellow-200/90 text-slate-955 font-bold px-1 rounded border-b border-yellow-400">integrity</mark> remains intact."</p>
+                                <p>"Consequently, the security parameter lambda holds for all adversary algorithms running in polynomial time. Hence, the transaction <mark className="bg-yellow-200/90 text-stone-900 font-bold px-1 rounded border-b border-yellow-400">integrity</mark> remains intact."</p>
                                 <div className="border border-[#dfdad0] p-2 rounded bg-[#ece8df]/30 text-[9px] text-slate-500 font-mono">
                                   SIGNATURE_CHAIN: e8a4f9b2d01e...
                                 </div>
@@ -1347,6 +1353,7 @@ export default function WarRoomPage() {
                     </div>
                 </div>
               </div>
+            </div>
 
               {/* Right Panel: AI Analytics Checklist */}
               <div className="bg-[#0F1424]/60 border border-slate-800/40 rounded-xl p-4 flex flex-col justify-between backdrop-blur-xl overflow-hidden">
@@ -1598,29 +1605,35 @@ export default function WarRoomPage() {
                 </div>
               </div>
 
-              {/* Right Pane: SQL Backdoor Sandbox */}
-              <div className="bg-[#0F1424]/60 border border-slate-800/40 rounded-xl p-4 flex flex-col justify-between backdrop-blur-xl overflow-hidden">
+              {/* Right Pane: SQL Backdoor Sandbox - High Hazard Red Zone */}
+              <div className="bg-rose-950/10 border border-rose-500/25 rounded-xl p-4 flex flex-col justify-between backdrop-blur-xl overflow-hidden relative shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]">
+                {/* Warning header strip */}
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-rose-500/20 via-rose-500 to-rose-500/20 animate-pulse" />
+                
                 <div className="h-full flex flex-col justify-between overflow-hidden">
                   
                   <div>
-                    <div className="flex items-center justify-between border-b border-slate-800/40 pb-2 mb-3.5 shrink-0">
-                      <span className="text-[10px] font-bold tracking-widest text-slate-500 font-mono">SQL BACKDOOR INJECTION SANDBOX</span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold bg-rose-500/10 text-rose-400 border border-rose-500/25">MUTATION MODULE</span>
+                    <div className="flex items-center justify-between border-b border-rose-500/20 pb-2 mb-3.5 shrink-0">
+                      <div className="flex items-center gap-2">
+                        <Skull className="w-4 h-4 text-rose-500 animate-pulse" />
+                        <span className="text-[10px] font-bold tracking-widest text-rose-400 font-mono">SQL MUTATION EXPLOIT MODULE</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold bg-rose-500/20 text-rose-450 border border-rose-500/30">HAZARD LEVEL P0</span>
                     </div>
 
                     <div className="space-y-4">
-                      <div className="bg-slate-950/80 border border-slate-900 rounded-xl p-3.5 space-y-2">
-                        <span className="text-[9px] font-bold font-mono text-slate-500 uppercase tracking-widest block">CHOOSE MALICIOUS PAYLOAD</span>
+                      <div className="bg-slate-950/90 border border-rose-950/40 rounded-xl p-3.5 space-y-2">
+                        <span className="text-[9px] font-bold font-mono text-rose-400/80 uppercase tracking-widest block">SELECT EXPLOIT PAYLOAD</span>
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={() => setSqlQuery("UPDATE grades SET total_score = 98 WHERE candidate_id = 'ANON-8891';")}
-                            className="p-2 bg-slate-900 hover:bg-slate-850 border border-slate-850 rounded text-[9px] font-mono font-bold text-slate-300 text-left transition cursor-pointer"
+                            className="p-2 bg-slate-900 hover:bg-slate-850 border border-rose-950/40 rounded text-[9px] font-mono font-bold text-slate-350 text-left transition cursor-pointer hover:border-rose-500/35 hover:text-white"
                           >
                             Query #1: Mutate Grade Score
                           </button>
                           <button
                             onClick={() => setSqlQuery("UPDATE nodes SET verification = 'BYPASSED' WHERE center_id = 'KOL_05';")}
-                            className="p-2 bg-slate-900 hover:bg-slate-850 border border-slate-850 rounded text-[9px] font-mono font-bold text-slate-300 text-left transition cursor-pointer"
+                            className="p-2 bg-slate-900 hover:bg-slate-850 border border-rose-950/40 rounded text-[9px] font-mono font-bold text-slate-350 text-left transition cursor-pointer hover:border-rose-500/35 hover:text-white"
                           >
                             Query #2: Bypass Node Identity
                           </button>
@@ -1634,7 +1647,7 @@ export default function WarRoomPage() {
                           rows={4}
                           value={sqlQuery}
                           onChange={(e) => setSqlQuery(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-900 focus:border-red-500/50 rounded-xl p-3 text-xs font-mono text-rose-350 focus:outline-none resize-none leading-relaxed"
+                          className="w-full bg-slate-950/90 border border-rose-950/50 focus:border-rose-500/50 rounded-xl p-3 text-xs font-mono text-rose-400 focus:outline-none resize-none leading-relaxed shadow-inner"
                           placeholder="INPUT MALICIOUS DATA MUTATION QUERY STATEMENT..."
                         />
                       </div>
@@ -1642,12 +1655,12 @@ export default function WarRoomPage() {
                   </div>
 
                   {/* Inject button */}
-                  <div className="pt-3.5 border-t border-slate-800/40 shrink-0">
+                  <div className="pt-3.5 border-t border-rose-500/20 shrink-0">
                     <button
                       onClick={handleInjectMutation}
-                      className="w-full py-4.5 bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:to-pink-500 text-white rounded-xl text-xs font-mono font-bold tracking-widest uppercase shadow-md shadow-rose-500/15 transition cursor-pointer active:scale-98"
+                      className="w-full py-4.5 bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white rounded-xl text-xs font-mono font-bold tracking-widest uppercase shadow-[0_0_25px_rgba(244,63,94,0.3)] transition cursor-pointer active:scale-98 border border-rose-400/20"
                     >
-                      Inject Malicious SQL Mutation // Bypass Firewall
+                      EXECUTE MUTATION EXPLOIT
                     </button>
                   </div>
 
