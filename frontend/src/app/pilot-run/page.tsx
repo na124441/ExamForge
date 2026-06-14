@@ -89,199 +89,12 @@ const ACTORS: Record<string, string> = {
   COMPLIANCE_REPORT: "Independent System Auditor"
 };
 
-export default function PilotRunPage() {
-  const router = useRouter();
-  const [activeRun, setActiveRun] = useState<PilotRun | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [actioning, setActioning] = useState(false);
-  const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [binder, setBinder] = useState<any>(null);
-
-  useEffect(() => {
-    fetchActiveRun();
-  }, []);
-
-  const fetchActiveRun = async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(`${BACKEND_URL}/api/pilot/runs`, {
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
-      });
-
-      if (res.status === 401 || res.status === 403) {
-        throw new Error("Session expired or unauthorized role. Log in as a Controller.");
-      }
-
-      if (res.ok) {
-        const runs = await res.json();
-        // Look for in-progress run or fall back to first run
-        const active = runs.find((r: any) => r.status === "IN_PROGRESS") || runs[0];
-        if (active) {
-          fetchRunDetails(active.id);
-        }
-      }
-      setError("");
-    } catch (err: any) {
-      setError(err.message || "Failed to sync pilot state.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchRunDetails = async (runId: string) => {
-    try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(`${BACKEND_URL}/api/pilot/runs/${runId}`, {
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setActiveRun(data);
-        if (data.status === "COMPLETED") {
-          setSuccess("Pilot Run completed! Cryptographic evidence binder is ready to compile.");
-        }
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleStartRun = async () => {
-    setActioning(true);
-    setError("");
-    setSuccess("");
-    setBinder(null);
-    setTerminalLogs(["[INIT] Spawning new Zero-Trust Pilot Run sequence..."]);
-    try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(`${BACKEND_URL}/api/pilot/runs`, {
-        method: "POST",
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Failed to create run.");
-
-      setActiveRun(data);
-      setTerminalLogs((prev) => [...prev, `[SUCCESS] Run ${data.id} instantiated. Stage 1 initialized.`]);
-    } catch (err: any) {
-      setError(err.message || "Failed to start run.");
-    } finally {
-      setActioning(false);
-    }
-  };
-
-  const handleAdvanceStage = async (stage: PilotStage) => {
-    if (!activeRun) return;
-    setActioning(true);
-    setError("");
-    setSuccess("");
-
-    setTerminalLogs((prev) => [
-      ...prev,
-      `[STAGE] Launching Stage ${stage.sequence}: ${stage.stage_name}`,
-      `[EXECUTE] Processing zero-trust security checks...`,
-    ]);
-
-    try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(`${BACKEND_URL}/api/pilot/runs/${activeRun.id}/stages/${stage.id}/advance`, {
-        method: "POST",
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Stage execution failed.");
-
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      
-      const lastEvent = data.events[data.events.length - 1];
-
-      setTerminalLogs((prev) => [
-        ...prev,
-        `[SUCCESS] Stage ${stage.sequence} completed.`,
-        `[VERDICT] Posture Effect: ${lastEvent?.risk_effect || "POSTURE_OK"}`,
-        `[CANONICAL HASH] ${lastEvent?.proof_hash || "None"}`,
-      ]);
-
-      fetchRunDetails(activeRun.id);
-    } catch (err: any) {
-      setError(err.message || "Stage execution failed.");
-      setTerminalLogs((prev) => [...prev, `[FAILED] ${err.message}`]);
-    } finally {
-      setActioning(false);
-    }
-  };
-
-  const handleGenerateBinder = async () => {
-    if (!activeRun) return;
-    setActioning(true);
-    setError("");
-    setSuccess("");
-    try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(`${BACKEND_URL}/api/pilot/evidence-binder/generate?pilot_run_id=${activeRun.id}`, {
-        method: "POST",
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Binder generation failed.");
-
-      setBinder(data);
-      setSuccess("✓ Cryptographic Evidence Binder compiled and signed successfully!");
-    } catch (err: any) {
-      setError(err.message || "Failed to generate binder.");
-    } finally {
-      setActioning(false);
-    }
-  };
-
-  const handleResetDatabase = async () => {
-    if (!confirm("Reset database? All active states, candidate submissions, and logs will be deleted.")) return;
-    setLoading(true);
-    setError("");
-    setSuccess("");
-    setBinder(null);
-    setActiveRun(null);
-    setTerminalLogs([]);
-
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/pilot/reset-and-seed`, {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Database reset failed.");
-
-      setSuccess(data.message);
-      setTerminalLogs(["[RESET] Database cleaned and seeded with pilot variables successfully."]);
-      fetchActiveRun();
-    } catch (err: any) {
-      setError(err.message || "Failed to reset database.");
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 font-mono text-xs gap-3">
-        <span className="animate-spin text-xl">⚙️</span>
-        <span>DECRYPTING INTERACTIVE WORKFLOW SEQUENCE...</span>
-      </div>
-    );
-  }
-
-  const currentStage = activeRun?.stages.find(
-    (s) => s.status === "IN_PROGRESS" || s.status === "FAILED"
-  ) || activeRun?.stages.find((s) => s.status === "PENDING");
-OMR_PROCESSING: "OMR Scanning Operator",
+const STAGE_OWNERS: Record<string, string> = {
+  OMR_PROCESSING: "OMR Scanning Operator",
   WRITTEN_EVALUATION: "Anonymizer & Evaluator Team",
   CONFLICT_RESOLUTION: "Exam Controller",
   RESULT_GATE: "Trust Policy Engine",
   RESULT_PUBLICATION: "Exam Controller",
-  DISPUTE_HANDLING: "Dispute Officer",
-  AUDIT_REPORT: "Independent System Auditor",
-  COMPLIANCE_REPORT: "Independent System Auditor"
 };
 
 export default function PilotRunPage() {
@@ -469,6 +282,10 @@ export default function PilotRunPage() {
     (s) => s.status === "IN_PROGRESS" || s.status === "FAILED"
   ) || activeRun?.stages.find((s) => s.status === "PENDING");
 
+  const currentOwner = currentStage
+    ? STAGE_OWNERS[currentStage.stage_name] ?? ACTORS[currentStage.stage_name] ?? "AuthorityPilot Operator"
+    : "AuthorityPilot Operator";
+
   const lastCompletedStage = activeRun?.stages
     .filter(s => s.status === "COMPLETED")
     .sort((a, b) => b.sequence - a.sequence)[0];
@@ -609,11 +426,11 @@ export default function PilotRunPage() {
                 </h2>
                 <div className="grid grid-cols-2 gap-4 mt-3.5 py-3.5 border-y border-white/[0.04] text-xs font-mono">
                   <div>
-                    <span className="text-slate-550 block text-[9px] uppercase font-bold">Acting Authority</span>
-                    <span className="text-slate-300 font-semibold">{ACTORS[currentStage.stage_name] || "Security Module"}</span>
+                    <span className="text-slate-400 block text-[9px] uppercase font-bold">Acting Authority</span>
+                    <span className="text-slate-300 font-semibold">{currentOwner}</span>
                   </div>
                   <div>
-                    <span className="text-slate-550 block text-[9px] uppercase font-bold">Action Details</span>
+                    <span className="text-slate-400 block text-[9px] uppercase font-bold">Action Details</span>
                     <span className="text-slate-300 font-semibold">Verify and seal secure ledger entries</span>
                   </div>
                 </div>

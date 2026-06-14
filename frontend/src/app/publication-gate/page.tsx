@@ -310,8 +310,8 @@ export default function PublicationGatePage() {
             {publishError.message}
           </p>
           {publishError.failures && (
-            <div className="bg-slate-950/60 rounded p-3 border border-white/[0.04] text-slate-550 leading-relaxed shadow-inner">
-              {publishError.failures.map((f, idx) => (
+            <div className="bg-slate-950/60 rounded p-3 border border-white/[0.04] text-slate-400 leading-relaxed shadow-inner">
+              {publishError.failures.map((f: any, idx: number) => (
                 <div key={idx}>- {f}</div>
               ))}
             </div>
