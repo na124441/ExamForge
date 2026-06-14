@@ -14,7 +14,9 @@ import {
   User,
   Radio,
   Eye,
-  EyeOff
+  EyeOff,
+  Cpu,
+  Layers
 } from "lucide-react";
 
 const BACKEND_URL = "http://localhost:8000";
@@ -26,7 +28,7 @@ const DEMO_ROLES = [
     email: "controller@example.com",
     desc: "Create exams, lock blueprints, generate secure papers, and verify the publication gate.",
     icon: "🔐",
-    color: "border-blue-500/20 text-blue-450 bg-slate-900/30 hover:bg-slate-900/60 hover:border-blue-500/40 hover:shadow-glow-blue",
+    color: "border-white/[0.06] text-violet-400 bg-white/[0.02] hover:bg-white/[0.05] hover:border-violet-500/30 hover:shadow-glow-blue",
     redirect: "/authority"
   },
   {
@@ -35,7 +37,7 @@ const DEMO_ROLES = [
     email: "officer@example.com",
     desc: "Verify candidates, assign seat layouts, release time-locked packages, and scan OMR sheets.",
     icon: "🏢",
-    color: "border-amber-500/20 text-amber-450 bg-slate-900/30 hover:bg-slate-900/60 hover:border-amber-500/40 hover:shadow-glow-cyan",
+    color: "border-white/[0.06] text-amber-400 bg-white/[0.02] hover:bg-white/[0.05] hover:border-amber-500/30 hover:shadow-glow-cyan",
     redirect: "/center-console"
   },
   {
@@ -44,7 +46,7 @@ const DEMO_ROLES = [
     email: "invigilator@example.com",
     desc: "Confirm candidate check-ins, log suspect behaviors, and verify seat maps.",
     icon: "🛡️",
-    color: "border-violet-500/20 text-violet-450 bg-slate-900/30 hover:bg-slate-900/60 hover:border-violet-500/40 hover:shadow-glow-violet",
+    color: "border-white/[0.06] text-violet-400 bg-white/[0.02] hover:bg-white/[0.05] hover:border-violet-500/30 hover:shadow-glow-violet",
     redirect: "/center-console"
   },
   {
@@ -53,7 +55,7 @@ const DEMO_ROLES = [
     email: "candidate@example.com",
     desc: "Lookup candidate grades, view receipt verification details, and review result audit states.",
     icon: "🎓",
-    color: "border-cyan-500/20 text-cyan-450 bg-slate-900/30 hover:bg-slate-900/60 hover:border-cyan-500/40 hover:shadow-glow-cyan",
+    color: "border-white/[0.06] text-sky-400 bg-white/[0.02] hover:bg-white/[0.05] hover:border-sky-500/30 hover:shadow-glow-cyan",
     redirect: "/result-portal"
   },
   {
@@ -62,7 +64,7 @@ const DEMO_ROLES = [
     email: "evaluator@example.com",
     desc: "Evaluate written booklet copies anonymously against strict rubrics in locked sessions.",
     icon: "⚖️",
-    color: "border-fuchsia-500/20 text-fuchsia-455 bg-slate-900/30 hover:bg-slate-900/60 hover:border-fuchsia-500/40 hover:shadow-glow-violet",
+    color: "border-white/[0.06] text-fuchsia-400 bg-white/[0.02] hover:bg-white/[0.05] hover:border-fuchsia-500/30 hover:shadow-glow-violet",
     redirect: "/evaluator"
   },
   {
@@ -71,7 +73,7 @@ const DEMO_ROLES = [
     email: "auditor@example.com",
     desc: "Verify append-only hash chains, audit timelines, and retrieve compliance evidence binders.",
     icon: "🔬",
-    color: "border-emerald-500/20 text-emerald-455 bg-slate-900/30 hover:bg-slate-900/60 hover:border-emerald-500/40 hover:shadow-glow-emerald",
+    color: "border-white/[0.06] text-emerald-400 bg-white/[0.02] hover:bg-white/[0.05] hover:border-emerald-500/30 hover:shadow-glow-emerald",
     redirect: "/audit-timeline"
   }
 ];
@@ -146,34 +148,36 @@ export default function RootEntryPage() {
   // Render Category Service Launcher if authenticated
   if (token) {
     return (
-      <div className="space-y-8 p-1 select-none">
+      <div className="space-y-8 p-1 select-none animate-fade-in-up">
         
         {/* Launcher Header Banner */}
-        <div className="flex justify-between items-center bg-glass border border-slate-900/60 p-5 rounded-2xl backdrop-blur-md shadow-glow-blue/5">
+        <div className="flex justify-between items-center bg-[#0F1424]/60 backdrop-blur-xl border border-white/[0.06] p-5 rounded-2xl shadow-glow-blue/5">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-600/10 border border-blue-500/20 text-blue-450 rounded-xl shadow-glow-blue/5">
+            <div className="p-2.5 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded-xl">
               <Sparkles className="w-5 h-5 animate-pulse" />
             </div>
             <div>
-              <h1 className="text-lg font-black text-white tracking-tight font-outfit">
-                Welcome, Examination Authority
+              <div className="flex items-center gap-2 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+                <span>Active Exam: <span className="text-slate-100 font-bold">National Scholarship Test 2026</span></span>
+                <span className="text-slate-700">•</span>
+                <span>Trust Score: <span className="text-emerald-450 font-bold">97% Integrity</span></span>
+              </div>
+              <h1 className="text-lg font-black text-slate-100 tracking-tight font-outfit mt-0.5">
+                1 exam active · Authority Grade · Exam day in 3 days
               </h1>
-              <p className="text-[11px] text-slate-400 mt-0.5 font-sans">
-                Configure and deploy high-integrity examination service workflows instantly.
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.push("/war-room")}
-              className="px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-violet-500/15 flex items-center gap-1.5 uppercase font-mono tracking-wider cursor-pointer active:scale-95"
+              className="px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-650 hover:from-violet-500 hover:to-indigo-550 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 uppercase font-mono tracking-wider cursor-pointer active-press"
             >
               <Radio className="w-4 h-4 animate-pulse" />
               <span>v0.2 War Room</span>
             </button>
             <button
               onClick={() => router.push("/create-exam")}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 flex items-center gap-1.5 uppercase font-mono tracking-wider cursor-pointer active:scale-95"
+              className="px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-650 hover:from-violet-500 hover:to-indigo-550 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 uppercase font-mono tracking-wider cursor-pointer active-press"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Create New Exam</span>
@@ -183,51 +187,66 @@ export default function RootEntryPage() {
 
         {/* Section 1: Choose exam category */}
         <div className="space-y-3.5">
-          <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono px-1">
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono px-1">
             What exam type do you want to conduct?
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             
             <div 
               onClick={() => router.push("/create-exam?template=cbt")}
-              className="bg-glass-card hover:bg-slate-900/60 p-5.5 rounded-2xl border border-slate-850 hover:border-blue-500/30 transition duration-200 cursor-pointer flex flex-col justify-between min-h-[140px] group shadow-sm hover:shadow-glow-blue/5"
+              className="bg-[#0f1424]/60 backdrop-blur-md hover:bg-white/[0.02] p-5.5 rounded-2xl border border-white/[0.06] transition duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] group shadow-sm hover:border-violet-500/40"
             >
               <div>
-                <span className="text-2xl filter drop-shadow-[0_2px_8px_rgba(37,99,235,0.2)]">💻</span>
-                <h4 className="font-outfit font-bold text-white mt-2.5 group-hover:text-blue-400 transition-colors">CBT MCQ Exam</h4>
-                <p className="text-[11px] text-slate-400 mt-1.5 leading-relaxed font-sans">
+                <div className="flex items-start justify-between">
+                  <Cpu className="w-6 h-6 text-sky-400 filter drop-shadow-[0_2px_8px_rgba(56,189,248,0.3)]" />
+                  <span className="text-[9px] font-mono font-bold px-2 py-0.5 bg-sky-500/10 text-sky-400 border border-sky-500/25 rounded uppercase">
+                    Timing-Locked Questions
+                  </span>
+                </div>
+                <h4 className="font-outfit font-bold text-slate-100 mt-3 group-hover:text-violet-400 transition-colors text-sm">CBT MCQ Exam</h4>
+                <p className="text-[11px] text-slate-400 mt-2 leading-relaxed font-sans font-medium">
                   Best for computer-based testing. Timing-locked questions, local biometric login, and dynamic package releases.
                 </p>
               </div>
-              <span className="text-[9px] text-blue-400 font-mono mt-3.5 block font-bold">Use Template →</span>
+              <span className="text-[9px] text-violet-400 font-mono mt-3.5 block font-bold">Use Template →</span>
             </div>
 
             <div 
               onClick={() => router.push("/create-exam?template=omr")}
-              className="bg-glass-card hover:bg-slate-900/60 p-5.5 rounded-2xl border border-slate-850 hover:border-blue-500/30 transition duration-200 cursor-pointer flex flex-col justify-between min-h-[140px] group shadow-sm hover:shadow-glow-blue/5"
+              className="bg-[#0f1424]/60 backdrop-blur-md hover:bg-white/[0.02] p-5.5 rounded-2xl border border-white/[0.06] transition duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] group shadow-sm hover:border-violet-500/40"
             >
               <div>
-                <span className="text-2xl filter drop-shadow-[0_2px_8px_rgba(5,150,105,0.2)]">🔵</span>
-                <h4 className="font-outfit font-bold text-white mt-2.5 group-hover:text-blue-400 transition-colors">Offline OMR Exam</h4>
-                <p className="text-[11px] text-slate-400 mt-1.5 leading-relaxed font-sans">
+                <div className="flex items-start justify-between">
+                  <Layers className="w-6 h-6 text-emerald-400 filter drop-shadow-[0_2px_8px_rgba(52,211,153,0.3)]" />
+                  <span className="text-[9px] font-mono font-bold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 rounded uppercase">
+                    Auto-QR Geotag Ingest
+                  </span>
+                </div>
+                <h4 className="font-outfit font-bold text-slate-100 mt-3 group-hover:text-emerald-400 transition-colors text-sm">Offline OMR Exam</h4>
+                <p className="text-[11px] text-slate-400 mt-2 leading-relaxed font-sans font-medium">
                   Best for bubble sheet evaluation. Auto QR generation, scanner ingestion pipelines, and ambiguous bubble correction flows.
                 </p>
               </div>
-              <span className="text-[9px] text-blue-400 font-mono mt-3.5 block font-bold">Use Template →</span>
+              <span className="text-[9px] text-emerald-450 font-mono mt-3.5 block font-bold">Use Template →</span>
             </div>
 
             <div 
               onClick={() => router.push("/create-exam?template=hybrid")}
-              className="bg-glass-card hover:bg-slate-900/60 p-5.5 rounded-2xl border border-slate-850 hover:border-blue-500/30 transition duration-200 cursor-pointer flex flex-col justify-between min-h-[140px] group shadow-sm hover:shadow-glow-blue/5"
+              className="bg-[#0f1424]/60 backdrop-blur-md hover:bg-white/[0.02] p-5.5 rounded-2xl border border-white/[0.06] transition duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] group shadow-sm hover:border-violet-500/40"
             >
               <div>
-                <span className="text-2xl filter drop-shadow-[0_2px_8px_rgba(139,92,246,0.2)]">🚀</span>
-                <h4 className="font-outfit font-bold text-white mt-2.5 group-hover:text-blue-400 transition-colors">Hybrid Scholarship Exam</h4>
-                <p className="text-[11px] text-slate-400 mt-1.5 leading-relaxed font-sans">
+                <div className="flex items-start justify-between">
+                  <Radio className="w-6 h-6 text-violet-400 filter drop-shadow-[0_2px_8px_rgba(139,92,246,0.3)]" />
+                  <span className="text-[9px] font-mono font-bold px-2 py-0.5 bg-violet-500/10 text-violet-400 border border-violet-500/25 rounded uppercase">
+                    AI-Assisted Rubrics
+                  </span>
+                </div>
+                <h4 className="font-outfit font-bold text-slate-100 mt-3 group-hover:text-violet-400 transition-colors text-sm">Hybrid Scholarship Exam</h4>
+                <p className="text-[11px] text-slate-400 mt-2 leading-relaxed font-sans font-medium">
                   OMR + Descriptive Written sheets. Integrates scanning, anonymized grading panels, and double evaluation checklists.
                 </p>
               </div>
-              <span className="text-[9px] text-blue-400 font-mono mt-3.5 block font-bold">Use Template →</span>
+              <span className="text-[9px] text-violet-400 font-mono mt-3.5 block font-bold">Use Template →</span>
             </div>
 
           </div>
@@ -235,69 +254,101 @@ export default function RootEntryPage() {
 
         {/* Section 2: Choose Integrity package */}
         <div className="space-y-3.5">
-          <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono px-1">
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono px-1">
             Or select a preconfigured integrity level
           </h3>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             
             <div 
               onClick={() => router.push("/create-exam?package=basic")}
-              className="bg-glass-card hover:bg-slate-900/60 p-4.5 rounded-xl border border-slate-850 hover:border-slate-700/50 hover:shadow-glow-cyan/2 transition cursor-pointer text-left"
+              className="bg-[#0f1424]/60 backdrop-blur-md hover:bg-white/[0.02] p-4 rounded-xl border border-white/[0.06] transition cursor-pointer text-left font-mono"
             >
-              <span className="text-[9px] font-bold text-slate-500 font-mono uppercase">Package 1</span>
-              <h4 className="font-outfit font-bold text-white text-xs mt-1">Basic Trust</h4>
-              <p className="text-[10px] text-slate-450 mt-1 leading-relaxed">
-                Paper hashes, candidate receipt codes, and simple logs. Best for semester exams.
-              </p>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[9px] font-bold text-slate-500 uppercase">Tier 1</span>
+                <div className="flex items-center gap-1 text-[9px] text-slate-500">
+                  <Lock className="w-3 h-3" />
+                  <span>● ○ ○ ○</span>
+                </div>
+              </div>
+              <h4 className="font-outfit font-bold text-slate-100 text-xs">Basic Trust</h4>
+              <ul className="mt-3.5 space-y-1 text-[10px] text-slate-500 leading-normal">
+                <li>• Paper cryptographic hashes</li>
+                <li>• Candidate receipt codes</li>
+                <li>• Simple audit log trail</li>
+              </ul>
             </div>
 
             <div 
               onClick={() => router.push("/create-exam?package=secure")}
-              className="bg-glass-card hover:bg-slate-900/60 p-4.5 rounded-xl border border-slate-850 hover:border-slate-700/50 hover:shadow-glow-blue/5 transition cursor-pointer text-left"
+              className="bg-[#0f1424]/60 backdrop-blur-md hover:bg-white/[0.02] p-4 rounded-xl border border-white/[0.06] transition cursor-pointer text-left font-mono"
             >
-              <span className="text-[9px] font-bold text-blue-400 font-mono uppercase">Package 2</span>
-              <h4 className="font-outfit font-bold text-white text-xs mt-1">Secure Exam</h4>
-              <p className="text-[10px] text-slate-450 mt-1 leading-relaxed">
-                Encrypted papers, local release, and biometric admit card verification.
-              </p>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[9px] font-bold text-slate-500 uppercase">Tier 2</span>
+                <div className="flex items-center gap-1 text-[9px] text-slate-500">
+                  <Lock className="w-3 h-3" />
+                  <span>● ● ○ ○</span>
+                </div>
+              </div>
+              <h4 className="font-outfit font-bold text-slate-100 text-xs">Secure Exam</h4>
+              <ul className="mt-3.5 space-y-1 text-[10px] text-slate-500 leading-normal">
+                <li>• Encrypted paper payloads</li>
+                <li>• Local node release keys</li>
+                <li>• Biometric check-in cards</li>
+              </ul>
             </div>
 
             <div 
               onClick={() => router.push("/create-exam?package=stakes")}
-              className="bg-glass-card hover:bg-slate-900/60 p-4.5 rounded-xl border border-slate-850 hover:border-slate-700/50 hover:shadow-glow-cyan/5 transition cursor-pointer text-left"
+              className="bg-[#0f1424]/60 backdrop-blur-md hover:bg-white/[0.02] p-4 rounded-xl border border-white/[0.06] transition cursor-pointer text-left font-mono"
             >
-              <span className="text-[9px] font-bold text-amber-400 font-mono uppercase">Package 3</span>
-              <h4 className="font-outfit font-bold text-white text-xs mt-1">High-Stakes</h4>
-              <p className="text-[10px] text-slate-450 mt-1 leading-relaxed">
-                Center mapping, seat maps, OMR scanning checks, and double evaluations.
-              </p>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[9px] font-bold text-slate-500 uppercase">Tier 3</span>
+                <div className="flex items-center gap-1 text-[9px] text-slate-500">
+                  <Lock className="w-3 h-3" />
+                  <span>● ● ● ○</span>
+                </div>
+              </div>
+              <h4 className="font-outfit font-bold text-slate-100 text-xs">High-Stakes</h4>
+              <ul className="mt-3.5 space-y-1 text-[10px] text-slate-500 leading-normal">
+                <li>• Center seating mapping</li>
+                <li>• OMR density validation</li>
+                <li>• Evaluator double blind</li>
+              </ul>
             </div>
 
             <div 
               onClick={() => router.push("/create-exam?package=authority")}
-              className="bg-glass-card hover:bg-slate-900/60 p-4.5 rounded-xl border border-slate-850 hover:border-slate-700/50 hover:shadow-glow-violet/5 transition cursor-pointer text-left"
+              className="bg-[#0f1424]/60 backdrop-blur-md hover:bg-white/[0.02] p-4 rounded-xl border-2 border-violet-500/40 transition cursor-pointer text-left font-mono shadow-[0_0_15px_rgba(124,58,237,0.15)]"
             >
-              <span className="text-[9px] font-bold text-violet-400 font-mono uppercase font-black">Package 4</span>
-              <h4 className="font-outfit font-bold text-white text-xs mt-1">Authority Grade</h4>
-              <p className="text-[10px] text-slate-450 mt-1 leading-relaxed">
-                Multi-party key releases, strict safety checks, compliance reports, and legal logs.
-              </p>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[9px] font-bold text-violet-400 uppercase">Tier 4 (Featured)</span>
+                <div className="flex items-center gap-1 text-[9px] text-violet-400">
+                  <Lock className="w-3 h-3 text-violet-500 fill-violet-500/20" />
+                  <span>● ● ● ●</span>
+                </div>
+              </div>
+              <h4 className="font-outfit font-bold text-slate-100 text-xs">Authority Grade</h4>
+              <ul className="mt-3.5 space-y-1 text-[10px] text-slate-500 leading-normal">
+                <li>• Multi-party consensus key</li>
+                <li>• Real-time ledger checks</li>
+                <li>• Legal compliance binder</li>
+              </ul>
             </div>
 
           </div>
         </div>
 
         {/* Section 3: Track existing exams */}
-        <div className="bg-glass border border-slate-900/60 p-5.5 rounded-2xl shadow-lg">
-          <h2 className="text-xs font-bold text-white uppercase tracking-wider mb-4 font-mono flex items-center gap-1.5 px-1">
+        <div className="bg-[#0F1424]/60 backdrop-blur-xl border border-white/[0.06] p-5.5 rounded-2xl shadow-lg">
+          <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 font-mono flex items-center gap-1.5 px-1">
             <Activity className="w-4 h-4 text-emerald-450 animate-pulse" />
             <span>Track Existing Exams</span>
           </h2>
           
-          <div className="overflow-x-auto rounded-xl border border-slate-900/80">
+          <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
             <table className="w-full text-left border-collapse text-xs font-mono">
               <thead>
-                <tr className="border-b border-slate-900/80 bg-slate-950/40 text-slate-500">
+                <tr className="border-b border-white/[0.06] bg-white/[0.02] text-slate-500 text-[10px] uppercase tracking-[0.12em]">
                   <th className="py-3 px-4.5">Exam ID</th>
                   <th className="py-3 px-4.5">Exam Name</th>
                   <th className="py-3 px-4.5">Mode</th>
@@ -306,19 +357,30 @@ export default function RootEntryPage() {
                   <th className="py-3 px-4.5 text-right">Console</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-900/50 text-slate-300">
-                <tr className="hover:bg-slate-900/20 cursor-pointer transition" onClick={() => router.push("/exams/EXM-001/control-room")}>
-                  <td className="py-3.5 px-4.5 text-white font-bold">EXM-001</td>
-                  <td className="py-3.5 px-4.5 font-sans text-slate-200 font-semibold">National Scholarship Test 2026</td>
-                  <td className="py-3.5 px-4.5">HYBRID (OMR+Descriptive)</td>
+              <tbody className="divide-y divide-white/[0.04] text-slate-300">
+                <tr className="hover:bg-white/[0.02] cursor-pointer transition" onClick={() => router.push("/exams/EXM-001/control-room")}>
+                  <td className="py-3.5 px-4.5 text-slate-500 font-mono text-[11px]">EXM-001</td>
+                  <td className="py-3.5 px-4.5 font-medium text-slate-100 text-[14px] font-sans">National Scholarship Test 2026</td>
+                  <td className="py-3.5 px-4.5 text-slate-400">HYBRID (OMR+Descriptive)</td>
                   <td className="py-3.5 px-4.5 text-violet-400 font-bold">Authority Grade</td>
                   <td className="py-3.5 px-4.5">
-                    <span className="px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/25">
-                      Ready for Exam Day
-                    </span>
+                    {/* Operational phase as mini stepper */}
+                    <div className="flex items-center gap-1.5 text-[9px] font-mono font-bold">
+                      <span className="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">POLICY</span>
+                      <span className="text-slate-700">➔</span>
+                      <span className="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">SEALED</span>
+                      <span className="text-slate-700">➔</span>
+                      <div className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.12)]">
+                        <span className="flex h-1.5 w-1.5 relative">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                        </span>
+                        <span>READY</span>
+                      </div>
+                    </div>
                   </td>
                   <td className="py-3.5 px-4.5 text-right">
-                    <button className="text-[10px] px-3 py-1 bg-slate-950 border border-slate-800 text-slate-300 rounded-lg hover:border-slate-700 transition cursor-pointer">
+                    <button className="text-[11px] px-3 py-1 bg-[#070A14] border border-white/[0.08] text-violet-400 hover:text-violet-300 rounded-lg hover:border-violet-500/30 transition cursor-pointer font-mono">
                       Control Room →
                     </button>
                   </td>
@@ -334,12 +396,12 @@ export default function RootEntryPage() {
 
   // Render Login screen if logged out
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col justify-center items-center p-6 text-slate-100 font-sans selection:bg-blue-600/30">
+    <main className="min-h-screen bg-[#070A14] flex flex-col justify-center items-center p-6 text-slate-100 font-sans selection:bg-violet-600/30 animate-fade-in-up">
       <div className="max-w-4xl w-full flex flex-col items-center">
         {/* War room banner */}
         <div 
           onClick={() => router.push("/war-room")}
-          className="mb-6 px-4 py-2 bg-violet-500/10 border border-violet-500/20 hover:border-violet-500/40 rounded-full text-xs font-mono font-bold text-violet-400 cursor-pointer flex items-center gap-2 shadow-[0_0_15px_rgba(139,92,246,0.1)] transition duration-200 active:scale-98"
+          className="mb-6 px-4 py-2 bg-violet-500/5 border border-violet-500/20 hover:border-violet-500/40 rounded-full text-xs font-mono font-bold text-violet-400 cursor-pointer flex items-center gap-2 shadow-[0_0_15px_rgba(124,58,237,0.1)] transition duration-200 active-press"
         >
           <span className="flex h-2 w-2 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
@@ -349,17 +411,17 @@ export default function RootEntryPage() {
         </div>
 
         {/* Top badge */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-950/20 border border-blue-900/20 rounded-full text-[10px] font-mono font-bold tracking-widest text-blue-400 uppercase mb-4 shadow-glow-blue/5 animate-pulse">
-          <Lock className="w-3 h-3 text-blue-500" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-violet-950/10 border border-violet-900/20 rounded-full text-[10px] font-mono font-bold tracking-widest text-violet-400 uppercase mb-4 shadow-glow-blue/5">
+          <Lock className="w-3 h-3 text-violet-500" />
           <span>Multi-Tenant Vault Authentication</span>
         </div>
 
         {/* Brand header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-none font-outfit">
-            EXAM<span className="text-blue-500">FORGE</span>
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-none font-sans uppercase">
+            EXAM<span className="text-violet-500">FORGE</span>
           </h1>
-          <p className="text-xs text-slate-400 max-w-md mx-auto mt-2.5 leading-relaxed">
+          <p className="text-xs text-slate-400 max-w-md mx-auto mt-2.5 leading-relaxed font-sans">
             Zero-trust examination command & verification engine. Enforcing cryptographic chain of custody from question to publication.
           </p>
         </div>
@@ -370,26 +432,26 @@ export default function RootEntryPage() {
             <div
               key={role.role}
               onClick={() => handleDemoSelect(role.email)}
-              className={`p-4.5 rounded-2xl border cursor-pointer transition-all duration-300 flex flex-col justify-between min-h-[145px] ${role.color} ${
+              className={`p-4.5 rounded-xl border cursor-pointer transition-all duration-300 flex flex-col justify-between min-h-[145px] ${role.color} ${
                 selectedEmail === role.email
-                  ? "ring-2 ring-blue-500 border-transparent bg-slate-900/90 shadow-xl shadow-blue-500/10 scale-[1.03]"
-                  : "border-slate-800/80 bg-glass-card shadow-sm"
+                  ? "border-violet-500/40 bg-violet-500/[0.04] shadow-[0_0_0_1px_rgba(124,58,237,0.15),0_8px_32px_rgba(0,0,0,0.4)] scale-[1.02]"
+                  : "border-white/[0.06] bg-white/[0.02] shadow-sm hover:border-white/[0.12] hover:bg-white/[0.04]"
               }`}
             >
               <div>
                 <div className="flex items-center gap-2.5 mb-2.5">
                   <span className="text-2xl filter drop-shadow-[0_2px_4px_rgba(255,255,255,0.05)]">{role.icon}</span>
-                  <h3 className="text-xs font-black text-white uppercase tracking-wider font-mono">
+                  <h3 className="text-[13px] font-medium text-slate-100">
                     {role.name}
                   </h3>
                 </div>
-                <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
+                <p className="text-xs text-slate-400 leading-relaxed font-sans">
                   {role.desc}
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-slate-900/40 text-[9px] font-mono text-slate-500 flex justify-between items-center">
+              <div className="mt-4 pt-3 border-t border-white/[0.04] text-[10px] font-mono text-slate-500 flex justify-between items-center">
                 <span>ID: {role.email}</span>
-                <ChevronRight className="w-3 h-3 text-slate-650" />
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
               </div>
             </div>
           ))}
@@ -399,10 +461,10 @@ export default function RootEntryPage() {
         {selectedEmail && (
           <form
             onSubmit={handleLogin}
-            className="w-full max-w-md bg-glass border border-slate-900 p-6 rounded-2xl shadow-xl shadow-black/40 shadow-glow-blue/5 animate-in fade-in slide-in-from-bottom-2 duration-300"
+            className="w-full max-w-md bg-[#0F1424]/60 backdrop-blur-xl border border-white/[0.06] p-6 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] animate-in fade-in slide-in-from-bottom-2 duration-300"
           >
-            <h3 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mb-4.5 flex items-center gap-1.5 border-b border-slate-900 pb-2.5">
-              <Key className="w-3.5 h-3.5 text-blue-500" />
+            <h3 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mb-4.5 flex items-center gap-1.5 border-b border-white/[0.06] pb-2.5">
+              <Key className="w-3.5 h-3.5 text-violet-500" />
               <span>Establish Secure Session</span>
             </h3>
 
@@ -415,7 +477,7 @@ export default function RootEntryPage() {
                   type="text"
                   readOnly
                   value={selectedEmail}
-                  className="w-full p-2.5 bg-slate-950/80 border border-slate-900 rounded-xl text-xs text-slate-400 font-mono focus:outline-none"
+                  className="w-full p-2.5 bg-slate-950/80 border border-white/[0.06] rounded-xl text-xs text-slate-500 font-mono focus:outline-none"
                 />
               </div>
               
@@ -429,12 +491,12 @@ export default function RootEntryPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter vault passphrase"
-                    className="w-full p-2.5 bg-slate-950/80 border border-slate-850 focus:border-blue-500/60 rounded-xl text-xs text-white focus:outline-none font-mono tracking-widest pr-10"
+                    className="w-full p-2.5 bg-[#070A14] border border-white/[0.08] focus:border-violet-500/60 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 font-mono tracking-widest pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500 hover:text-slate-300 transition cursor-pointer"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500 hover:text-slate-350 transition cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -442,7 +504,7 @@ export default function RootEntryPage() {
               </div>
 
               {error && (
-                <div className="p-3 bg-red-950/15 border border-red-900/20 text-red-400 rounded-xl text-[10px] font-mono leading-normal flex gap-2 items-start">
+                <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl text-[10px] font-mono leading-normal flex gap-2 items-start shadow-[0_0_15px_rgba(251,113,133,0.1)]">
                   <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </div>
@@ -451,7 +513,7 @@ export default function RootEntryPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-mono font-black text-xs uppercase rounded-xl transition-all cursor-pointer shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 active:scale-[0.98]"
+                className="w-full py-2.5 bg-violet-600 hover:bg-violet-500 text-white font-mono font-bold text-xs uppercase rounded-xl transition-all cursor-pointer shadow-md hover:shadow-[0_0_20px_rgba(124,58,237,0.35)] flex items-center justify-center gap-2 active-press"
               >
                 {loading ? (
                   <span>Decrypting Keyring...</span>
@@ -469,3 +531,4 @@ export default function RootEntryPage() {
     </main>
   );
 }
+

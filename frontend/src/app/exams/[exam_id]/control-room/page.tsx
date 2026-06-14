@@ -326,8 +326,9 @@ export default function ExamControlRoom({ params }: { params: any }) {
   return (
     <div className="space-y-6">
       {/* Top Banner: Single Exam Control Room */}
-      <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
+      <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-violet-500 to-indigo-500" />
+        <div className="relative z-10">
           <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono uppercase font-bold">
             <span>Control Room</span>
             <span>•</span>
@@ -341,19 +342,19 @@ export default function ExamControlRoom({ params }: { params: any }) {
           </p>
         </div>
         
-        <div className="flex gap-3 shrink-0">
-          <div className="bg-slate-950 border border-slate-850 p-2.5 px-4 rounded-xl flex items-center gap-3 font-mono text-xs text-left">
+        <div className="flex gap-3 shrink-0 relative z-10">
+          <div className="bg-slate-950/60 border border-white/[0.04] p-2.5 px-4 rounded-xl flex items-center gap-3 font-mono text-xs text-left">
             <div>
               <span className="text-[8px] text-slate-500 font-bold uppercase tracking-wider block">Integrity Score</span>
               <span className="text-sm font-black text-white">{score} / 100</span>
             </div>
-            <div className={`w-2.5 h-2.5 rounded-full ${score >= 95 ? "bg-emerald-400" : "bg-red-400 animate-ping"}`} />
+            <div className={`w-2.5 h-2.5 rounded-full ${score >= 95 ? "bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-red-400 animate-ping"}`} />
           </div>
 
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 border border-slate-800 hover:bg-slate-800 rounded-xl text-slate-400 hover:text-white transition flex items-center font-mono text-xs gap-1.5 self-center"
+            className="p-2 border border-white/[0.08] hover:bg-white/[0.04] rounded-xl text-slate-400 hover:text-white transition flex items-center font-mono text-xs gap-1.5 self-center cursor-pointer active-press"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
             <span>Sync Control</span>
@@ -371,7 +372,7 @@ export default function ExamControlRoom({ params }: { params: any }) {
       />
 
       {/* Tab Navigation */}
-      <div className="flex border-b border-slate-900 overflow-x-auto pb-px scrollbar-thin">
+      <div className="flex border-b border-white/[0.06] overflow-x-auto pb-px scrollbar-thin">
         {[
           { id: "overview", label: "Overview", icon: Compass },
           { id: "setup", label: "Readiness Checklist", icon: FileCheck },
@@ -390,11 +391,11 @@ export default function ExamControlRoom({ params }: { params: any }) {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 py-2.5 px-4 text-xs font-mono font-bold border-b-2 tracking-wide uppercase transition shrink-0 cursor-pointer ${
                 isActive 
-                  ? "border-blue-500 text-white" 
-                  : "border-transparent text-slate-500 hover:text-slate-300"
+                  ? "border-violet-500 text-white bg-violet-500/[0.02]" 
+                  : "border-transparent text-slate-500 hover:text-slate-205 hover:bg-white/[0.02]"
               }`}
             >
-              <Icon className="w-3.5 h-3.5" />
+              <Icon className={`w-3.5 h-3.5 ${isActive ? "text-violet-400" : "text-slate-500"}`} />
               <span>{tab.label}</span>
             </button>
           );
@@ -410,54 +411,54 @@ export default function ExamControlRoom({ params }: { params: any }) {
             {/* Overview Stats Cards (8 cols) */}
             <div className="lg:col-span-8 space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-850 flex flex-col justify-between min-h-[90px]">
+                <div className="bg-slate-950/40 p-4 rounded-xl border border-white/[0.04] flex flex-col justify-between min-h-[90px] transition-all duration-300 glow-hover hover:border-violet-500/20">
                   <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Centers Registry</span>
                   <span className="text-2xl font-black text-white mt-1 font-mono">{summary?.stats.total_centers ?? 0}</span>
-                  <span className="text-[9px] text-slate-500">Node centers active</span>
+                  <span className="text-[9px] text-slate-500 font-mono font-bold uppercase">Node centers active</span>
                 </div>
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-850 flex flex-col justify-between min-h-[90px]">
+                <div className="bg-slate-950/40 p-4 rounded-xl border border-white/[0.04] flex flex-col justify-between min-h-[90px] transition-all duration-300 glow-hover hover:border-violet-500/20">
                   <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Verified Check-ins</span>
                   <span className="text-2xl font-black text-white mt-1 font-mono">
                     {summary?.stats.verified_candidates ?? 0} <span className="text-xs text-slate-500">/ {summary?.stats.total_candidates ?? 0}</span>
                   </span>
-                  <span className="text-[9px] text-slate-500">Biometric checks sync</span>
+                  <span className="text-[9px] text-slate-500 font-mono font-bold uppercase">Biometric checks sync</span>
                 </div>
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-850 flex flex-col justify-between min-h-[90px]">
+                <div className="bg-slate-950/40 p-4 rounded-xl border border-white/[0.04] flex flex-col justify-between min-h-[90px] transition-all duration-300 glow-hover hover:border-violet-500/20">
                   <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Scans Ingested</span>
                   <span className="text-2xl font-black text-white mt-1 font-mono">
                     {summary?.stats.submission_completed ?? 0} <span className="text-xs text-slate-500">OMR</span>
                   </span>
-                  <span className="text-[9px] text-slate-500">Chained receipt sheets</span>
+                  <span className="text-[9px] text-slate-500 font-mono font-bold uppercase">Chained receipt sheets</span>
                 </div>
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-850 flex flex-col justify-between min-h-[90px]">
+                <div className="bg-slate-950/40 p-4 rounded-xl border border-white/[0.04] flex flex-col justify-between min-h-[90px] transition-all duration-300 glow-hover hover:border-violet-500/20">
                   <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Active Incidents</span>
                   <span className={`text-2xl font-black mt-1 font-mono ${incidents.filter(i => i.status === "OPEN").length > 0 ? "text-red-400 animate-pulse" : "text-emerald-400"}`}>
                     {incidents.filter(i => i.status === "OPEN").length} open
                   </span>
-                  <span className="text-[9px] text-slate-500">Warnings flagged</span>
+                  <span className="text-[9px] text-slate-500 font-mono font-bold uppercase">Warnings flagged</span>
                 </div>
               </div>
 
               {/* Subsystems integrity grid */}
-              <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850">
+              <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg">
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-4 font-mono flex items-center gap-1.5">
-                  <Server className="w-4 h-4 text-emerald-400" />
+                  <Server className="w-4 h-4 text-violet-405" />
                   <span>Deployment Subsystems Health</span>
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-center text-xs">
-                  <div className="bg-slate-950/40 p-3 rounded-xl border border-slate-850">
+                  <div className="bg-slate-950/60 p-3 rounded-xl border border-white/[0.04]">
                     <span className="text-[9px] text-slate-500 font-bold uppercase block">Core Database</span>
                     <span className="text-emerald-400 font-bold mt-1.5 block">READY</span>
                   </div>
-                  <div className="bg-slate-950/40 p-3 rounded-xl border border-slate-850">
+                  <div className="bg-slate-950/60 p-3 rounded-xl border border-white/[0.04]">
                     <span className="text-[9px] text-slate-500 font-bold uppercase block">Redis Caching</span>
                     <span className="text-emerald-400 font-bold mt-1.5 block">ACTIVE</span>
                   </div>
-                  <div className="bg-slate-950/40 p-3 rounded-xl border border-slate-850">
+                  <div className="bg-slate-950/60 p-3 rounded-xl border border-white/[0.04]">
                     <span className="text-[9px] text-slate-500 font-bold uppercase block">Object Storage</span>
                     <span className="text-emerald-400 font-bold mt-1.5 block">READY</span>
                   </div>
-                  <div className="bg-slate-950/40 p-3 rounded-xl border border-slate-850">
+                  <div className="bg-slate-950/60 p-3 rounded-xl border border-white/[0.04]">
                     <span className="text-[9px] text-slate-500 font-bold uppercase block">Audit Ledger</span>
                     <span className="text-emerald-400 font-bold mt-1.5 block">INTACT</span>
                   </div>
@@ -466,16 +467,16 @@ export default function ExamControlRoom({ params }: { params: any }) {
             </div>
 
             {/* Right: Stepper Summary (4 cols) */}
-            <div className="lg:col-span-4 bg-slate-900 p-5 rounded-2xl border border-slate-850 flex flex-col justify-between">
+            <div className="lg:col-span-4 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg flex flex-col justify-between">
               <div>
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-3 font-mono">
                   Guided Stage steppers
                 </h3>
                 <LifecycleStepper stages={DEFAULT_STAGES.slice(0, 5)} activeSequence={STATE_SEQUENCE[examState]} />
               </div>
-              <div className="text-[10px] text-slate-500 font-mono border-t border-slate-850 pt-3 mt-4 flex justify-between">
+              <div className="text-[10px] text-slate-550 font-mono border-t border-white/[0.06] pt-3 mt-4 flex justify-between items-center">
                 <span>Active State: {examState}</span>
-                <button onClick={() => setActiveTab("setup")} className="text-blue-400 hover:underline">Readiness checklist →</button>
+                <button onClick={() => setActiveTab("setup")} className="text-violet-400 hover:text-violet-300 font-bold hover:underline cursor-pointer transition">Readiness checklist →</button>
               </div>
             </div>
           </div>
@@ -483,9 +484,9 @@ export default function ExamControlRoom({ params }: { params: any }) {
 
         {/* Tab 2: Setup Readiness Checklist */}
         {activeTab === "setup" && (
-          <div className="bg-slate-900 p-6 rounded-2xl border border-slate-850 shadow-lg space-y-6 animate-in fade-in duration-200">
+          <div className="bg-[#101524]/60 backdrop-blur-xl p-6 rounded-2xl border border-white/[0.06] shadow-lg space-y-6 animate-in fade-in duration-200">
             <div>
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 <span>Exam Launch Readiness Checklist</span>
               </h2>
@@ -496,61 +497,61 @@ export default function ExamControlRoom({ params }: { params: any }) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
               <div className="space-y-3">
-                <div className="p-3 bg-slate-950/50 rounded-xl border border-emerald-500/10 flex justify-between items-center">
-                  <div className="flex gap-2 items-center">
+                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-emerald-500/20 flex justify-between items-center shadow-[0_0_12px_rgba(16,185,129,0.02)]">
+                  <div className="flex gap-2.5 items-center">
                     <span className="text-emerald-400 font-bold">✓</span>
                     <div>
                       <span className="text-white font-bold block">Exam details added</span>
                       <span className="text-[9px] text-slate-500">Name and hybrid parameters locked</span>
                     </div>
                   </div>
-                  <span className="text-emerald-400 font-bold uppercase text-[10px]">Ready</span>
+                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Ready</span>
                 </div>
-                <div className="p-3 bg-slate-950/50 rounded-xl border border-emerald-500/10 flex justify-between items-center">
-                  <div className="flex gap-2 items-center">
+                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-emerald-500/20 flex justify-between items-center shadow-[0_0_12px_rgba(16,185,129,0.02)]">
+                  <div className="flex gap-2.5 items-center">
                     <span className="text-emerald-400 font-bold">✓</span>
                     <div>
                       <span className="text-white font-bold block">Integrity package selected</span>
                       <span className="text-[9px] text-slate-500">Authority Grade package active</span>
                     </div>
                   </div>
-                  <span className="text-emerald-400 font-bold uppercase text-[10px]">Ready</span>
+                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Ready</span>
                 </div>
-                <div className="p-3 bg-slate-950/50 rounded-xl border border-emerald-500/10 flex justify-between items-center">
-                  <div className="flex gap-2 items-center">
+                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-emerald-500/20 flex justify-between items-center shadow-[0_0_12px_rgba(16,185,129,0.02)]">
+                  <div className="flex gap-2.5 items-center">
                     <span className="text-emerald-400 font-bold">✓</span>
                     <div>
                       <span className="text-white font-bold block">Question bank ready</span>
                       <span className="text-[9px] text-slate-500">Question sets catalog sealed</span>
                     </div>
                   </div>
-                  <span className="text-emerald-400 font-bold uppercase text-[10px]">Ready</span>
+                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Ready</span>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <div className="p-3 bg-slate-950/50 rounded-xl border border-emerald-500/10 flex justify-between items-center">
-                  <div className="flex gap-2 items-center">
+                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-emerald-500/20 flex justify-between items-center shadow-[0_0_12px_rgba(16,185,129,0.02)]">
+                  <div className="flex gap-2.5 items-center">
                     <span className="text-emerald-400 font-bold">✓</span>
                     <div>
                       <span className="text-white font-bold block">Candidates imported</span>
                       <span className="text-[9px] text-slate-500">40,000 admit cards hashed</span>
                     </div>
                   </div>
-                  <span className="text-emerald-400 font-bold uppercase text-[10px]">Ready</span>
+                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Ready</span>
                 </div>
-                <div className="p-3 bg-slate-950/50 rounded-xl border border-emerald-500/10 flex justify-between items-center">
-                  <div className="flex gap-2 items-center">
+                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-emerald-500/20 flex justify-between items-center shadow-[0_0_12px_rgba(16,185,129,0.02)]">
+                  <div className="flex gap-2.5 items-center">
                     <span className="text-emerald-400 font-bold">✓</span>
                     <div>
                       <span className="text-white font-bold block">Centers assigned</span>
                       <span className="text-[9px] text-slate-500">80 center nodes mapped</span>
                     </div>
                   </div>
-                  <span className="text-emerald-400 font-bold uppercase text-[10px]">Ready</span>
+                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Ready</span>
                 </div>
-                <div className="p-3 bg-slate-950/50 rounded-xl border border-slate-800 flex justify-between items-center">
-                  <div className="flex gap-2 items-center">
+                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-white/[0.04] flex justify-between items-center">
+                  <div className="flex gap-2.5 items-center">
                     <span className="text-slate-600 font-bold">•</span>
                     <div>
                       <span className="text-slate-400 font-semibold block">Center packages sealed</span>
@@ -559,7 +560,7 @@ export default function ExamControlRoom({ params }: { params: any }) {
                   </div>
                   <button 
                     onClick={() => handleTransition("PACKAGE_SEALED")}
-                    className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-[10px] uppercase font-bold"
+                    className="px-3 py-1.5 bg-violet-600 hover:bg-violet-550 hover:shadow-[0_0_12px_rgba(124,58,237,0.3)] text-white rounded-lg text-[9px] uppercase font-bold tracking-wider font-mono cursor-pointer transition active-press"
                   >
                     Seal Envelopes
                   </button>
@@ -573,13 +574,13 @@ export default function ExamControlRoom({ params }: { params: any }) {
         {activeTab === "centers" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-200">
             {/* Left: Centers Table (7 cols) */}
-            <div className="lg:col-span-7 bg-glass p-5 rounded-2xl border border-slate-900/60 shadow-lg space-y-4">
+            <div className="lg:col-span-7 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-4">
               <div>
                 <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
-                  <Users className="w-4 h-4 text-blue-400" />
+                  <Users className="w-4 h-4 text-violet-400 animate-pulse" />
                   <span>Center Nodes & Seating Registries</span>
                 </h2>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 mt-1 font-sans">
                   Select a center node to inspect its live physical seating map.
                 </p>
               </div>
@@ -587,7 +588,7 @@ export default function ExamControlRoom({ params }: { params: any }) {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs font-mono">
                   <thead>
-                    <tr className="border-b border-slate-900/60 text-slate-500">
+                    <tr className="border-b border-white/[0.06] text-slate-500">
                       <th className="py-2.5 px-3">Center ID</th>
                       <th className="py-2.5 px-3">Key Release</th>
                       <th className="py-2.5 px-3">Verified Present</th>
@@ -595,7 +596,7 @@ export default function ExamControlRoom({ params }: { params: any }) {
                       <th className="py-2.5 px-3 text-right">Node status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-900/50 text-slate-350">
+                  <tbody className="divide-y divide-white/[0.02] text-slate-350">
                     {summary?.centers.map((c: any) => {
                       const isSelected = selectedCenter === c.center_id;
                       return (
@@ -605,8 +606,8 @@ export default function ExamControlRoom({ params }: { params: any }) {
                             setSelectedCenter(c.center_id);
                             setHoveredSeat(null);
                           }}
-                          className={`hover:bg-slate-900/20 cursor-pointer transition ${
-                            isSelected ? "bg-blue-950/20 border-l-2 border-blue-500 font-bold" : ""
+                          className={`hover:bg-white/[0.02] cursor-pointer transition ${
+                            isSelected ? "bg-violet-500/[0.06] border-l-2 border-violet-500 font-bold text-violet-300" : ""
                           }`}
                         >
                           <td className="py-3.5 px-3 text-white">{c.center_id}</td>
@@ -617,7 +618,7 @@ export default function ExamControlRoom({ params }: { params: any }) {
                             }`}>{c.package_status}</span>
                           </td>
                           <td className="py-3.5 px-3 text-slate-300">{c.verified_candidates} present</td>
-                          <td className="py-3.5 px-3 text-red-400">{c.unresolved_incidents} active</td>
+                          <td className="py-3.5 px-3 text-rose-400">{c.unresolved_incidents} active</td>
                           <td className="py-3.5 px-3 text-right">
                             <StatusBadge status={c.status} />
                           </td>
@@ -630,11 +631,11 @@ export default function ExamControlRoom({ params }: { params: any }) {
             </div>
 
             {/* Right: Seating Map Grid (5 cols) */}
-            <div className="lg:col-span-5 bg-glass p-5 rounded-2xl border border-slate-900/60 shadow-lg flex flex-col justify-between min-h-[420px]">
+            <div className="lg:col-span-5 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg flex flex-col justify-between min-h-[420px]">
               <div>
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">Live telemetry feed</span>
-                  <span className="text-[10px] text-cyan-405 font-mono font-bold uppercase">{selectedCenter} Map</span>
+                  <span className="text-[10px] text-violet-400 font-mono font-bold uppercase">{selectedCenter} Map</span>
                 </div>
                 
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono mb-4">
@@ -642,7 +643,7 @@ export default function ExamControlRoom({ params }: { params: any }) {
                 </h3>
 
                 {/* Grid */}
-                <div className="grid grid-cols-8 gap-2 bg-slate-950/60 p-4 border border-slate-900 rounded-2xl">
+                <div className="grid grid-cols-8 gap-2 bg-slate-950/60 p-4 border border-white/[0.04] rounded-2xl shadow-inner">
                   {Array.from({ length: 48 }).map((_, i) => {
                     // Deterministic state generator for mock layout
                     const val = (i * 7 + selectedCenter.charCodeAt(selectedCenter.length - 1)) % 10;
@@ -662,10 +663,10 @@ export default function ExamControlRoom({ params }: { params: any }) {
                       }
                     };
 
-                    let dotColor = "bg-slate-800 border-slate-900";
+                    let dotColor = "bg-slate-900 border-white/[0.04]";
                     if (status === "verified") dotColor = "bg-emerald-500 shadow-glow-emerald border-emerald-400/30";
-                    else if (status === "inprogress") dotColor = "bg-blue-500 shadow-glow-blue border-blue-400/30";
-                    else if (status === "anomaly") dotColor = "bg-red-500 shadow-glow-red animate-pulse border-red-400/30";
+                    else if (status === "inprogress") dotColor = "bg-violet-500 shadow-glow-violet border-violet-400/30";
+                    else if (status === "anomaly") dotColor = "bg-red-500 shadow-glow-rose animate-pulse border-red-400/30";
 
                     return (
                       <div 
@@ -681,45 +682,45 @@ export default function ExamControlRoom({ params }: { params: any }) {
                 </div>
 
                 {/* Legend */}
-                <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[9px] text-slate-500 px-1 border-b border-slate-900/60 pb-3">
+                <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[9px] text-slate-500 px-1 border-b border-white/[0.04] pb-3">
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-glow-emerald" />
                     <span>Verified</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-blue-500 shadow-glow-blue" />
+                    <span className="w-2 h-2 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
                     <span>Verifying</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-red-500 shadow-glow-red animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse" />
                     <span>Anomaly</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-slate-800" />
+                    <span className="w-2 h-2 rounded-full bg-slate-900" />
                     <span>Absent</span>
                   </div>
                 </div>
               </div>
 
               {/* Inspector Card */}
-              <div className="mt-4 bg-slate-950/40 border border-slate-900 p-4.5 rounded-xl min-h-[105px] flex flex-col justify-center font-mono">
+              <div className="mt-4 bg-slate-950/60 border border-white/[0.04] p-4.5 rounded-xl min-h-[105px] flex flex-col justify-center font-mono">
                 {hoveredSeat ? (
                   <div className="text-[10px] space-y-1 animate-in fade-in duration-150">
-                    <div className="flex justify-between border-b border-slate-900 pb-1">
+                    <div className="flex justify-between border-b border-white/[0.02] pb-1">
                       <span className="text-slate-500">Seat Node:</span>
                       <span className="text-white font-bold">#{hoveredSeat.id}</span>
                     </div>
-                    <div className="flex justify-between border-b border-slate-900 pb-1">
+                    <div className="flex justify-between border-b border-white/[0.02] pb-1">
                       <span className="text-slate-500">Candidate:</span>
                       <span className="text-slate-250 font-semibold">{hoveredSeat.candidate.name}</span>
                     </div>
-                    <div className="flex justify-between border-b border-slate-900 pb-1">
+                    <div className="flex justify-between border-b border-white/[0.02] pb-1">
                       <span className="text-slate-500">Roll Reg:</span>
                       <span className="text-slate-250">{hoveredSeat.candidate.roll}</span>
                     </div>
-                    <div className="flex justify-between border-b border-slate-900 pb-1">
+                    <div className="flex justify-between border-b border-white/[0.02] pb-1">
                       <span className="text-slate-500">Biometrics:</span>
-                      <span className={`font-bold ${hoveredSeat.status === "verified" ? "text-emerald-450" : hoveredSeat.status === "anomaly" ? "text-red-400" : "text-blue-400"}`}>
+                      <span className={`font-bold ${hoveredSeat.status === "verified" ? "text-emerald-450" : hoveredSeat.status === "anomaly" ? "text-red-400" : "text-violet-400"}`}>
                         {hoveredSeat.candidate.biometrics}
                       </span>
                     </div>
@@ -740,11 +741,11 @@ export default function ExamControlRoom({ params }: { params: any }) {
 
         {/* Tab 4: Question & Paper */}
         {activeTab === "paper" && (
-          <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg space-y-6 animate-in fade-in duration-200">
+          <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-6 animate-in fade-in duration-200">
             <div className="flex justify-between items-start">
               <div>
                 <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
-                  <Key className="w-4 h-4 text-violet-400" />
+                  <Key className="w-4 h-4 text-violet-400 animate-pulse" />
                   <span>Secure Paper Sets & Blueprints</span>
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
@@ -753,14 +754,14 @@ export default function ExamControlRoom({ params }: { params: any }) {
               </div>
               <button 
                 onClick={() => handleTransition("PAPER_GENERATED")}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold font-mono uppercase"
+                className="px-3 py-1.5 bg-violet-600 hover:bg-violet-550 hover:shadow-[0_0_12px_rgba(124,58,237,0.3)] text-white rounded-lg text-xs font-bold font-mono uppercase cursor-pointer active-press transition"
               >
                 Generate Paper sets
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-mono">
-              <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-850 space-y-3">
+              <div className="p-4.5 bg-slate-950/40 rounded-xl border border-white/[0.04] space-y-3">
                 <span className="text-[9px] text-slate-500 uppercase font-bold block">Subject Distribution Blueprint</span>
                 <div className="space-y-2">
                   <div className="flex justify-between">
@@ -778,20 +779,20 @@ export default function ExamControlRoom({ params }: { params: any }) {
                 </div>
               </div>
 
-              <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-850 space-y-3">
+              <div className="p-4.5 bg-slate-950/40 rounded-xl border border-white/[0.04] space-y-3">
                 <span className="text-[9px] text-slate-500 uppercase font-bold block">Generated Paper Sets</span>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span>Set A (Alpha)</span>
-                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] border border-emerald-500/20 font-bold uppercase">Sealed</span>
+                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] border border-emerald-500/20 font-bold uppercase shadow-[0_0_8px_rgba(16,185,129,0.05)]">Sealed</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Set B (Beta)</span>
-                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] border border-emerald-500/20 font-bold uppercase">Sealed</span>
+                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] border border-emerald-500/20 font-bold uppercase shadow-[0_0_8px_rgba(16,185,129,0.05)]">Sealed</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Set C (Gamma)</span>
-                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] border border-emerald-500/20 font-bold uppercase">Sealed</span>
+                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] border border-emerald-500/20 font-bold uppercase shadow-[0_0_8px_rgba(16,185,129,0.05)]">Sealed</span>
                   </div>
                 </div>
               </div>
@@ -804,30 +805,30 @@ export default function ExamControlRoom({ params }: { params: any }) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-200">
             {/* Live incident responder (8 cols) */}
             <div className="lg:col-span-8 space-y-6">
-              <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg space-y-4">
-                <h3 className="text-xs font-bold text-red-400 uppercase tracking-wider font-mono flex items-center gap-1.5">
-                  <AlertTriangle className="w-4 h-4 text-red-500" />
+              <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-4">
+                <h3 className="text-xs font-bold text-rose-455 uppercase tracking-wider font-mono flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-rose-500 animate-bounce" />
                   <span>Active Security Incidents</span>
                 </h3>
 
                 <div className="space-y-3">
                   {incidents.filter(i => i.status === "OPEN").length === 0 ? (
-                    <div className="text-center py-8 text-slate-500 font-mono text-xs border border-dashed border-slate-850 rounded-xl">
+                    <div className="text-center py-8 text-slate-500 font-mono text-xs border border-dashed border-white/[0.06] rounded-xl bg-slate-950/20">
                       🟢 ALL NODE CHANNELS SECURE. NO ACTIVE ALERTS REPORTED.
                     </div>
                   ) : (
                     incidents.filter(i => i.status === "OPEN").map(inc => (
-                      <div key={inc.incident_id} className="p-4 rounded-xl bg-slate-950 border border-red-500/20 flex justify-between items-center gap-4 text-xs font-mono">
+                      <div key={inc.incident_id} className="p-4.5 rounded-xl bg-slate-950/80 border border-rose-500/20 shadow-[0_0_15px_rgba(239,68,68,0.02)] flex justify-between items-center gap-4 text-xs font-mono">
                         <div>
                           <div className="flex items-center gap-2 font-bold">
-                            <span className="bg-red-500/10 text-red-400 border border-red-500/25 px-1.5 py-0.2 rounded text-[8px]">{inc.severity}</span>
+                            <span className="bg-red-500/10 text-red-450 border border-red-500/25 px-1.5 py-0.2 rounded text-[8px]">{inc.severity}</span>
                             <span className="text-white">{inc.incident_type}</span>
                           </div>
                           <p className="text-slate-400 mt-1.5 font-sans leading-normal">{inc.description}</p>
                         </div>
                         <button 
                           onClick={() => handleResolveIncident(inc.incident_id)}
-                          className="px-2.5 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded uppercase text-[10px]"
+                          className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-450 hover:shadow-[0_0_12px_rgba(16,185,129,0.3)] text-slate-950 font-bold rounded-lg uppercase text-[10px] cursor-pointer transition active-press"
                         >
                           Resolve
                         </button>
@@ -839,17 +840,17 @@ export default function ExamControlRoom({ params }: { params: any }) {
             </div>
 
             {/* Logs console (4 cols) */}
-            <div className="lg:col-span-4 bg-slate-900 p-5 rounded-2xl border border-slate-850 flex flex-col justify-between h-[240px]">
+            <div className="lg:col-span-4 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg flex flex-col justify-between h-[240px]">
               <div>
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5 mb-2">
-                  <Cpu className="w-4 h-4 text-slate-400" />
+                  <Cpu className="w-4 h-4 text-slate-500" />
                   <span>Operations Console</span>
                 </h3>
                 <p className="text-[11px] text-slate-500 leading-relaxed font-sans mb-3">
                   Live diagnostics and key releases logged during the exam window.
                 </p>
               </div>
-              <div className="bg-slate-950 border border-slate-850 p-3 rounded-xl font-mono text-[9px] text-[#00ff66]/80 flex-1 overflow-y-auto space-y-1">
+              <div className="bg-slate-950/90 border border-white/[0.04] p-3 rounded-xl font-mono text-[9px] text-[#00ff66]/80 flex-1 overflow-y-auto space-y-1 shadow-inner scrollbar-thin">
                 <div>[INIT] Decryption keys sealed in HSM storage.</div>
                 <div>[AUTH] Dual custody keys check completed.</div>
                 <div>[OK] Centers node handshake validated.</div>
@@ -864,10 +865,10 @@ export default function ExamControlRoom({ params }: { params: any }) {
             {/* Left columns (8 cols) */}
             <div className="lg:col-span-8 space-y-6">
               {/* Grading modules */}
-              <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg">
+              <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg">
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-4 font-mono">Evaluation Modules</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
-                  <Link href="/evaluator/queue" className="p-4 bg-slate-950/40 rounded-xl border border-slate-850 hover:border-slate-700 transition flex justify-between items-center group">
+                  <Link href="/evaluator/queue" className="p-4 bg-slate-950/40 rounded-xl border border-white/[0.04] hover:border-violet-550/20 hover:shadow-[0_0_15px_rgba(124,58,237,0.05)] transition flex justify-between items-center group">
                     <div>
                       <span className="text-slate-200 font-bold block">Anonymous Grading queue</span>
                       <span className="text-[9px] text-slate-500 block mt-1">Assign booklet copies to evaluators</span>
@@ -875,7 +876,7 @@ export default function ExamControlRoom({ params }: { params: any }) {
                     <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400" />
                   </Link>
 
-                  <Link href="/evaluation-conflicts" className="p-4 bg-slate-950/40 rounded-xl border border-slate-850 hover:border-slate-700 transition flex justify-between items-center group">
+                  <Link href="/evaluation-conflicts" className="p-4 bg-slate-950/40 rounded-xl border border-white/[0.04] hover:border-violet-550/20 hover:shadow-[0_0_15px_rgba(124,58,237,0.05)] transition flex justify-between items-center group">
                     <div>
                       <span className="text-slate-200 font-bold block">Reconcile Score Variance</span>
                       <span className="text-[9px] text-slate-500 block mt-1">Override double evaluation conflicts</span>
@@ -887,7 +888,7 @@ export default function ExamControlRoom({ params }: { params: any }) {
             </div>
 
             {/* Right: stats (4 cols) */}
-            <div className="lg:col-span-4 bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg space-y-4">
+            <div className="lg:col-span-4 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-4">
               <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Grading Status</h3>
               <div className="space-y-2.5 font-mono text-xs text-slate-400">
                 <div className="flex justify-between">
@@ -911,7 +912,7 @@ export default function ExamControlRoom({ params }: { params: any }) {
         {activeTab === "results" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-200">
             {/* Safety check list (8 cols) */}
-            <div className="lg:col-span-8 bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg space-y-4">
+            <div className="lg:col-span-8 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-4">
               <div>
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Result Safety Release Check</h3>
                 <p className="text-[11px] text-slate-500 mt-1 font-sans">
@@ -919,12 +920,12 @@ export default function ExamControlRoom({ params }: { params: any }) {
                 </p>
               </div>
 
-              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
                 {gateStatus?.checklist.map((item: any, idx: number) => (
                   <div 
                     key={idx} 
-                    className={`p-3 rounded-xl border flex items-center justify-between gap-4 font-mono text-xs ${
-                      item.passed ? "border-emerald-500/15 bg-emerald-500/2" : "border-red-500/15 bg-red-500/2"
+                    className={`p-3.5 bg-slate-950/40 rounded-xl border flex items-center justify-between gap-4 font-mono text-xs hover:border-white/[0.08] transition ${
+                      item.passed ? "border-emerald-500/15 bg-emerald-500/[0.01]" : "border-red-500/15 bg-red-500/[0.01]"
                     }`}
                   >
                     <div>
@@ -940,15 +941,15 @@ export default function ExamControlRoom({ params }: { params: any }) {
             </div>
 
             {/* Verdict card (4 cols) */}
-            <div className="lg:col-span-4 bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg flex flex-col justify-between min-h-[280px]">
+            <div className="lg:col-span-4 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg flex flex-col justify-between min-h-[280px]">
               <div>
                 <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider font-mono">Safety Verdict</span>
                 <h4 className={`text-xl font-black tracking-tight mt-1 uppercase ${
-                  gateStatus?.allowed ? "text-emerald-400" : "text-red-400"
+                  gateStatus?.allowed ? "text-emerald-400" : "text-red-400 animate-pulse"
                 }`}>
                   {gateStatus?.allowed ? "🔓 Gate Approved" : "🔒 Locked / Blocked"}
                 </h4>
-                <p className="text-[11px] text-slate-500 font-sans mt-3 leading-relaxed">
+                <p className="text-[11px] text-slate-505 font-sans mt-3 leading-relaxed">
                   {gateStatus?.allowed 
                     ? "Verify and sign the final results block to release grades to the Candidate Portal." 
                     : "The gate has locked the release keyspace. Check the failed checklist items to proceed."}
@@ -958,10 +959,10 @@ export default function ExamControlRoom({ params }: { params: any }) {
               <button
                 onClick={() => handleTransition("RESULT_PUBLISHED")}
                 disabled={!gateStatus?.allowed || actioning}
-                className={`w-full py-2.5 rounded-lg font-mono font-black text-xs uppercase transition tracking-wider ${
+                className={`w-full py-3.5 rounded-xl font-mono font-black text-xs uppercase transition-all duration-300 tracking-wider ${
                   gateStatus?.allowed 
-                    ? "bg-emerald-500 text-slate-950 hover:bg-emerald-450" 
-                    : "bg-slate-800 text-slate-500 border border-slate-850 cursor-not-allowed"
+                    ? "bg-emerald-500 text-slate-950 hover:bg-emerald-400 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer active-press" 
+                    : "bg-slate-800 text-slate-550 border border-white/[0.03] cursor-not-allowed"
                 }`}
               >
                 {actioning ? "Publishing..." : "Publish verified results"}
@@ -972,30 +973,30 @@ export default function ExamControlRoom({ params }: { params: any }) {
 
         {/* Tab 8: Evidence Timeline */}
         {activeTab === "audit" && (
-          <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg space-y-6 animate-in fade-in duration-200">
+          <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-6 animate-in fade-in duration-200">
             <div>
               <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
-                <History className="w-4 h-4 text-cyan-400" />
+                <History className="w-4 h-4 text-violet-400 animate-pulse" />
                 <span>Verifiable Evidence Ledger Blocks</span>
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-550 mt-1">
                 Inspect chained hashes block by block. Click any record to expand cryptographic signatures.
               </p>
             </div>
 
-            <div className="relative pl-6 border-l border-slate-850 space-y-4 ml-2.5 font-mono text-xs">
+            <div className="relative pl-6 border-l border-white/[0.06] space-y-4 ml-2.5 font-mono text-xs">
               {timeline.slice(0, 4).map((block) => (
                 <div
                   key={block.index}
                   onClick={() => handleBlockClick(block)}
-                  className="bg-slate-950/40 p-4.5 rounded-xl border border-slate-850 cursor-pointer hover:border-slate-700 transition relative flex flex-col gap-2 hover:shadow-lg hover:shadow-black/20"
+                  className="bg-slate-950/60 p-4.5 rounded-xl border border-white/[0.04] cursor-pointer hover:border-violet-500/25 transition relative flex flex-col gap-2 hover:shadow-[0_0_15px_rgba(124,58,237,0.05)] glow-hover"
                 >
                   {/* Dot */}
-                  <span className="absolute left-[-29px] top-[22px] w-3 h-3 rounded-full bg-cyan-400 border-2 border-slate-950" />
+                  <span className="absolute left-[-29px] top-[22px] w-3 h-3 rounded-full bg-violet-550 border-2 border-slate-950 shadow-[0_0_6px_rgba(139,92,246,0.6)]" />
                   
                   <div className="flex justify-between items-center flex-wrap gap-2 text-[11px]">
                     <div className="flex items-center gap-2">
-                      <span className="text-white font-extrabold uppercase text-[9px] px-1.5 py-0.2 bg-slate-900 rounded border border-slate-850">
+                      <span className="text-white font-extrabold uppercase text-[9px] px-1.5 py-0.2 bg-slate-900 rounded border border-white/[0.06]">
                         Block #{block.index}
                       </span>
                       <span className="text-white font-bold text-xs uppercase tracking-wide">

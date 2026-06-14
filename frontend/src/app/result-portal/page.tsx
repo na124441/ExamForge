@@ -55,26 +55,28 @@ export default function ResultPortal() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-6 font-sans select-none selection:bg-emerald-600/30">
-      <div className="max-w-md w-full bg-slate-900 p-8 rounded-2xl border border-slate-850 shadow-2xl flex flex-col gap-6 backdrop-blur-md relative overflow-hidden">
+    <div className="min-h-screen bg-[#070A14] text-slate-100 flex flex-col justify-center items-center p-6 font-sans select-none relative overflow-hidden selection:bg-emerald-600/30">
+      <div className="glow-radial-canvas" />
+      
+      <div className="max-w-md w-full bg-[#101524]/60 p-8 rounded-2xl border border-white/[0.06] shadow-2xl flex flex-col gap-6 backdrop-blur-xl relative overflow-hidden z-10">
         
         {/* Top green glow accent */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500" />
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500" />
 
         {/* Back Link */}
         <div className="flex justify-between items-center text-xs font-mono">
-          <Link href="/" className="text-slate-500 hover:text-slate-300 transition flex items-center gap-1">
+          <Link href="/" className="text-slate-500 hover:text-slate-350 transition flex items-center gap-1 hover:underline">
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Simulators Portal</span>
           </Link>
-          <span className="text-[9px] px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded uppercase font-bold tracking-wider">
+          <span className="text-[9px] px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded uppercase font-bold tracking-wider shadow-[0_0_8px_rgba(52,211,153,0.05)]">
             Candidate Gate
           </span>
         </div>
 
         {/* Header */}
         <div className="text-center mt-2">
-          <div className="mx-auto w-12 h-12 rounded-full bg-slate-950 border border-slate-800 flex items-center justify-center text-2xl mb-3">
+          <div className="mx-auto w-12 h-12 rounded-full bg-slate-950/60 border border-white/[0.06] flex items-center justify-center text-2xl mb-3 shadow-inner">
             🎓
           </div>
           <h1 className="text-xl font-black text-white tracking-tight">Candidate Result Portal</h1>
@@ -87,7 +89,7 @@ export default function ResultPortal() {
         {!result && (
           <form onSubmit={handleLookup} className="flex flex-col gap-4 text-xs font-mono">
             <div>
-              <label className="block text-slate-400 mb-1 font-bold uppercase tracking-wider text-[9px]">
+              <label className="block text-slate-450 mb-1 font-bold uppercase tracking-wider text-[9px]">
                 Registration Number
               </label>
               <input
@@ -95,12 +97,12 @@ export default function ResultPortal() {
                 placeholder="e.g. REG-6000"
                 value={regNum}
                 onChange={(e) => setRegNum(e.target.value)}
-                className="w-full p-2.5 bg-slate-950 border border-slate-850 rounded-lg focus:border-emerald-500 focus:outline-none text-white font-mono"
+                className="w-full p-2.5 bg-slate-950/60 border border-white/[0.06] rounded-lg focus:border-emerald-500/80 focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] focus:outline-none text-white font-mono transition"
               />
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1 font-bold uppercase tracking-wider text-[9px]">
+              <label className="block text-slate-450 mb-1 font-bold uppercase tracking-wider text-[9px]">
                 Examination ID
               </label>
               <input
@@ -108,12 +110,12 @@ export default function ResultPortal() {
                 placeholder="e.g. EXM-001"
                 value={examId}
                 onChange={(e) => setExamId(e.target.value)}
-                className="w-full p-2.5 bg-slate-950 border border-slate-850 rounded-lg focus:border-emerald-500 focus:outline-none text-white font-mono"
+                className="w-full p-2.5 bg-slate-950/60 border border-white/[0.06] rounded-lg focus:border-emerald-500/80 focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] focus:outline-none text-white font-mono transition"
               />
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1 font-bold uppercase tracking-wider text-[9px]">
+              <label className="block text-slate-450 mb-1 font-bold uppercase tracking-wider text-[9px]">
                 Verification PIN
               </label>
               <input
@@ -121,13 +123,13 @@ export default function ResultPortal() {
                 placeholder="Enter key PIN"
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
-                className="w-full p-2.5 bg-slate-950 border border-slate-850 rounded-lg focus:border-emerald-500 focus:outline-none text-white font-mono tracking-widest"
+                className="w-full p-2.5 bg-slate-950/60 border border-white/[0.06] rounded-lg focus:border-emerald-500/80 focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] focus:outline-none text-white font-mono tracking-widest transition"
               />
             </div>
 
             {error && (
-              <div className="p-3 bg-red-950/15 border border-red-900/20 text-red-400 rounded-lg text-[10px] leading-relaxed flex gap-2 items-start font-mono">
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <div className="p-3 bg-red-955/15 border border-red-500/20 text-red-400 rounded-lg text-[10px] leading-relaxed flex gap-2 items-start font-mono">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
                 <span>{error}</span>
               </div>
             )}
@@ -135,7 +137,7 @@ export default function ResultPortal() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-emerald-500 text-slate-950 font-black rounded-lg hover:bg-emerald-400 transition cursor-pointer text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10"
+              className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-450 text-slate-950 font-black rounded-lg transition-all duration-300 cursor-pointer text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10 active-press"
             >
               {loading ? "Decrypting Ledger..." : "Search & Verify Result"}
             </button>
@@ -147,8 +149,8 @@ export default function ResultPortal() {
           <div className="space-y-5 animate-in fade-in zoom-in-95 duration-250">
             
             {/* Score Sheet */}
-            <div className="bg-slate-950/50 p-5 rounded-2xl border border-slate-850 space-y-4">
-              <div className="flex justify-between items-center border-b border-slate-850 pb-3">
+            <div className="bg-slate-950/60 p-5 rounded-2xl border border-white/[0.04] space-y-4 shadow-inner">
+              <div className="flex justify-between items-center border-b border-white/[0.04] pb-3">
                 <div>
                   <span className="text-[9px] text-slate-500 font-mono uppercase tracking-wider block">Candidate Identity</span>
                   <span className="text-xs font-bold font-mono text-white">{result.candidate_anonymous_id}</span>
@@ -162,17 +164,17 @@ export default function ResultPortal() {
               </div>
 
               <div className="grid grid-cols-3 gap-2 text-center py-2 font-mono">
-                <div className="p-2 bg-slate-950 rounded-xl border border-slate-900">
+                <div className="p-2 bg-[#101524]/60 rounded-xl border border-white/[0.06] shadow-sm">
                   <span className="text-[9px] text-slate-500 block">Score</span>
                   <span className="text-sm font-black text-white">{result.marks_obtained}</span>
                   <span className="text-[8px] text-slate-600 block mt-0.5">/ {result.max_marks}</span>
                 </div>
-                <div className="p-2 bg-slate-950 rounded-xl border border-slate-900">
+                <div className="p-2 bg-[#101524]/60 rounded-xl border border-white/[0.06] shadow-sm">
                   <span className="text-[9px] text-slate-500 block">Rank</span>
                   <span className="text-sm font-black text-white">#{result.rank}</span>
                   <span className="text-[8px] text-slate-600 block mt-0.5">National</span>
                 </div>
-                <div className="p-2 bg-slate-950 rounded-xl border border-slate-900">
+                <div className="p-2 bg-[#101524]/60 rounded-xl border border-white/[0.06] shadow-sm">
                   <span className="text-[9px] text-slate-500 block">Verdict</span>
                   <span className="text-xs font-black text-emerald-400 uppercase mt-0.5 block">
                     {result.status === "FINAL" ? "FINALIZED" : "DRAFT"}
@@ -183,7 +185,7 @@ export default function ResultPortal() {
             </div>
 
             {/* Human Friendly verification card */}
-            <div className="p-4 bg-emerald-500/5 border border-emerald-500/15 rounded-2xl space-y-3">
+            <div className="p-4 bg-emerald-500/[0.02] border border-emerald-500/20 rounded-2xl space-y-3 shadow-[0_0_15px_rgba(52,211,153,0.02)]">
               <div className="flex items-start gap-2.5 text-xs text-slate-300">
                 <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
@@ -219,7 +221,7 @@ export default function ResultPortal() {
             <div className="flex flex-col gap-2 font-mono text-xs">
               <Link 
                 href={`/result-integrity/${result.result_id}`} 
-                className="w-full flex items-center justify-between p-3 bg-slate-950 border border-slate-850 hover:border-emerald-500/30 text-slate-200 rounded-xl transition group"
+                className="w-full flex items-center justify-between p-3 bg-slate-950/40 border border-white/[0.06] hover:border-emerald-500/30 text-slate-200 rounded-xl transition group hover:shadow-[0_0_15px_rgba(52,211,153,0.03)]"
               >
                 <div className="flex items-center gap-2">
                   <FileCheck className="w-4 h-4 text-slate-400 group-hover:text-emerald-400" />
@@ -230,7 +232,7 @@ export default function ResultPortal() {
 
               <Link 
                 href={`/result-versions/${result.result_id}`}
-                className="w-full flex items-center justify-between p-3 bg-slate-950 border border-slate-850 hover:border-emerald-500/30 text-slate-200 rounded-xl transition group"
+                className="w-full flex items-center justify-between p-3 bg-slate-950/40 border border-white/[0.06] hover:border-emerald-500/30 text-slate-200 rounded-xl transition group hover:shadow-[0_0_15px_rgba(52,211,153,0.03)]"
               >
                 <div className="flex items-center gap-2">
                   <Lock className="w-4 h-4 text-slate-400 group-hover:text-emerald-400" />
@@ -241,7 +243,7 @@ export default function ResultPortal() {
 
               <Link 
                 href="/disputes/file" 
-                className="w-full text-center py-2.5 bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 text-amber-400 rounded-xl font-bold transition font-sans text-[11px]"
+                className="w-full text-center py-2.5 bg-amber-500/[0.03] border border-amber-500/20 hover:bg-amber-500/10 text-amber-400 rounded-xl font-bold transition font-sans text-[11px] hover:shadow-[0_0_15px_rgba(245,158,11,0.03)]"
               >
                 ⚠️ File a Recheck Dispute Claim
               </Link>

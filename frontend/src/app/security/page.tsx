@@ -112,22 +112,22 @@ export default function SecurityOverviewPage() {
   return (
     <div className="space-y-6">
       {/* Sub-Header */}
-      <div className="flex justify-between items-center bg-slate-900/40 p-4 rounded-xl border border-slate-900/60 backdrop-blur-md">
+      <div className="flex justify-between items-center bg-[#101524]/60 backdrop-blur-xl p-4 rounded-xl border border-white/[0.06] shadow-lg">
         <div>
           <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
             <span>Security Command Center</span>
-            <span className="text-[9px] px-2 py-0.5 bg-red-600/10 border border-red-500/20 text-red-400 rounded uppercase font-mono font-bold tracking-widest">
+            <span className="text-[9px] px-2 py-0.5 bg-red-600/10 border border-red-500/20 text-red-400 rounded uppercase font-mono font-bold tracking-widest shadow-[0_0_8px_rgba(239,68,68,0.05)]">
               Security Hub
             </span>
           </h1>
-          <p className="text-[11px] text-slate-500 mt-0.5">
+          <p className="text-[11px] text-slate-500 mt-0.5 font-mono">
             Real-time verification of keyspaces, threat mitigation status, and compliance levels.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push("/authority")}
-            className="text-xs px-3 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white rounded-lg transition"
+            className="text-xs px-3 py-2 bg-slate-950/60 hover:bg-slate-900 border border-white/[0.08] hover:border-white/[0.15] text-white rounded-lg transition cursor-pointer"
           >
             🏢 Authority Console
           </button>
@@ -137,13 +137,13 @@ export default function SecurityOverviewPage() {
       {/* Row 1: High Level Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Compliance Readiness Card */}
-        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-850 flex flex-col justify-between min-h-[150px] shadow-lg">
+        <div className="bg-[#101524]/60 backdrop-blur-xl p-6 rounded-2xl border border-white/[0.06] flex flex-col justify-between min-h-[150px] shadow-lg">
           <div>
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Compliance readiness</span>
             <div className="text-3xl font-black text-white mt-1 font-mono">{score}%</div>
           </div>
           <div className="flex items-center gap-2.5 mt-4">
-            <span className={`w-2 h-2 rounded-full ${score >= 90 ? "bg-emerald-400 animate-pulse" : score >= 70 ? "bg-amber-400" : "bg-red-400 animate-ping"}`}></span>
+            <span className={`w-2.5 h-2.5 rounded-full ${score >= 90 ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)] animate-pulse" : score >= 70 ? "bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]" : "bg-red-400 animate-ping shadow-[0_0_8px_rgba(239,68,68,0.5)]"}`}></span>
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 font-mono">
               Posture: {stats.status || "EXCELLENT"}
             </span>
@@ -151,7 +151,7 @@ export default function SecurityOverviewPage() {
         </div>
 
         {/* Threat Mitigation Card */}
-        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-850 flex flex-col justify-between min-h-[150px] shadow-lg">
+        <div className="bg-[#101524]/60 backdrop-blur-xl p-6 rounded-2xl border border-white/[0.06] flex flex-col justify-between min-h-[150px] shadow-lg">
           <div>
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Mitigated Threat Nodes</span>
             <div className="text-3xl font-black text-white mt-1 font-mono">
@@ -159,7 +159,7 @@ export default function SecurityOverviewPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 mt-4">
-            <span className={`w-2 h-2 rounded-full ${stats.threats.unmitigated === 0 ? "bg-emerald-400 animate-pulse" : "bg-amber-400 animate-pulse"}`}></span>
+            <span className={`w-2.5 h-2.5 rounded-full ${stats.threats.unmitigated === 0 ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)] animate-pulse" : "bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)] animate-pulse"}`}></span>
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 font-mono">
               {stats.threats.unmitigated === 0 ? "All mitigations active" : `${stats.threats.unmitigated} open vulnerabilities`}
             </span>
@@ -167,7 +167,7 @@ export default function SecurityOverviewPage() {
         </div>
 
         {/* Open Incidents Card */}
-        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-850 flex flex-col justify-between min-h-[150px] shadow-lg">
+        <div className="bg-[#101524]/60 backdrop-blur-xl p-6 rounded-2xl border border-white/[0.06] flex flex-col justify-between min-h-[150px] shadow-lg">
           <div>
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Unmitigated Breaches</span>
             <div className={`text-3xl font-black mt-1 font-mono ${stats.incidents.open === 0 ? "text-white" : "text-red-400 animate-pulse"}`}>
@@ -175,7 +175,7 @@ export default function SecurityOverviewPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 mt-4">
-            <span className={`w-2 h-2 rounded-full ${stats.incidents.open === 0 ? "bg-emerald-400" : "bg-red-400 animate-ping"}`}></span>
+            <span className={`w-2.5 h-2.5 rounded-full ${stats.incidents.open === 0 ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" : "bg-red-400 animate-ping shadow-[0_0_8px_rgba(239,68,68,0.5)]"}`}></span>
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 font-mono">
               {stats.incidents.open === 0 ? "Platform status: secure" : "Active Incident response"}
             </span>
@@ -203,9 +203,9 @@ export default function SecurityOverviewPage() {
               <div
                 key={item.path}
                 onClick={() => router.push(item.path)}
-                className="bg-slate-900/40 p-4.5 rounded-xl border border-slate-850 shadow-sm hover:border-slate-750 hover:bg-slate-900 transition duration-150 cursor-pointer flex gap-4 items-start group"
+                className="bg-[#101524]/60 p-4.5 rounded-xl border border-white/[0.06] shadow-sm hover:border-violet-500/20 hover:shadow-[0_0_15px_rgba(124,58,237,0.05)] hover:bg-[#101524]/80 transition duration-150 cursor-pointer flex gap-4 items-start group"
               >
-                <div className="p-2 bg-slate-950 border border-slate-850 text-slate-400 rounded-lg group-hover:text-blue-400 shrink-0">
+                <div className="p-2 bg-slate-950/60 border border-white/[0.04] text-slate-400 rounded-lg group-hover:text-violet-400 group-hover:border-violet-500/30 group-hover:shadow-[0_0_8px_rgba(139,92,246,0.15)] shrink-0 transition">
                   <Icon className="w-5 h-5 stroke-[2]" />
                 </div>
                 <div className="min-w-0">

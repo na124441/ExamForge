@@ -39,7 +39,7 @@ export function LifecycleStepper({
     }
     if (isActive || status === "IN_PROGRESS") {
       return (
-        <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center ring-2 ring-blue-500/50 ring-offset-1 ring-offset-slate-950 shadow-glow-blue/40">
+        <div className="w-5 h-5 rounded-full bg-violet-600 text-white flex items-center justify-center ring-2 ring-violet-500/50 ring-offset-1 ring-offset-slate-950 shadow-glow-violet/40">
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
         </div>
       );
@@ -76,8 +76,8 @@ export function LifecycleStepper({
     }
     if (isActive || status === "IN_PROGRESS") {
       return {
-        bg: "bg-slate-900/90 border-blue-500/30 text-white shadow-glow-blue/8 ring-1 ring-blue-500/15",
-        label: "text-blue-400 font-bold",
+        bg: "bg-slate-900/90 border-violet-500/30 text-white shadow-glow-violet/8 ring-1 ring-violet-500/15",
+        label: "text-violet-400 font-bold",
         statusText: "Active"
       };
     }
@@ -170,7 +170,7 @@ export function LifecycleStepper({
             <span className={`text-[8px] font-bold uppercase px-2 py-0.5 rounded ${
               stage.status === "COMPLETED" ? "bg-emerald-500/10 text-emerald-400" :
               stage.status === "FAILED" ? "bg-red-500/10 text-red-400" :
-              stage.status === "IN_PROGRESS" ? "bg-blue-500/10 text-blue-400 animate-pulse" :
+              stage.status === "IN_PROGRESS" ? "bg-violet-500/10 text-violet-400 animate-pulse" :
               "bg-slate-850 text-slate-500"
             }`}>
               {stage.status}
