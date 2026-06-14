@@ -25,7 +25,7 @@ export function AppShell({ children }: AppShellProps) {
       const role = localStorage.getItem("user_role");
       
       // Let root login page and candidate portals load without auth redirection
-      const isPublicPath = pathname === "/" || pathname.startsWith("/result-portal") || pathname.startsWith("/verify-certificate") || pathname.startsWith("/candidate");
+      const isPublicPath = pathname === "/" || pathname === "/pilot-run" || pathname.startsWith("/result-portal") || pathname.startsWith("/verify-certificate") || pathname.startsWith("/candidate");
       
       if (token) {
         setIsAuthenticated(true);

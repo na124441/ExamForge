@@ -278,6 +278,20 @@ export default function PilotRunPage() {
     );
   }
 
+  if (error) {
+    return (
+      <main className="min-h-screen p-8 bg-slate-950 text-slate-100">
+        <h1 className="text-2xl font-bold">ExamForge AuthorityPilot</h1>
+        <p className="mt-4 text-red-600">
+          Could not load pilot workflow.
+        </p>
+        <p className="mt-2 text-gray-600">
+          Check whether the FastAPI backend is running and NEXT_PUBLIC_API_URL is correct.
+        </p>
+      </main>
+    );
+  }
+
   const currentStage = activeRun?.stages.find(
     (s) => s.status === "IN_PROGRESS" || s.status === "FAILED"
   ) || activeRun?.stages.find((s) => s.status === "PENDING");
