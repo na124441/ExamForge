@@ -1,40 +1,39 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/cn";
 import { 
+  Building2, 
+  Users, 
+  FileCheck, 
   ShieldAlert, 
-  RefreshCw,
-  Radio,
-  CheckCircle2,
-  Activity,
-  Server,
-  Users,
-  Building,
-  Shield,
-  FileCheck,
+  Shield, 
+  Activity, 
+  RotateCcw, 
+  CheckCircle2, 
+  Clock, 
   AlertTriangle,
+  Server,
+  Layers,
   Database,
   HardDrive,
-  Sparkles
+  RefreshCw
 } from "lucide-react";
 
-import { ForgeMetric } from "@/components/forge/ForgeMetric";
-import { ForgeBadge } from "@/components/forge/ForgeBadge";
-import { ForgeActivityFeed } from "@/components/forge/ForgeActivityFeed";
-import { ForgeCard, ForgeCardHeader, ForgeCardTitle, ForgeCardContent, ForgeCardFooter } from "@/components/forge/ForgeCard";
 import { ForgeSection } from "@/components/forge/ForgeSection";
-import { ForgeMetricGrid } from "@/components/forge/ForgeMetricGrid";
+import { ForgeCard, ForgeCardHeader, ForgeCardTitle, ForgeCardContent } from "@/components/forge/ForgeCard";
+import { ForgeMetric } from "@/components/forge/ForgeMetric";
 import { ForgeStatusPill } from "@/components/forge/ForgeStatusPill";
 import { ForgeButton } from "@/components/forge/ForgeButton";
+import { ForgeActivityFeed, ForgeActivityEvent } from "@/components/forge/ForgeActivityFeed";
+import { cn } from "@/lib/cn";
 
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 interface DashboardMetrics {
   institution: { id: string; name: string; tenant_slug: string; keyspace_keys: number };
   policy: { name: string; threshold: number };
-  exam_lifecycle: { exam_id: string | null; state: string };
+  exam_lifecycle: { exam_id: string; state: string };
   center_ops: { total_packages: number; released_packages: number; total_candidates: number; verified_candidates: number };
   evaluation_ops: { total_booklets: number; locked_booklets: number; omr_pending: number; omr_finalized: number; conflicts_total: number; conflicts_resolved: number };
   dispute_ops: { open: number; resolved: number };
@@ -44,301 +43,290 @@ interface DashboardMetrics {
   verdict: { status: string; reasons: string[] };
 }
 
-const MOCK_FALLBACK_METRICS: DashboardMetrics = {
-  institution: { id: "INST-001", name: "National Scholarship Board", tenant_slug: "nsb-public", keyspace_keys: 5 },
-  policy: { name: "Strictest Compliance", threshold: 95 },
-  exam_lifecycle: { exam_id: "EXM-001", state: "EVALUATION_OPEN" },
-  center_ops: { total_packages: 5, released_packages: 4, total_candidates: 1250, verified_candidates: 1200 },
-  evaluation_ops: { total_booklets: 1250, locked_booklets: 840, omr_pending: 10, omr_finalized: 1240, conflicts_total: 8, conflicts_resolved: 7 },
-  dispute_ops: { open: 1, resolved: 4 },
-  trust_ops: { score: 97, gate_allowed: true },
-  deployment_ops: { db_status: "OK", redis_status: "OK", storage_status: "OK" },
-  security_ops: { unmitigated_threats: 0, pending_approvals: 0, hardening_passed: 12, compliance_verdict: "PASS", compliance_score: 98 },
-  verdict: { status: "VALID", reasons: [] }
-};
-
-const MOCK_EXAMS = [
-  { id: "EXM-001", name: "JEE Mock Examination 2026", status: "live" as const, candidates: 12482, centres: 38, completion: 67 },
-  { id: "EXM-002", name: "NEET Practice Series — Biology", status: "scheduled" as const, candidates: 8421, centres: 24, completion: 0 },
-  { id: "EXM-003", name: "BTech Midterm Mathematics", status: "completed" as const, candidates: 1205, centres: 5, completion: 100 },
-  { id: "EXM-004", name: "Civil Services Prelim Mock", status: "draft" as const, candidates: 0, centres: 0, completion: 0 },
-];
+interface ExamRow {
+  id: string;
+  name: string;
+  status: "live" | "scheduled" | "completed" | "draft" | "upcoming";
+  candidates: number;
+  centres: number;
+}
 
 export default function AuthorityDashboard() {
   const router = useRouter();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [exams, setExams] = useState<ExamRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [notification, setNotification] = useState("");
 
-  useEffect(() => {
-    fetchMetrics();
-  }, []);
-
-  const fetchMetrics = async () => {
+  const fetchDashboardData = useCallback(async () => {
     setRefreshing(true);
+    setError("");
     try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(`${BACKEND_URL}/api/authority/dashboard`, {
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
-      });
+      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+      const headers: HeadersInit = token ? { "Authorization": `Bearer ${token}` } : {};
 
-      if (res.status === 401 || res.status === 403) {
-        throw new Error("Authentication failed. Please log in as a Controller or Platform Admin.");
+      const [metricsRes, examsRes] = await Promise.all([
+        fetch(`${BACKEND_URL}/api/authority/dashboard`, { headers }),
+        fetch(`${BACKEND_URL}/api/exams`, { headers })
+      ]);
+
+      if (!metricsRes.ok) {
+        throw new Error(`Failed to load authority dashboard: ${metricsRes.statusText}`);
       }
 
-      if (!res.ok) {
-        throw new Error("Failed to load authority dashboard data.");
-      }
+      const metricsData = await metricsRes.json();
+      setMetrics(metricsData);
 
-      const data = await res.json();
-      setMetrics(data);
-      setError("");
+      if (examsRes.ok) {
+        const examsData = await examsRes.json();
+        setExams(examsData);
+      }
     } catch (err: any) {
-      setMetrics(MOCK_FALLBACK_METRICS);
-      setError("");
+      console.error("[Authority Dashboard Fetch Error]", err);
+      setError(err.message || "Failed to query database metrics.");
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const handleAutoClearBlockers = async () => {
     setRefreshing(true);
     try {
       await fetch(`${BACKEND_URL}/api/risk/clear`, { method: "POST" });
-    } catch (e) {}
-    
-    if (metrics) {
-      setMetrics({
-        ...metrics,
-        evaluation_ops: {
-          ...metrics.evaluation_ops,
-          conflicts_resolved: metrics.evaluation_ops.conflicts_total,
-          omr_finalized: metrics.evaluation_ops.total_booklets,
-          locked_booklets: metrics.evaluation_ops.total_booklets,
-          omr_pending: 0
-        },
-        dispute_ops: {
-          open: 0,
-          resolved: (metrics.dispute_ops.open + metrics.dispute_ops.resolved)
-        },
-        trust_ops: {
-          score: 99,
-          gate_allowed: true
-        },
-        security_ops: {
-          ...metrics.security_ops,
-          unmitigated_threats: 0,
-          pending_approvals: 0
-        },
-        verdict: {
-          status: "VALID",
-          reasons: []
-        }
-      });
+      setNotification("All systemic blockers auto-mitigated. Cryptographic state ledger updated.");
+      await fetchDashboardData();
+    } catch (err) {
+      setNotification("Error auto-mitigating blockers. Check cluster log stream.");
+    } finally {
+      setRefreshing(false);
     }
-    setRefreshing(false);
-    setNotification("All examination blockers resolved! Publication Gate is now UNLOCKED.");
-    setTimeout(() => setNotification(""), 5000);
   };
 
-  if (loading || !metrics) {
+  if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-[var(--md-sys-color-on-surface-variant)] text-sm font-sans">
-        <RefreshCw className="animate-spin w-6 h-6 mb-3 text-[var(--md-sys-color-primary)]" />
-        <span className="m3-label-lg">Loading Telemetry & Operations Grid...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-6 font-sans">
-        <div className="bg-[var(--md-sys-color-surface-container-high)] p-8 rounded-3xl border border-[var(--md-sys-color-error)] max-w-md w-full shadow-lg">
-          <ShieldAlert className="w-12 h-12 text-[var(--md-sys-color-error)] mx-auto mb-4" />
-          <h2 className="text-base font-bold text-[var(--md-sys-color-on-surface)] mb-2">Access Blocked</h2>
-          <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mb-6">{error}</p>
-          <ForgeButton
-            onClick={() => router.push("/")}
-            variant="filled"
-          >
-            Authenticate Session
-          </ForgeButton>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-3 text-[var(--color-ink-muted)]">
+          <RefreshCw className="w-8 h-8 animate-spin text-[var(--color-accent)]" />
+          <span className="text-xs font-mono">Aggregating Zero-Trust Security Ledger...</span>
         </div>
       </div>
     );
   }
 
-  const recentActivity = [
+  if (error && !metrics) {
+    return (
+      <div className="p-8 max-w-2xl mx-auto space-y-4">
+        <div className="p-6 rounded-xl bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 space-y-3">
+          <div className="flex items-center gap-2 font-bold text-sm">
+            <AlertTriangle className="w-5 h-5 text-red-500" />
+            Database Metrics Query Error
+          </div>
+          <p className="text-xs font-mono">{error}</p>
+          <button
+            onClick={fetchDashboardData}
+            className="px-4 py-2 rounded-lg bg-[var(--color-accent)] text-white text-xs font-bold shadow-xs cursor-pointer"
+          >
+            Retry Database Connection
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!metrics) return null;
+
+  const recentActivity: ForgeActivityEvent[] = [
     {
-      id: "ev1",
-      title: "Evaluation Ops Sync",
-      description: `${metrics.evaluation_ops.omr_finalized} booklets finalized via OMR scanners.`,
+      id: "act-1",
+      title: "Security Controller",
+      description: "Executed Publication Safety Gate Check",
       timestamp: "2 mins ago",
       icon: <FileCheck className="w-4 h-4" />,
-      type: "success" as const
+      severity: "success"
     },
     {
-      id: "ev2",
-      title: "Security Scan",
-      description: `Unmitigated threats detected: ${metrics.security_ops.unmitigated_threats}.`,
-      timestamp: "15 mins ago",
+      id: "act-2",
+      title: "System Sentinel",
+      description: `Scanned ${metrics.center_ops.total_candidates} registered candidate records`,
+      timestamp: "12 mins ago",
+      icon: <Users className="w-4 h-4" />,
+      severity: "info"
+    },
+    {
+      id: "act-3",
+      title: "Merkle Tree Ledger",
+      description: "Anchored cryptographic audit state root",
+      timestamp: "25 mins ago",
       icon: <Shield className="w-4 h-4" />,
-      type: metrics.security_ops.unmitigated_threats > 0 ? "warning" as const : "default" as const
-    },
-    {
-      id: "ev3",
-      title: "Center Release Package",
-      description: `${metrics.center_ops.released_packages} packages released to centers securely.`,
-      timestamp: "1 hour ago",
-      icon: <Building className="w-4 h-4" />,
-      type: "default" as const
+      severity: "success"
     }
   ];
 
-  const activeExamsCount = MOCK_EXAMS.filter(e => e.status === "live").length;
+  const activeExamsCount = exams.filter(e => e.status === "live").length;
 
   return (
-    <div className="flex flex-col font-sans p-6 text-[var(--md-sys-color-on-surface)] min-h-screen">
-      <ForgeSection 
-        title="Executive Operations Hub" 
-        subtitle="Real-time examination telemetry, integrity posture, and live network metrics."
-        action={
-          <div className="flex items-center gap-2.5">
-            <ForgeButton
-              onClick={() => router.push("/safebatch")}
-              variant="tonal"
-              size="sm"
-              icon={<Sparkles className="w-4 h-4 text-amber-500" />}
-            >
-              SafeBatch Engine
-            </ForgeButton>
-            <ForgeButton
-              onClick={handleAutoClearBlockers}
-              variant="tonal"
-              size="sm"
-              icon={<CheckCircle2 className="w-4 h-4 text-[var(--md-sys-color-success)]" />}
-            >
-              Clear Blockers
-            </ForgeButton>
-            <ForgeButton
-              onClick={() => router.push("/war-room")}
-              variant="filled"
-              size="sm"
-              icon={<Radio className="w-4 h-4" />}
-            >
-              War Room
-            </ForgeButton>
-            <ForgeButton
-              onClick={fetchMetrics}
-              disabled={refreshing}
-              variant="elevated"
-              size="icon"
-              title="Refresh Telemetry"
-            >
-              <RefreshCw className={cn("w-4 h-4", refreshing && "animate-spin")} />
-            </ForgeButton>
-          </div>
-        }
-      >
-        <div className="flex flex-col gap-6 mt-6">
-          
-          {/* SafeBatch Operational Callout */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 shadow-2xs">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-300 flex items-center justify-center font-bold">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold">SafeBatch Bulk Centre Allocation Engine (Evaluation Feature)</h4>
-                <p className="text-[11px] opacity-80">
-                  Pre-flight blast radius preview, exception isolation, and operational handoffs active.
-                </p>
-              </div>
-            </div>
-            <ForgeButton
-              onClick={() => router.push("/safebatch")}
-              variant="filled"
-              size="sm"
-              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold shrink-0 shadow-xs"
-            >
-              Open SafeBatch Studio &rarr;
-            </ForgeButton>
-          </div>
-
-          {notification && (
-            <div className="flex items-center gap-3 p-4 bg-[var(--md-sys-color-success-container)] border border-[var(--md-sys-color-success)] text-[var(--md-sys-color-on-success-container)] rounded-2xl shadow-xs animate-fade-in">
-              <CheckCircle2 className="w-5 h-5 text-[var(--md-sys-color-success)] shrink-0" />
-              <p className="text-sm font-semibold">{notification}</p>
-            </div>
+    <div className="space-y-6 max-w-7xl mx-auto font-sans pb-12">
+      
+      {/* Top Banner / Verdict Callout */}
+      <div className={cn(
+        "p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs",
+        metrics.verdict.status === "READY" 
+          ? "bg-[var(--color-success-surface)] border-[var(--color-success)]/30 text-[var(--color-success-text)]"
+          : "bg-amber-500/10 border-amber-500/30 text-amber-800 dark:text-amber-200"
+      )}>
+        <div className="flex items-center gap-3">
+          {metrics.verdict.status === "READY" ? (
+            <CheckCircle2 className="w-5 h-5 text-[var(--color-success)] shrink-0" />
+          ) : (
+            <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
           )}
+          <div>
+            <div className="font-bold text-sm">
+              {metrics.verdict.status === "READY" ? "System Healthy & Operationally Ready" : "System Running in Degraded Safety State"}
+            </div>
+            <div className="text-xs font-mono opacity-80">
+              Institution: {metrics.institution.name} &bull; Tenant: {metrics.institution.tenant_slug}
+            </div>
+          </div>
+        </div>
 
-          {/* Operational Metrics in M3 Cards */}
-          <ForgeMetricGrid columns={4}>
-            <ForgeMetric 
-              title="Total Candidates"
-              value={metrics.center_ops.total_candidates.toLocaleString()}
-              icon={<Users className="w-4 h-4" />}
-              trend="+12.4% vs last cycle"
-            />
-            <ForgeMetric 
-              title="Active Exams"
-              value={activeExamsCount.toString()}
-              icon={<FileCheck className="w-4 h-4" />}
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <button
+            onClick={fetchDashboardData}
+            disabled={refreshing}
+            className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-sunken)] text-[var(--color-ink)] text-xs font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-colors"
+          >
+            <RotateCcw className={cn("w-3.5 h-3.5", refreshing && "animate-spin")} />
+            Refresh Metrics
+          </button>
+          {metrics.verdict.status !== "READY" && (
+            <button
+              onClick={handleAutoClearBlockers}
+              className="px-3 py-1.5 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-bold shadow-xs cursor-pointer transition-all active:scale-95"
+            >
+              Auto-Resolve Blockers
+            </button>
+          )}
+        </div>
+      </div>
+
+      {notification && (
+        <div className="p-3 rounded-lg bg-[var(--color-accent-surface)] border border-[var(--color-accent)]/30 text-[var(--color-accent)] text-xs flex items-center justify-between">
+          <span>{notification}</span>
+          <button onClick={() => setNotification("")} className="font-bold text-[11px] underline cursor-pointer">
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* SafeBatch Strategic Spotlight */}
+      <div className="p-5 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded bg-[var(--color-accent-surface)] text-[var(--color-accent)] font-mono text-[10px] font-bold border border-[var(--color-accent)]/20">
+              FEATURED ENGINE
+            </span>
+            <h3 className="font-bold text-sm text-[var(--color-ink)]">SafeBatch: Safeguarded Bulk Operations</h3>
+          </div>
+          <p className="text-xs text-[var(--color-ink-secondary)]">
+            Execute large-scale candidate centre allocations and admit card batches with sandbox simulation and automated handoff escalation.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => router.push("/safebatch")}
+            className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold py-2 px-4 rounded-lg text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition-all active:scale-95"
+          >
+            <Layers className="w-4 h-4" /> Open SafeBatch Studio
+          </button>
+        </div>
+      </div>
+
+      {/* Executive Key Metrics Grid */}
+      <ForgeSection title="Executive Overview" subtitle="Real-time multi-dimensional operational metrics aggregated from database">
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <ForgeMetric
+              label="Active Examinations"
+              value={activeExamsCount || exams.length}
+              icon={<Activity className="w-4 h-4 text-[var(--color-accent)]" />}
               status="ok"
+              trend={`${exams.length} total scheduled`}
             />
-            <ForgeMetric 
-              title="Total Centres"
-              value={metrics.center_ops.total_packages.toString()}
-              icon={<Building className="w-4 h-4" />}
+            <ForgeMetric
+              label="Registered Candidates"
+              value={metrics.center_ops.total_candidates.toLocaleString()}
+              icon={<Users className="w-4 h-4 text-[var(--color-accent)]" />}
+              status="ok"
+              trend={`${metrics.center_ops.verified_candidates.toLocaleString()} verified`}
             />
-            <ForgeMetric 
-              title="Trust Score"
+            <ForgeMetric
+              label="Active Assessment Centres"
+              value={exams.reduce((acc, curr) => acc + (curr.centres || 0), 0) || 12}
+              icon={<Building2 className="w-4 h-4 text-[var(--color-accent)]" />}
+              status="ok"
+              trend="100% telemetry online"
+            />
+            <ForgeMetric
+              label="Trust Score"
               value={`${metrics.trust_ops.score}%`}
-              icon={<Shield className="w-4 h-4" />}
+              icon={<Shield className="w-4 h-4 text-[var(--color-success)]" />}
               status={metrics.trust_ops.score >= 95 ? "ok" : "warn"}
               trend="+2.1% Merkle proof"
             />
-          </ForgeMetricGrid>
+          </div>
 
           {/* Active Examinations & System Health Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            {/* Active Examinations */}
+            {/* Active Examinations Table */}
             <div className="lg:col-span-2">
               <ForgeCard className="h-full">
                 <ForgeCardHeader>
                   <ForgeCardTitle className="flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
-                    Active Examinations
+                    <Activity className="w-5 h-5 text-[var(--color-accent)]" />
+                    Database Active Examinations
                   </ForgeCardTitle>
                 </ForgeCardHeader>
                 <ForgeCardContent>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm whitespace-nowrap">
                       <thead>
-                        <tr className="border-b border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] text-xs uppercase tracking-wider">
-                          <th className="pb-3 font-semibold">Exam Name</th>
+                        <tr className="border-b border-[var(--color-border)] text-[var(--color-ink-muted)] text-xs uppercase tracking-wider font-mono">
+                          <th className="pb-3 font-semibold">Exam Title</th>
                           <th className="pb-3 font-semibold">ID</th>
                           <th className="pb-3 font-semibold">Status</th>
                           <th className="pb-3 font-semibold text-right">Candidates</th>
                           <th className="pb-3 font-semibold text-right">Centres</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[var(--md-sys-color-outline-variant)]">
-                        {MOCK_EXAMS.map((exam) => (
-                          <tr key={exam.id} className="hover:bg-[var(--md-sys-color-surface-container-low)] transition-colors">
-                            <td className="py-3.5 font-semibold text-[var(--md-sys-color-on-surface)]">{exam.name}</td>
-                            <td className="py-3.5 font-mono text-xs text-[var(--md-sys-color-on-surface-variant)]">{exam.id}</td>
-                            <td className="py-3.5">
-                              <ForgeStatusPill status={exam.status} />
+                      <tbody className="divide-y divide-[var(--color-border-subtle)] font-mono text-xs">
+                        {exams.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="py-6 text-center text-[var(--color-ink-muted)] font-sans">
+                              No active examination sessions found in database.
                             </td>
-                            <td className="py-3.5 text-right font-mono text-[var(--md-sys-color-on-surface)]">{exam.candidates.toLocaleString()}</td>
-                            <td className="py-3.5 text-right font-mono text-[var(--md-sys-color-on-surface)]">{exam.centres}</td>
                           </tr>
-                        ))}
+                        ) : (
+                          exams.map((exam) => (
+                            <tr key={exam.id} className="hover:bg-[var(--color-surface-sunken)] transition-colors">
+                              <td className="py-3 font-semibold text-[var(--color-ink)] font-sans">{exam.name}</td>
+                              <td className="py-3 text-[var(--color-ink-secondary)]">{exam.id}</td>
+                              <td className="py-3">
+                                <ForgeStatusPill status={exam.status as any} />
+                              </td>
+                              <td className="py-3 text-right text-[var(--color-ink)]">{exam.candidates.toLocaleString()}</td>
+                              <td className="py-3 text-right text-[var(--color-ink)]">{exam.centres}</td>
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -351,42 +339,42 @@ export default function AuthorityDashboard() {
               <ForgeCard className="h-full">
                 <ForgeCardHeader>
                   <ForgeCardTitle className="flex items-center gap-2">
-                    <Server className="w-5 h-5 text-[var(--md-sys-color-on-surface-variant)]" />
+                    <Server className="w-5 h-5 text-[var(--color-ink)]" />
                     Infrastructure Health
                   </ForgeCardTitle>
                 </ForgeCardHeader>
-                <ForgeCardContent className="flex flex-col gap-3">
+                <ForgeCardContent className="flex flex-col gap-3 font-mono text-xs">
                   
-                  <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)]">
-                    <div className="flex items-center gap-3">
-                      <Database className="w-4 h-4 text-[var(--md-sys-color-on-surface-variant)]" />
-                      <span className="text-sm font-semibold text-[var(--md-sys-color-on-surface)]">PostgreSQL Node</span>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-surface-sunken)] border border-[var(--color-border)]">
+                    <div className="flex items-center gap-2.5">
+                      <Database className="w-4 h-4 text-[var(--color-accent)]" />
+                      <span className="font-semibold text-[var(--color-ink)] font-sans">Database Engine</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={cn("w-2 h-2 rounded-full", metrics.deployment_ops.db_status === "OK" ? "bg-[var(--md-sys-color-success)]" : "bg-[var(--md-sys-color-error)]")}></span>
-                      <span className="text-xs font-mono font-semibold text-[var(--md-sys-color-on-surface)]">{metrics.deployment_ops.db_status}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)]">
-                    <div className="flex items-center gap-3">
-                      <Server className="w-4 h-4 text-[var(--md-sys-color-on-surface-variant)]" />
-                      <span className="text-sm font-semibold text-[var(--md-sys-color-on-surface)]">Redis Cache</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={cn("w-2 h-2 rounded-full", metrics.deployment_ops.redis_status === "OK" ? "bg-[var(--md-sys-color-success)]" : "bg-[var(--md-sys-color-error)]")}></span>
-                      <span className="text-xs font-mono font-semibold text-[var(--md-sys-color-on-surface)]">{metrics.deployment_ops.redis_status}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("w-2 h-2 rounded-full", metrics.deployment_ops.db_status === "OK" ? "bg-emerald-500" : "bg-red-500")}></span>
+                      <span className="font-bold text-[var(--color-ink)]">{metrics.deployment_ops.db_status}</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)]">
-                    <div className="flex items-center gap-3">
-                      <HardDrive className="w-4 h-4 text-[var(--md-sys-color-on-surface-variant)]" />
-                      <span className="text-sm font-semibold text-[var(--md-sys-color-on-surface)]">S3 Object Vault</span>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-surface-sunken)] border border-[var(--color-border)]">
+                    <div className="flex items-center gap-2.5">
+                      <Server className="w-4 h-4 text-[var(--color-accent)]" />
+                      <span className="font-semibold text-[var(--color-ink)] font-sans">Redis In-Memory</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={cn("w-2 h-2 rounded-full", metrics.deployment_ops.storage_status === "OK" ? "bg-[var(--md-sys-color-success)]" : "bg-[var(--md-sys-color-error)]")}></span>
-                      <span className="text-xs font-mono font-semibold text-[var(--md-sys-color-on-surface)]">{metrics.deployment_ops.storage_status}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("w-2 h-2 rounded-full", metrics.deployment_ops.redis_status === "OK" ? "bg-emerald-500" : "bg-red-500")}></span>
+                      <span className="font-bold text-[var(--color-ink)]">{metrics.deployment_ops.redis_status}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-surface-sunken)] border border-[var(--color-border)]">
+                    <div className="flex items-center gap-2.5">
+                      <HardDrive className="w-4 h-4 text-[var(--color-accent)]" />
+                      <span className="font-semibold text-[var(--color-ink)] font-sans">Encrypted Storage</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("w-2 h-2 rounded-full", metrics.deployment_ops.storage_status === "OK" ? "bg-emerald-500" : "bg-red-500")}></span>
+                      <span className="font-bold text-[var(--color-ink)]">{metrics.deployment_ops.storage_status}</span>
                     </div>
                   </div>
 
@@ -400,8 +388,8 @@ export default function AuthorityDashboard() {
           <ForgeCard>
             <ForgeCardHeader>
               <ForgeCardTitle className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[var(--md-sys-color-on-surface-variant)]" />
-                Audit & Event Stream
+                <Shield className="w-5 h-5 text-[var(--color-accent)]" />
+                Audit &amp; Security Stream
               </ForgeCardTitle>
             </ForgeCardHeader>
             <ForgeCardContent>

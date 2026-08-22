@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { 
   Users, 
@@ -10,7 +10,11 @@ import {
   Calendar, 
   Clock, 
   MonitorPlay, 
-  Settings 
+  Settings,
+  RefreshCw,
+  Database,
+  IndianRupee,
+  ShieldCheck
 } from 'lucide-react';
 
 import { ForgeMasterDetail } from '@/components/forge/ForgeMasterDetail';
@@ -24,7 +28,8 @@ import { cn } from '@/lib/cn';
 interface Examination {
   id: string;
   name: string;
-  status: 'live' | 'scheduled' | 'completed' | 'draft';
+  code?: string;
+  status: 'live' | 'scheduled' | 'completed' | 'draft' | 'upcoming';
   candidates: number;
   centres: number;
   startDate: string;
@@ -32,22 +37,15 @@ interface Examination {
   completion: number;
   subject: string;
   blueprint: string;
+  fee_general?: number;
+  fee_reserved?: number;
 }
-
-const MOCK_EXAMS: Examination[] = [
-  { id: 'EXM-001', name: 'JEE Mock Examination 2026', status: 'live', candidates: 12482, centres: 38, startDate: '2026-08-20T09:00:00Z', endDate: '2026-08-20T12:00:00Z', completion: 67, subject: 'Engineering', blueprint: 'JEE-2026-Mock-A' },
-  { id: 'EXM-002', name: 'NEET Practice Series — Biology', status: 'scheduled', candidates: 8421, centres: 24, startDate: '2026-08-25T10:00:00Z', endDate: '2026-08-25T13:00:00Z', completion: 0, subject: 'Medical', blueprint: 'NEET-2026-BIO' },
-  { id: 'EXM-003', name: 'BTech Midterm Mathematics', status: 'completed', candidates: 1205, centres: 5, startDate: '2026-08-15T09:00:00Z', endDate: '2026-08-15T11:00:00Z', completion: 100, subject: 'Mathematics', blueprint: 'BTech-MID-MATH' },
-  { id: 'EXM-004', name: 'Civil Services Prelim Mock', status: 'draft', candidates: 0, centres: 0, startDate: '', endDate: '', completion: 0, subject: 'General Studies', blueprint: 'UPSC-2026-PRE' },
-  { id: 'EXM-005', name: 'SSC Combined Graduate Level', status: 'live', candidates: 45210, centres: 120, startDate: '2026-08-20T14:00:00Z', endDate: '2026-08-20T16:00:00Z', completion: 34, subject: 'General', blueprint: 'SSC-CGL-2026' },
-  { id: 'EXM-006', name: 'State Board Class XII Final', status: 'scheduled', candidates: 28400, centres: 85, startDate: '2026-09-01T09:00:00Z', endDate: '2026-09-01T15:00:00Z', completion: 0, subject: 'Multiple', blueprint: 'SB-XII-2026' },
-];
 
 type FilterType = 'All' | 'Live' | 'Scheduled' | 'Completed' | 'Draft';
 
 export default function ExaminationsPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-[var(--text-muted)]">Loading examinations...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-[var(--color-ink-muted)]">Loading examinations...</div>}>
       <ExaminationsContent />
     </Suspense>
   );
@@ -60,8 +58,34 @@ function ExaminationsContent() {
   
   const selectedId = searchParams.get('selected');
   
+  const [exams, setExams] = useState<Examination[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('All');
+
+  const fetchExams = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+      const res = await fetch(`${backendUrl}/api/exams`);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch examinations: ${res.statusText}`);
+      }
+      const data = await res.json();
+      setExams(data);
+    } catch (err: any) {
+      console.error("[Database Connectivity Error] /api/exams:", err);
+      setError(err.message || "Failed to connect to database");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchExams();
+  }, [fetchExams]);
 
   const handleSelect = useCallback((id: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -74,35 +98,33 @@ function ExaminationsContent() {
   }, [router, pathname, searchParams]);
 
   const filteredExams = useMemo(() => {
-    return MOCK_EXAMS.filter((exam) => {
-      // Name filter
-      if (search && !exam.name.toLowerCase().includes(search.toLowerCase())) {
+    return exams.filter((exam) => {
+      if (search && !exam.name.toLowerCase().includes(search.toLowerCase()) && !exam.subject?.toLowerCase().includes(search.toLowerCase())) {
         return false;
       }
       
-      // Status filter
       if (activeFilter !== 'All') {
-        if (activeFilter.toLowerCase() !== exam.status) {
+        if (activeFilter.toLowerCase() !== exam.status.toLowerCase()) {
           return false;
         }
       }
       
       return true;
     });
-  }, [search, activeFilter]);
+  }, [exams, search, activeFilter]);
 
   const renderListItem = useCallback((exam: Examination) => {
     return (
-      <div className="flex flex-col gap-1 px-4 py-3 border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--surface-hover)] transition-colors cursor-pointer w-full">
+      <div className="flex flex-col gap-1 px-4 py-3 border-b border-[var(--color-border-subtle)] last:border-0 hover:bg-[var(--color-surface-sunken)] transition-colors cursor-pointer w-full">
         <div className="flex justify-between items-start gap-2">
           <div className="flex flex-col truncate">
-            <span className="text-sm font-medium text-[var(--text-primary)] truncate">{exam.name}</span>
-            <span className="text-xs text-[var(--text-muted)] truncate">{exam.subject}</span>
+            <span className="text-sm font-semibold text-[var(--color-ink)] truncate">{exam.name}</span>
+            <span className="text-xs text-[var(--color-ink-muted)] truncate">{exam.subject}</span>
           </div>
           <ForgeStatusPill status={exam.status as any} />
         </div>
-        <div className="text-xs text-[var(--text-muted)] mt-1 flex items-center gap-1">
-          <Users className="w-3.5 h-3.5" />
+        <div className="text-xs text-[var(--color-ink-secondary)] mt-1 flex items-center gap-1 font-mono">
+          <Users className="w-3.5 h-3.5 text-[var(--color-accent)]" />
           {new Intl.NumberFormat().format(exam.candidates)} candidates
         </div>
       </div>
@@ -112,76 +134,93 @@ function ExaminationsContent() {
   const renderDetail = useCallback((exam: Examination) => {
     const formatDateTime = (isoStr: string) => {
       if (!isoStr) return 'N/A';
-      return new Intl.DateTimeFormat('en-US', {
-        dateStyle: 'medium',
-        timeStyle: 'short'
-      }).format(new Date(isoStr));
+      try {
+        return new Intl.DateTimeFormat('en-US', {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        }).format(new Date(isoStr));
+      } catch {
+        return isoStr;
+      }
     };
 
     return (
-      <div className="p-6 flex flex-col gap-6 h-full overflow-y-auto">
+      <div className="p-6 flex flex-col gap-6 h-full overflow-y-auto font-sans">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-lg font-semibold text-[var(--text-primary)]">{exam.name}</h2>
-            <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-              <span className="px-2 py-0.5 rounded-[var(--radius-sm)] bg-[var(--surface-sunken)] border border-[var(--border-subtle)] font-mono text-xs">
+          <div className="flex flex-col gap-1.5">
+            <h2 className="text-lg font-bold text-[var(--color-ink)]">{exam.name}</h2>
+            <div className="flex items-center gap-2 text-xs text-[var(--color-ink-secondary)]">
+              <span className="px-2 py-0.5 rounded bg-[var(--color-surface-sunken)] border border-[var(--color-border)] font-mono text-xs font-bold text-[var(--color-ink)]">
                 {exam.id}
               </span>
-              • {exam.subject}
+              <span>&bull;</span>
+              <span className="font-semibold">{exam.subject}</span>
             </div>
           </div>
-          <ForgeStatusPill status={exam.status} />
+          <ForgeStatusPill status={exam.status as any} />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <ForgeMetric 
-            label="Candidates" 
+            label="Total Registrations" 
             value={new Intl.NumberFormat().format(exam.candidates)} 
-            icon={<Users className="w-4 h-4" />} 
+            icon={<Users className="w-4 h-4 text-[var(--color-accent)]" />} 
           />
           <ForgeMetric 
-            label="Centres" 
+            label="Active Centres" 
             value={new Intl.NumberFormat().format(exam.centres)} 
-            icon={<Building2 className="w-4 h-4" />} 
+            icon={<Building2 className="w-4 h-4 text-[var(--color-accent)]" />} 
           />
           <ForgeMetric 
             label="Completion" 
             value={`${exam.completion}%`} 
-            icon={<Percent className="w-4 h-4" />} 
+            icon={<Percent className="w-4 h-4 text-[var(--color-success)]" />} 
           />
           <ForgeMetric 
-            label="Blueprint" 
+            label="Security Blueprint" 
             value={exam.blueprint} 
-            icon={<FileText className="w-4 h-4" />} 
+            icon={<FileText className="w-4 h-4 text-[var(--color-accent)]" />} 
             mono={true}
           />
         </div>
 
         <ForgeCard>
           <ForgeCardHeader>
-            <ForgeCardTitle>Schedule Details</ForgeCardTitle>
+            <ForgeCardTitle>Schedule &amp; Fee Structure</ForgeCardTitle>
           </ForgeCardHeader>
-          <ForgeCardContent className="flex flex-col gap-4">
-            <div className="flex items-center gap-3 text-sm text-[var(--text-primary)]">
-              <Calendar className="w-4 h-4 text-[var(--text-muted)]" />
-              <span className="w-24 text-[var(--text-secondary)]">Start Date:</span>
-              <span>{formatDateTime(exam.startDate)}</span>
+          <ForgeCardContent className="flex flex-col gap-4 text-xs font-mono">
+            <div className="flex items-center gap-3 text-[var(--color-ink)]">
+              <Calendar className="w-4 h-4 text-[var(--color-ink-muted)] shrink-0" />
+              <span className="w-28 text-[var(--color-ink-secondary)]">Start Date:</span>
+              <span className="font-bold">{formatDateTime(exam.startDate)}</span>
             </div>
-            <div className="flex items-center gap-3 text-sm text-[var(--text-primary)]">
-              <Clock className="w-4 h-4 text-[var(--text-muted)]" />
-              <span className="w-24 text-[var(--text-secondary)]">End Date:</span>
-              <span>{formatDateTime(exam.endDate)}</span>
+            <div className="flex items-center gap-3 text-[var(--color-ink)]">
+              <Clock className="w-4 h-4 text-[var(--color-ink-muted)] shrink-0" />
+              <span className="w-28 text-[var(--color-ink-secondary)]">End Date:</span>
+              <span className="font-bold">{formatDateTime(exam.endDate)}</span>
             </div>
+            {exam.fee_general !== undefined && (
+              <div className="flex items-center gap-3 text-[var(--color-ink)]">
+                <IndianRupee className="w-4 h-4 text-[var(--color-success)] shrink-0" />
+                <span className="w-28 text-[var(--color-ink-secondary)]">Application Fee:</span>
+                <span className="font-bold text-[var(--color-success)]">₹{exam.fee_general} (General) / ₹{exam.fee_reserved} (Reserved)</span>
+              </div>
+            )}
           </ForgeCardContent>
         </ForgeCard>
 
-        <div className="mt-auto pt-6 border-t border-[var(--border-subtle)] flex items-center justify-end gap-3">
-          <ForgeButton variant="secondary" icon={<Settings className="w-4 h-4" />}>
-            Manage
-          </ForgeButton>
-          <ForgeButton variant="primary" icon={<MonitorPlay className="w-4 h-4" />}>
-            Monitor Exam
-          </ForgeButton>
+        <div className="mt-auto pt-6 border-t border-[var(--color-border)] flex items-center justify-between gap-3">
+          <span className="text-[11px] text-[var(--color-ink-muted)] font-mono flex items-center gap-1">
+            <Database className="w-3.5 h-3.5 text-[var(--color-success)]" /> Database Source: PostgreSQL / SQLite
+          </span>
+          <div className="flex gap-2">
+            <ForgeButton variant="secondary" icon={<Settings className="w-4 h-4" />}>
+              Configure Blueprint
+            </ForgeButton>
+            <ForgeButton variant="primary" icon={<MonitorPlay className="w-4 h-4" />}>
+              Launch Monitor
+            </ForgeButton>
+          </div>
         </div>
       </div>
     );
@@ -197,10 +236,10 @@ function ExaminationsContent() {
             key={filter}
             onClick={() => setActiveFilter(filter)}
             className={cn(
-              "px-3 py-1 text-xs font-medium rounded-[var(--radius-pill)] whitespace-nowrap transition-colors",
+              "px-3 py-1 text-xs font-semibold rounded-lg whitespace-nowrap transition-colors cursor-pointer",
               activeFilter === filter
-                ? "bg-[var(--accent-primary)] text-white"
-                : "bg-[var(--surface-interactive)] text-[var(--text-secondary)] hover:bg-[var(--surface-hover)]"
+                ? "bg-[var(--color-accent)] text-white shadow-xs"
+                : "bg-[var(--color-surface-sunken)] text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-inset)]"
             )}
           >
             {filter}
@@ -212,25 +251,38 @@ function ExaminationsContent() {
 
   return (
     <ForgeSection 
-      title="Examinations" 
-      subtitle="Manage and monitor all examination sessions"
+      title="Examinations Directory" 
+      subtitle="Live database catalog of all accredited examination sessions and blueprints"
       className="flex flex-col h-full overflow-hidden"
     >
       <div className="h-[calc(100vh-140px)] w-full flex-1">
-        <ForgeMasterDetail
-          items={filteredExams}
-          selectedId={selectedId}
-          onSelect={handleSelect}
-          renderListItem={renderListItem}
-          renderDetail={renderDetail}
-          getItemId={(exam) => exam.id}
-          searchPlaceholder="Search examinations..."
-          searchValue={search}
-          onSearchChange={setSearch}
-          filterSlot={<FilterPills />}
-          emptyDetailTitle="Select an examination"
-          emptyDetailDescription="Choose an examination from the list to view its details and monitoring dashboard."
-        />
+        {isLoading ? (
+          <div className="p-12 text-center text-xs font-mono text-[var(--color-accent)] flex items-center justify-center gap-2">
+            <RefreshCw className="w-4 h-4 animate-spin" /> Querying Database Catalog...
+          </div>
+        ) : error ? (
+          <div className="p-8 rounded-xl bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 text-xs text-center space-y-2">
+            <p className="font-bold">Database Query Error: {error}</p>
+            <button onClick={fetchExams} className="px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-white text-xs font-semibold cursor-pointer">
+              Retry Query
+            </button>
+          </div>
+        ) : (
+          <ForgeMasterDetail
+            items={filteredExams}
+            selectedId={selectedId}
+            onSelect={handleSelect}
+            renderListItem={renderListItem}
+            renderDetail={renderDetail}
+            getItemId={(exam) => exam.id}
+            searchPlaceholder="Search examinations by title, code or domain..."
+            searchValue={search}
+            onSearchChange={setSearch}
+            filterSlot={<FilterPills />}
+            emptyDetailTitle="Select an examination"
+            emptyDetailDescription="Choose an examination from the database list to inspect its configuration and telemetry."
+          />
+        )}
       </div>
     </ForgeSection>
   );

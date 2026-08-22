@@ -16,6 +16,7 @@ export interface ForgeTableProps<T> {
   columns: ForgeTableColumn<T>[];
   data: T[];
   onSort?: (key: string) => void;
+  onRowClick?: (row: T) => void;
   sortKey?: string;
   sortDir?: "asc" | "desc";
   emptyMessage?: string;
@@ -27,6 +28,7 @@ export function ForgeTable<T extends Record<string, any>>({
   columns,
   data,
   onSort,
+  onRowClick,
   sortKey,
   sortDir,
   emptyMessage = "No data available.",
@@ -77,7 +79,11 @@ export function ForgeTable<T extends Record<string, any>>({
                 <tr
                   key={rowKey}
                   tabIndex={0}
-                  className="hover:bg-[var(--color-surface-sunken)] transition-colors duration-[var(--duration-fast)]"
+                  onClick={() => onRowClick && onRowClick(row)}
+                  className={cn(
+                    "hover:bg-[var(--color-surface-sunken)] transition-colors duration-[var(--duration-fast)]",
+                    onRowClick && "cursor-pointer"
+                  )}
                 >
                   {columns.map((col) => {
                     const cellValue = row[col.key];
