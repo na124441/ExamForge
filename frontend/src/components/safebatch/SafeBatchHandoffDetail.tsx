@@ -55,7 +55,6 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
     try {
       const res = await getSafeBatchHandoffDetail(handoffId);
       setData(res);
-      // Pre-populate resolution target to Chennai Hub D for all items
       const initialTargets: Record<string, string> = {};
       res.items.forEach((it) => {
         initialTargets[it.candidate_id] = "c4"; // Chennai Hub D (Buffer)
@@ -116,7 +115,7 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-[#8AD8B8] space-y-3 font-mono text-sm">
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-[var(--color-accent)] space-y-3 font-mono text-sm">
         <RefreshCw className="animate-spin" size={24} />
         <span>Loading SafeBatch Handoff Packet...</span>
       </div>
@@ -125,13 +124,12 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
 
   if (!data) {
     return (
-      <div className="p-8 text-center text-rose-400 font-mono text-sm">
+      <div className="p-8 text-center text-[var(--color-danger)] font-mono text-sm bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-xl">
         Failed to load handoff packet {handoffId}.
       </div>
     );
   }
 
-  // Filter items
   const filteredItems = data.items.filter((item) => {
     const matchesSearch =
       item.candidate_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -145,38 +143,38 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
   const isResolved = data.status === "RESOLVED" || resolutionSuccess;
 
   return (
-    <div className="space-y-8 font-sans">
+    <div className="space-y-6 font-sans w-full max-w-7xl mx-auto text-[var(--color-ink)] animate-fade-in">
       {/* TOP BREADCRUMB */}
       <div className="flex items-center justify-between">
         <Link
           href="/safebatch"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-[#8AD8B8] hover:text-[#FFF4E2] transition-colors no-underline"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--color-accent)] hover:underline no-underline"
         >
           <ArrowLeft size={14} />
           Back to SafeBatch Studio
         </Link>
-        <span className="text-xs font-mono text-[#8AD8B8]/70">
-          Target Role: <strong className="text-[#FFF4E2]">Centre Superintendent (OFFICER)</strong>
+        <span className="text-xs font-mono text-[var(--color-ink-secondary)]">
+          Target Role: <strong className="text-[var(--color-ink)]">Centre Superintendent (OFFICER)</strong>
         </span>
       </div>
 
       {/* RESOLUTION SUCCESS TOAST */}
       {isResolved && (
-        <div className="p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-between animate-in fade-in">
+        <div className="p-4 sm:p-5 rounded-xl bg-[var(--color-success-surface)] border border-[var(--color-success)]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="text-[#8AD8B8]" size={24} />
+            <CheckCircle2 className="text-[var(--color-success)] shrink-0" size={24} />
             <div>
-              <h4 className="text-sm font-bold text-[#FFF4E2]">
-                Handoff Successfully Resolved & Committed
+              <h4 className="text-sm font-bold text-[var(--color-success-text)]">
+                Handoff Successfully Resolved &amp; Committed
               </h4>
-              <p className="text-xs text-[#8AD8B8]/90">
+              <p className="text-xs text-[var(--color-success-text)] opacity-90">
                 All 34 exceptions have been allocated to Chennai Hub D buffer. The parent Bulk Action is now 100% COMPLETE.
               </p>
             </div>
           </div>
           <Link
             href="/audit-timeline"
-            className="px-3.5 py-1.5 rounded-xl bg-[#8AD8B8] text-[#132D28] font-bold text-xs shadow-sm hover:bg-[#a0e8cb] transition-all no-underline"
+            className="px-3.5 py-1.5 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] text-[var(--color-ink)] font-bold text-xs shadow-2xs transition-colors self-start sm:self-auto no-underline"
           >
             Inspect Ledger Proof
           </Link>
@@ -184,33 +182,33 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
       )}
 
       {/* HANDOFF HEADER CARD */}
-      <div className="bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-xl p-6 sm:p-8 shadow-xs space-y-6 text-[var(--color-ink)]">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-[rgba(138,216,184,0.18)] pb-6">
+      <div className="bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-xl p-6 sm:p-8 shadow-xs space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-[var(--color-border)] pb-6">
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-[rgba(64,133,118,0.35)] border border-[rgba(138,216,184,0.4)] flex items-center justify-center text-[#8AD8B8] shadow-lg shrink-0">
-              <FileText size={28} />
+            <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shrink-0">
+              <FileText size={24} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono text-[#8AD8B8] uppercase tracking-widest block">
+                <span className="text-[10px] font-mono text-amber-600 dark:text-amber-400 uppercase tracking-widest block font-bold">
                   OPERATIONAL HANDOFF &middot; {data.id}
                 </span>
                 <span className={cn(
                   "px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold border uppercase",
                   isResolved
-                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                    ? "bg-[var(--color-success-surface)] text-[var(--color-success-text)] border-[var(--color-success)]/30"
                     : isClaimed
-                    ? "bg-sky-500/20 text-sky-300 border-sky-500/30"
-                    : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                    ? "bg-[var(--color-accent-surface)] text-[var(--color-accent)] border-[var(--color-accent)]/30"
+                    : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
                 )}>
                   {isResolved ? "RESOLVED" : isClaimed ? "CLAIMED BY SUPERINTENDENT" : "UNCLAIMED (ACTION REQUIRED)"}
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-black text-[#FFF4E2] mt-1">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-[var(--color-ink)] mt-1">
                 {data.title}
               </h1>
-              <p className="text-xs text-[#8AD8B8]/80 mt-1">
-                Linked Bulk Action: <strong className="text-[#FFF4E2] font-mono">{data.bulk_action_id}</strong> &middot; Exam: <strong className="text-[#FFF4E2]">AIML Entrance Exam 2026</strong>
+              <p className="text-xs text-[var(--color-ink-secondary)] mt-1">
+                Linked Bulk Action: <strong className="text-[var(--color-ink)] font-mono">{data.bulk_action_id}</strong> &middot; Exam: <strong className="text-[var(--color-ink)]">AIML Entrance Exam 2026</strong>
               </p>
             </div>
           </div>
@@ -221,9 +219,9 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
               <button
                 onClick={handleClaim}
                 disabled={claiming}
-                className="px-6 py-3 rounded-2xl bg-[#8AD8B8] hover:bg-[#a0e8cb] text-[#132D28] font-bold text-sm transition-all shadow-[0_10px_25px_-5px_rgba(138,216,184,0.6)] flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+                className="px-5 py-2.5 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold text-xs transition-all shadow-xs flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
               >
-                {claiming ? <RefreshCw className="animate-spin" size={16} /> : <UserCheck size={16} />}
+                {claiming ? <RefreshCw className="animate-spin" size={14} /> : <UserCheck size={14} />}
                 <span>Claim Handoff</span>
               </button>
             )}
@@ -232,10 +230,10 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
               <button
                 onClick={handleResolve}
                 disabled={resolving}
-                className="px-6 py-3 rounded-2xl bg-[#8AD8B8] hover:bg-[#a0e8cb] text-[#132D28] font-bold text-sm transition-all shadow-[0_10px_25px_-5px_rgba(138,216,184,0.6)] flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+                className="px-5 py-2.5 rounded-lg bg-[var(--color-success)] hover:bg-emerald-600 text-white font-bold text-xs transition-all shadow-xs flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
               >
-                {resolving ? <RefreshCw className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
-                <span>Resolve All 34 Exceptions & Finalize</span>
+                {resolving ? <RefreshCw className="animate-spin" size={14} /> : <CheckCircle2 size={14} />}
+                <span>Resolve All 34 Exceptions &amp; Finalize</span>
               </button>
             )}
           </div>
@@ -243,39 +241,39 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
 
         {/* METADATA CARDS */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
-          <div className="p-3.5 rounded-2xl bg-[rgba(8,19,16,0.6)] border border-[rgba(138,216,184,0.15)]">
-            <span className="text-[10px] text-[#8AD8B8]/70 uppercase block">Initiator</span>
-            <span className="text-xs font-bold text-[#FFF4E2] block mt-0.5">{data.initiated_by}</span>
-            <span className="text-[10px] text-[#8AD8B8]/60">Role: {data.initiated_by_role}</span>
+          <div className="p-3.5 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)]">
+            <span className="text-[10px] text-[var(--color-ink-muted)] uppercase block font-bold">Initiator</span>
+            <span className="text-xs font-bold text-[var(--color-ink)] block mt-0.5">{data.initiated_by}</span>
+            <span className="text-[10px] text-[var(--color-ink-secondary)]">Role: {data.initiated_by_role}</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-[rgba(8,19,16,0.6)] border border-[rgba(138,216,184,0.15)]">
-            <span className="text-[10px] text-[#8AD8B8]/70 uppercase block">Assigned Role</span>
-            <span className="text-xs font-bold text-[#8AD8B8] block mt-0.5">{data.assigned_to_user}</span>
-            <span className="text-[10px] text-[#8AD8B8]/60">Role: {data.assigned_to_role}</span>
+          <div className="p-3.5 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)]">
+            <span className="text-[10px] text-[var(--color-ink-muted)] uppercase block font-bold">Assigned Role</span>
+            <span className="text-xs font-bold text-[var(--color-accent)] block mt-0.5">{data.assigned_to_user}</span>
+            <span className="text-[10px] text-[var(--color-ink-secondary)]">Role: {data.assigned_to_role}</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-[rgba(8,19,16,0.6)] border border-[rgba(138,216,184,0.15)]">
-            <span className="text-[10px] text-[#8AD8B8]/70 uppercase block">Unresolved Scope</span>
-            <span className="text-xl font-bold text-amber-400 font-mono block mt-0.5">{data.affected_count} Candidates</span>
-            <span className="text-[10px] text-[#8AD8B8]/60">Resolved: {isResolved ? 34 : data.resolved_count}</span>
+          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
+            <span className="text-[10px] text-amber-600 dark:text-amber-400 uppercase block font-bold">Unresolved Scope</span>
+            <span className="text-xl font-bold text-amber-600 dark:text-amber-400 font-mono block mt-0.5">{data.affected_count} Candidates</span>
+            <span className="text-[10px] text-amber-600 dark:text-amber-400">Resolved: {isResolved ? 34 : data.resolved_count}</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-[rgba(8,19,16,0.6)] border border-[rgba(138,216,184,0.15)]">
-            <span className="text-[10px] text-[#8AD8B8]/70 uppercase block">Audit Proof Hash</span>
-            <span className="text-[11px] font-mono text-[#8AD8B8] block mt-0.5 truncate">
+          <div className="p-3.5 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)]">
+            <span className="text-[10px] text-[var(--color-ink-muted)] uppercase block font-bold">Audit Proof Hash</span>
+            <span className="text-[11px] font-mono text-[var(--color-ink)] block mt-0.5 truncate">
               {data.audit_receipt_hash || "sha256:7f83b1657ff1..."}
             </span>
-            <span className="text-[10px] text-[#8AD8B8]/60">Immutable Ledger</span>
+            <span className="text-[10px] text-[var(--color-ink-secondary)]">Immutable Ledger</span>
           </div>
         </div>
 
         {/* INSTRUCTIONS */}
-        <div className="p-4 rounded-2xl bg-[rgba(64,133,118,0.2)] border border-[rgba(138,216,184,0.25)] space-y-1.5 text-xs font-sans">
-          <span className="font-mono text-[10px] font-bold text-[#8AD8B8] uppercase tracking-wider block">
+        <div className="p-4 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-1.5 text-xs font-sans">
+          <span className="font-mono text-[10px] font-bold text-[var(--color-accent)] uppercase tracking-wider block">
             SUPERINTENDENT RESOLUTION INSTRUCTIONS
           </span>
-          <p className="text-[#FFF4E2]/90 leading-relaxed">
+          <p className="text-[var(--color-ink-secondary)] leading-relaxed">
             {data.next_action}
           </p>
         </div>
@@ -284,49 +282,49 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
       {/* ========================================================================= */}
       {/* 34 EXCEPTIONS RESOLVER TABLE */}
       {/* ========================================================================= */}
-      <div className="bg-[rgba(19,45,40,0.85)] border border-[rgba(138,216,184,0.25)] rounded-3xl p-6 sm:p-8 shadow-xl backdrop-blur-xl space-y-6">
+      <div className="bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-xl p-6 sm:p-8 shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
-              <Users size={18} className="text-[#8AD8B8]" />
+            <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)] flex items-center gap-2">
+              <Users size={18} className="text-[var(--color-accent)]" />
               Unresolved Candidate Items ({data.items.length})
             </h2>
-            <p className="text-xs text-[#8AD8B8]/80 mt-0.5">
+            <p className="text-xs text-[var(--color-ink-secondary)] mt-0.5">
               Review error codes and apply manual centre assignment overrides.
             </p>
           </div>
 
           {/* Search & Filter Bar */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8AD8B8]/60" size={14} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-ink-muted)]" size={14} />
               <input
                 type="text"
                 placeholder="Search candidate name or reg..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-[rgba(8,19,16,0.8)] border border-[rgba(138,216,184,0.25)] rounded-xl pl-9 pr-3 py-1.5 text-xs text-[#FFF4E2] focus:outline-none focus:border-[#8AD8B8]"
+                className="bg-[var(--color-surface-sunken)] border border-[var(--color-border)] rounded-lg pl-9 pr-3 py-1.5 text-xs text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-border-focus)] transition-colors"
               />
             </div>
 
-            <div className="flex items-center gap-1 bg-[rgba(8,19,16,0.6)] p-1 rounded-xl border border-[rgba(138,216,184,0.2)] text-[11px] font-mono">
+            <div className="flex items-center gap-1 bg-[var(--color-surface-sunken)] p-1 rounded-lg border border-[var(--color-border)] text-[11px] font-mono">
               <button
                 onClick={() => setSelectedFilter("ALL")}
-                className={cn("px-2.5 py-1 rounded-lg transition-colors", selectedFilter === "ALL" ? "bg-[#408576] text-[#FFF4E2]" : "text-[#8AD8B8]/70")}
+                className={cn("px-2.5 py-1 rounded font-semibold transition-colors", selectedFilter === "ALL" ? "bg-[var(--color-surface-raised)] text-[var(--color-ink)] shadow-2xs" : "text-[var(--color-ink-secondary)]")}
               >
                 All
               </button>
               <button
                 onClick={() => setSelectedFilter("CENTRE_FULL")}
-                className={cn("px-2.5 py-1 rounded-lg transition-colors", selectedFilter === "CENTRE_FULL" ? "bg-[#408576] text-[#FFF4E2]" : "text-[#8AD8B8]/70")}
+                className={cn("px-2.5 py-1 rounded font-semibold transition-colors", selectedFilter === "CENTRE_FULL" ? "bg-[var(--color-surface-raised)] text-[var(--color-ink)] shadow-2xs" : "text-[var(--color-ink-secondary)]")}
               >
-                Capacity (23)
+                Capacity (22)
               </button>
               <button
                 onClick={() => setSelectedFilter("ADDRESS_MISSING")}
-                className={cn("px-2.5 py-1 rounded-lg transition-colors", selectedFilter === "ADDRESS_MISSING" ? "bg-[#408576] text-[#FFF4E2]" : "text-[#8AD8B8]/70")}
+                className={cn("px-2.5 py-1 rounded font-semibold transition-colors", selectedFilter === "ADDRESS_MISSING" ? "bg-[var(--color-surface-raised)] text-[var(--color-ink)] shadow-2xs" : "text-[var(--color-ink-secondary)]")}
               >
-                Address (11)
+                Address (12)
               </button>
             </div>
           </div>
@@ -337,121 +335,77 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
           {filteredItems.map((item, idx) => (
             <div
               key={item.id || idx}
-              className="p-4 rounded-2xl bg-[rgba(8,19,16,0.6)] border border-[rgba(138,216,184,0.18)] space-y-2.5"
+              className="p-4 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-2.5"
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <span className="font-bold text-[#FFF4E2] text-sm block">{item.candidate_name}</span>
-                  <span className="font-mono text-[10px] text-[#8AD8B8]/70">{item.candidate_reg_no} · {item.candidate_city || "Unspecified"}</span>
+                  <span className="font-bold text-[var(--color-ink)] text-sm block">{item.candidate_name}</span>
+                  <span className="font-mono text-[10px] text-[var(--color-ink-secondary)]">{item.candidate_reg_no} &middot; {item.candidate_city || "Unspecified"}</span>
                 </div>
                 <span className={cn(
                   "px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase shrink-0",
-                  item.error_code === "CENTRE_FULL" ? "bg-amber-500/20 text-amber-300" : "bg-rose-500/20 text-rose-300"
+                  item.error_code === "CENTRE_FULL" ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" : "bg-blue-500/10 text-blue-600 dark:text-blue-400"
                 )}>
                   {item.error_code}
                 </span>
               </div>
-
-              <p className="text-[11px] text-[#8AD8B8]/80 leading-relaxed bg-[rgba(19,45,40,0.5)] p-2 rounded-xl border border-[rgba(138,216,184,0.1)]">
-                {item.error_detail}
-              </p>
-
-              <div className="space-y-1 pt-1">
-                <label className="block text-[10px] font-mono text-[#8AD8B8] uppercase">Target Allocation</label>
+              <p className="text-xs text-[var(--color-ink-secondary)]">{item.error_detail}</p>
+              <div>
+                <label className="text-[10px] font-mono text-[var(--color-ink-muted)] block mb-1 uppercase font-bold">Assign Buffer Venue</label>
                 <select
-                  value={resolutionTarget[item.candidate_id] || "c4"}
-                  onChange={(e) => {
-                    setResolutionTarget({
-                      ...resolutionTarget,
-                      [item.candidate_id]: e.target.value,
-                    });
-                  }}
                   disabled={isResolved}
-                  className="w-full bg-[rgba(8,19,16,0.9)] border border-[rgba(138,216,184,0.3)] rounded-xl px-3 py-2 text-xs text-[#FFF4E2] focus:outline-none focus:border-[#8AD8B8]"
+                  value={resolutionTarget[item.candidate_id] || "c4"}
+                  onChange={(e) => setResolutionTarget({ ...resolutionTarget, [item.candidate_id]: e.target.value })}
+                  className="w-full bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-lg px-2.5 py-1.5 text-xs text-[var(--color-ink)]"
                 >
-                  <option value="c4">Chennai Main - Hub D (Buffer)</option>
-                  <option value="c1">Mumbai Hub A (Override)</option>
-                  <option value="c2">Delhi Hub B (Override)</option>
-                  <option value="c3">Bengaluru Hub C (Override)</option>
+                  <option value="c4">Chennai Hub D (387 Seats Available)</option>
+                  <option value="c5">Delhi Reserve Lab 09 (150 Seats)</option>
+                  <option value="c6">Mumbai Satellite Hall 03 (120 Seats)</option>
                 </select>
-              </div>
-
-              <div className="flex items-center justify-between pt-1 border-t border-[rgba(138,216,184,0.1)]">
-                <span className="text-[10px] font-mono text-[#8AD8B8]/60">Status</span>
-                <span className={cn(
-                  "inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-mono text-[9px] font-bold",
-                  isResolved ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"
-                )}>
-                  {isResolved ? "RESOLVED ✓" : "NEEDS RESOLUTION"}
-                </span>
               </div>
             </div>
           ))}
         </div>
 
-        {/* DESKTOP & TABLET TABLE VIEW (Screen >= sm) */}
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full text-left text-xs font-sans">
-            <thead>
-              <tr className="border-b border-[rgba(138,216,184,0.18)] font-mono text-[11px] text-[#8AD8B8] uppercase">
-                <th className="pb-3 px-3">Candidate</th>
-                <th className="pb-3 px-3">Reg No &amp; City</th>
-                <th className="pb-3 px-3">Exception Code</th>
-                <th className="pb-3 px-3">Resolution Target</th>
-                <th className="pb-3 px-3 text-right">Status</th>
+        {/* DESKTOP TABLE VIEW */}
+        <div className="hidden sm:block overflow-x-auto rounded-xl border border-[var(--color-border)]">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[var(--color-surface-sunken)] border-b border-[var(--color-border)] text-[11px] font-mono text-[var(--color-ink-muted)] uppercase tracking-wider">
+              <tr>
+                <th className="py-3 px-4">Candidate</th>
+                <th className="py-3 px-4">Reg No</th>
+                <th className="py-3 px-4">Location</th>
+                <th className="py-3 px-4">Failure Code</th>
+                <th className="py-3 px-4">Failure Detail</th>
+                <th className="py-3 px-4">Assign Resolution Venue</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[rgba(138,216,184,0.1)]">
+            <tbody className="divide-y divide-[var(--color-border-subtle)]">
               {filteredItems.map((item, idx) => (
-                <tr key={item.id || idx} className="hover:bg-[rgba(64,133,118,0.15)] transition-colors">
-                  <td className="py-3 px-3">
-                    <span className="font-bold text-[#FFF4E2] block">{item.candidate_name}</span>
-                    <span className="font-mono text-[10px] text-[#8AD8B8]/70">{item.candidate_id}</span>
-                  </td>
-
-                  <td className="py-3 px-3">
-                    <span className="font-mono text-[11px] text-[#FFF4E2] block">{item.candidate_reg_no}</span>
-                    <span className="text-[11px] text-[#8AD8B8]/80">{item.candidate_city || "Unspecified"}</span>
-                  </td>
-
-                  <td className="py-3 px-3">
+                <tr key={item.id || idx} className="hover:bg-[var(--color-surface-sunken)] transition-colors">
+                  <td className="py-3 px-4 font-semibold text-[var(--color-ink)]">{item.candidate_name}</td>
+                  <td className="py-3 px-4 font-mono text-[var(--color-ink-secondary)]">{item.candidate_reg_no}</td>
+                  <td className="py-3 px-4 text-[var(--color-ink-secondary)]">{item.candidate_city || "Unspecified"}</td>
+                  <td className="py-3 px-4">
                     <span className={cn(
-                      "inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase",
-                      item.error_code === "CENTRE_FULL" ? "bg-amber-500/20 text-amber-300" : "bg-rose-500/20 text-rose-300"
+                      "px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase",
+                      item.error_code === "CENTRE_FULL" ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" : "bg-blue-500/10 text-blue-600 dark:text-blue-400"
                     )}>
                       {item.error_code}
                     </span>
-                    <p className="text-[10px] text-[#8AD8B8]/70 max-w-xs mt-0.5 truncate">{item.error_detail}</p>
                   </td>
-
-                  <td className="py-3 px-3">
+                  <td className="py-3 px-4 text-[var(--color-ink-secondary)] max-w-xs truncate">{item.error_detail}</td>
+                  <td className="py-3 px-4">
                     <select
-                      value={resolutionTarget[item.candidate_id] || "c4"}
-                      onChange={(e) => {
-                        setResolutionTarget({
-                          ...resolutionTarget,
-                          [item.candidate_id]: e.target.value,
-                        });
-                      }}
                       disabled={isResolved}
-                      className="bg-[rgba(8,19,16,0.8)] border border-[rgba(138,216,184,0.25)] rounded-xl px-2.5 py-1 text-xs text-[#FFF4E2] focus:outline-none focus:border-[#8AD8B8]"
+                      value={resolutionTarget[item.candidate_id] || "c4"}
+                      onChange={(e) => setResolutionTarget({ ...resolutionTarget, [item.candidate_id]: e.target.value })}
+                      className="bg-[var(--color-surface-sunken)] border border-[var(--color-border)] rounded-lg px-2.5 py-1 text-xs text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-border-focus)] transition-colors"
                     >
-                      <option value="c4">Chennai Main - Hub D (Buffer Capacity)</option>
-                      <option value="c1">Mumbai Hub A (Superintendent Override)</option>
-                      <option value="c2">Delhi Hub B (Superintendent Override)</option>
-                      <option value="c3">Bengaluru Hub C (Superintendent Override)</option>
+                      <option value="c4">Chennai Hub D (387 Seats Buffer)</option>
+                      <option value="c5">Delhi Reserve Lab 09 (150 Seats)</option>
+                      <option value="c6">Mumbai Satellite Hall 03 (120 Seats)</option>
                     </select>
-                  </td>
-
-                  <td className="py-3 px-3 text-right">
-                    <span className={cn(
-                      "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold",
-                      isResolved
-                        ? "bg-emerald-500/20 text-emerald-300"
-                        : "bg-amber-500/20 text-amber-300"
-                    )}>
-                      {isResolved ? "RESOLVED ✓" : "NEEDS RESOLUTION"}
-                    </span>
                   </td>
                 </tr>
               ))}
@@ -459,23 +413,28 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
           </table>
         </div>
 
-        {/* BOTTOM ACTION BAR */}
-        <div className="pt-4 border-t border-[rgba(138,216,184,0.15)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="text-xs text-[#8AD8B8]/80 font-mono">
-            Showing {filteredItems.length} of {data.items.length} candidate exceptions
-          </div>
+        {/* BOTTOM RESOLUTION BAR */}
+        {!isResolved && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-[var(--color-border)]">
+            <div className="text-xs text-[var(--color-ink-secondary)]">
+              Resolution Strategy: All <strong>34 exceptions</strong> will be routed to reserve buffer venues.
+            </div>
 
-          {!isResolved && (
             <button
               onClick={handleResolve}
-              disabled={resolving}
-              className="px-6 py-3 rounded-2xl bg-[#8AD8B8] hover:bg-[#a0e8cb] text-[#132D28] font-bold text-sm transition-all shadow-[0_10px_25px_-5px_rgba(138,216,184,0.6)] flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+              disabled={resolving || !isClaimed}
+              className={cn(
+                "px-6 py-2.5 rounded-lg font-bold text-xs transition-all flex items-center gap-2 shadow-xs",
+                isClaimed
+                  ? "bg-[var(--color-success)] hover:bg-emerald-600 text-white cursor-pointer active:scale-95"
+                  : "bg-[var(--color-surface-sunken)] text-[var(--color-ink-muted)] border border-[var(--color-border)] cursor-not-allowed"
+              )}
             >
-              {resolving ? <RefreshCw className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
-              <span>Resolve & Allocate All 34 Candidates</span>
+              {resolving ? <RefreshCw className="animate-spin" size={14} /> : <CheckCircle2 size={14} />}
+              <span>{isClaimed ? "Commit Override & Close Handoff" : "Must Claim Handoff First"}</span>
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

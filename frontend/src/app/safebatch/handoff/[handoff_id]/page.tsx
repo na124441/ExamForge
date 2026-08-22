@@ -9,7 +9,7 @@ export default function SafeBatchHandoffPage() {
   const handoffId = (params?.handoff_id as string) || "HO-2026-0822-0034";
 
   return (
-    <div className="min-h-screen bg-[#081310] text-[#FFF4E2] px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-ink)] px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto font-sans animate-fade-in">
       <SafeBatchHandoffDetail handoffId={handoffId} />
     </div>
   );
