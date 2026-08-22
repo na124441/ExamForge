@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from app.database import engine, Base, SessionLocal
 import app.models as models
 from app.authority.dashboard import get_authority_dashboard_metrics
+from app.results.routes import lookup_candidate_result, ResultLookupRequest
 
 class TestDatabasePersistence(unittest.TestCase):
     @classmethod
@@ -38,10 +39,13 @@ class TestDatabasePersistence(unittest.TestCase):
         print(f"  ✓ Verified {len(exams)} Real Examination Catalogs in DB.")
 
     def test_03_candidate_workflow_persistence(self):
+        ts = int(datetime.now().timestamp() * 1000)
+        test_email = f"test_candidate_{ts}@examforge.org"
+        test_phone = f"+91 99{ts % 100000000:08d}"
+
         # 1. Create candidate user & profile
-        test_email = f"test_candidate_{int(datetime.now().timestamp())}@examforge.org"
         user = models.User(
-            id=f"USR-TEST-{int(datetime.now().timestamp())}",
+            id=f"USR-TEST-{ts}",
             name="Test Persistence Candidate",
             email=test_email,
             password_hash="test_hash_pbkdf2",
@@ -50,13 +54,13 @@ class TestDatabasePersistence(unittest.TestCase):
         self.db.add(user)
         self.db.commit()
 
-        student_id = f"EXF-CAN-TEST-{int(datetime.now().timestamp())}"
+        student_id = f"EXF-CAN-TEST-{ts}"
         profile = models.CandidateProfile(
             user_id=user.id,
             candidate_student_id=student_id,
             full_name="Test Persistence Candidate",
             email=test_email,
-            phone="+91 9988776655",
+            phone=test_phone,
             dob="2007-05-10",
             gender="Male",
             category="General",
@@ -79,7 +83,7 @@ class TestDatabasePersistence(unittest.TestCase):
         self.assertEqual(reloaded_profile.aadhaar_status, "VERIFIED")
 
         # 3. Create Exam Application & Payment
-        app_num = f"APP-TEST-{int(datetime.now().timestamp())}"
+        app_num = f"APP-TEST-{ts}"
         exam_app = models.ExamApplication(
             application_number=app_num,
             exam_id="EXM-JEE-MAIN-2026",
@@ -92,7 +96,7 @@ class TestDatabasePersistence(unittest.TestCase):
         fresh_db.add(exam_app)
         fresh_db.commit()
 
-        tx_ref = f"TXN-TEST-{int(datetime.now().timestamp())}"
+        tx_ref = f"TXN-TEST-{ts}"
         payment = models.PaymentOrder(
             application_id=exam_app.id,
             candidate_id=reloaded_profile.id,
@@ -100,7 +104,7 @@ class TestDatabasePersistence(unittest.TestCase):
             vendor_id="VND-NTA-2026",
             amount=1000.0,
             transaction_ref=tx_ref,
-            bank_ref_no="UTR-998877661122",
+            bank_ref_no=f"UTR-{ts}",
             payment_method="UPI_DYNAMIC_QR",
             status="PAID",
             paid_at=datetime.now(timezone.utc)
@@ -128,6 +132,21 @@ class TestDatabasePersistence(unittest.TestCase):
         self.assertIn("verdict", metrics)
         self.assertGreaterEqual(metrics["center_ops"]["total_candidates"], 0)
         print(f"  ✓ Verified Authority Executive Dashboard aggregates real DB metrics (Trust Score: {metrics['trust_ops']['score']}%).")
+
+    def test_05_direct_candidate_result_lookup(self):
+        # Test student result lookup from database
+        res = lookup_candidate_result(
+            ResultLookupRequest(registration_number="REG-2026-JEE-9812", exam_code="JEE-MAIN-2026"),
+            self.db
+        )
+        self.assertIsNotNone(res)
+        self.assertEqual(res.exam_code, "JEE-MAIN-2026")
+        self.assertGreater(res.total_marks_obtained, 0)
+        self.assertGreater(res.percentile, 50.0)
+        self.assertGreater(len(res.subjects), 0)
+        self.assertTrue(res.digital_signature.startswith("ECDSA_"))
+        self.assertEqual(len(res.result_hash), 64)
+        print(f"  ✓ Verified Direct Student Result Lookup: Candidate '{res.candidate_name}', Score: {res.total_marks_obtained}/{res.max_total_marks}, Status: {res.qualifying_status}.")
 
 if __name__ == "__main__":
     print("\n========================================================")

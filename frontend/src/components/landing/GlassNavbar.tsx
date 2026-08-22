@@ -75,6 +75,13 @@ export function GlassNavbar({ onOpenAuthModal }: GlassNavbarProps) {
               Security
             </Link>
             <Link
+              href="/result-portal"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all flex items-center gap-1.5 shadow-2xs"
+            >
+              <Shield size={12} className="text-emerald-400" />
+              <span>Scorecards &amp; Results</span>
+            </Link>
+            <Link
               href="/portals"
               className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-[var(--color-accent)] hover:text-[var(--color-ink)] hover:bg-[var(--color-accent-surface)] transition-all flex items-center gap-1"
             >
@@ -150,6 +157,13 @@ export function GlassNavbar({ onOpenAuthModal }: GlassNavbarProps) {
                 className="px-3 py-2 min-h-[44px] flex items-center rounded-lg text-sm font-medium text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)]"
               >
                 Security & Hardening
+              </Link>
+              <Link
+                href="/result-portal"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 min-h-[44px] flex items-center rounded-lg text-sm font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20"
+              >
+                📜 Candidate Scorecards &amp; Results
               </Link>
               <Link
                 href="/portals"
