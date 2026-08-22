@@ -332,13 +332,70 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
           </div>
         </div>
 
-        {/* EXCEPTION ITEMS TABLE */}
-        <div className="overflow-x-auto">
+        {/* MOBILE CARD VIEW (Phones < sm) */}
+        <div className="sm:hidden space-y-3">
+          {filteredItems.map((item, idx) => (
+            <div
+              key={item.id || idx}
+              className="p-4 rounded-2xl bg-[rgba(8,19,16,0.6)] border border-[rgba(138,216,184,0.18)] space-y-2.5"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="font-bold text-[#FFF4E2] text-sm block">{item.candidate_name}</span>
+                  <span className="font-mono text-[10px] text-[#8AD8B8]/70">{item.candidate_reg_no} · {item.candidate_city || "Unspecified"}</span>
+                </div>
+                <span className={cn(
+                  "px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase shrink-0",
+                  item.error_code === "CENTRE_FULL" ? "bg-amber-500/20 text-amber-300" : "bg-rose-500/20 text-rose-300"
+                )}>
+                  {item.error_code}
+                </span>
+              </div>
+
+              <p className="text-[11px] text-[#8AD8B8]/80 leading-relaxed bg-[rgba(19,45,40,0.5)] p-2 rounded-xl border border-[rgba(138,216,184,0.1)]">
+                {item.error_detail}
+              </p>
+
+              <div className="space-y-1 pt-1">
+                <label className="block text-[10px] font-mono text-[#8AD8B8] uppercase">Target Allocation</label>
+                <select
+                  value={resolutionTarget[item.candidate_id] || "c4"}
+                  onChange={(e) => {
+                    setResolutionTarget({
+                      ...resolutionTarget,
+                      [item.candidate_id]: e.target.value,
+                    });
+                  }}
+                  disabled={isResolved}
+                  className="w-full bg-[rgba(8,19,16,0.9)] border border-[rgba(138,216,184,0.3)] rounded-xl px-3 py-2 text-xs text-[#FFF4E2] focus:outline-none focus:border-[#8AD8B8]"
+                >
+                  <option value="c4">Chennai Main - Hub D (Buffer)</option>
+                  <option value="c1">Mumbai Hub A (Override)</option>
+                  <option value="c2">Delhi Hub B (Override)</option>
+                  <option value="c3">Bengaluru Hub C (Override)</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-between pt-1 border-t border-[rgba(138,216,184,0.1)]">
+                <span className="text-[10px] font-mono text-[#8AD8B8]/60">Status</span>
+                <span className={cn(
+                  "inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-mono text-[9px] font-bold",
+                  isResolved ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"
+                )}>
+                  {isResolved ? "RESOLVED ✓" : "NEEDS RESOLUTION"}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* DESKTOP & TABLET TABLE VIEW (Screen >= sm) */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left text-xs font-sans">
             <thead>
               <tr className="border-b border-[rgba(138,216,184,0.18)] font-mono text-[11px] text-[#8AD8B8] uppercase">
                 <th className="pb-3 px-3">Candidate</th>
-                <th className="pb-3 px-3">Reg No & City</th>
+                <th className="pb-3 px-3">Reg No &amp; City</th>
                 <th className="pb-3 px-3">Exception Code</th>
                 <th className="pb-3 px-3">Resolution Target</th>
                 <th className="pb-3 px-3 text-right">Status</th>

@@ -215,7 +215,7 @@ export function SafeBatchStudio() {
         </div>
 
         {/* STEPPER PROGRESS */}
-        <div className="mt-8 pt-6 border-t border-[rgba(138,216,184,0.15)] grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3 text-xs">
+        <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-[rgba(138,216,184,0.15)] flex sm:grid sm:grid-cols-5 overflow-x-auto pb-2 sm:pb-0 gap-2 sm:gap-3 text-xs scrollbar-thin">
           {[
             { num: 1, label: "01 Scope" },
             { num: 2, label: "02 Impact Preview" },
@@ -226,7 +226,7 @@ export function SafeBatchStudio() {
             <div
               key={s.num}
               className={cn(
-                "px-3 py-2 rounded-xl font-mono flex items-center gap-2 transition-all",
+                "px-3 py-2 rounded-xl font-mono flex items-center gap-2 transition-all shrink-0 min-w-[125px] sm:min-w-0",
                 step === s.num
                   ? "bg-[#408576] text-[#FFF4E2] font-bold border border-[#8AD8B8] shadow-md"
                   : step > s.num
@@ -235,7 +235,7 @@ export function SafeBatchStudio() {
               )}
             >
               <span className={cn(
-                "w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold",
+                "w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0",
                 step > s.num ? "bg-[#8AD8B8] text-[#132D28]" : step === s.num ? "bg-[#FFF4E2] text-[#132D28]" : "bg-white/10"
               )}>
                 {step > s.num ? "✓" : s.num}

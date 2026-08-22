@@ -147,7 +147,7 @@ export function HeroOrbitalSystem() {
       {/* Central Spatial EF Node */}
       <div className="relative z-20 flex flex-col items-center justify-center">
         <div
-          className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-3.5 flex items-center justify-center transition-transform duration-500 hover:scale-105 overflow-hidden group"
+          className="relative w-16 h-16 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-2xl sm:rounded-3xl p-2.5 sm:p-3.5 flex items-center justify-center transition-transform duration-500 hover:scale-105 overflow-hidden group"
           style={{
             background: "radial-gradient(circle at 40% 35%, rgba(64, 133, 118, 0.65), rgba(19, 45, 40, 0.95) 75%)",
             border: "1.5px solid rgba(138, 216, 184, 0.45)",
@@ -166,11 +166,11 @@ export function HeroOrbitalSystem() {
           </div>
 
           {/* Central Halo Ring */}
-          <div className="absolute inset-0 rounded-3xl border border-[rgba(255,255,255,0.2)] pointer-events-none" />
+          <div className="absolute inset-0 rounded-2xl sm:rounded-3xl border border-[rgba(255,255,255,0.2)] pointer-events-none" />
         </div>
 
         {/* Cryptographic Ticker Badge */}
-        <div className="mt-3 px-3 py-1 rounded-full bg-[rgba(19,45,40,0.85)] border border-[rgba(138,216,184,0.3)] shadow-lg backdrop-blur-md flex items-center gap-1.5 font-mono text-[11px] text-[#8AD8B8]">
+        <div className="mt-2 sm:mt-3 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[rgba(19,45,40,0.85)] border border-[rgba(138,216,184,0.3)] shadow-lg backdrop-blur-md flex items-center gap-1.5 font-mono text-[9px] sm:text-[11px] text-[#8AD8B8]">
           <span className="w-1.5 h-1.5 rounded-full bg-[#8AD8B8] animate-ping" />
           <span>CHAIN&nbsp;VERIFIED</span>
         </div>
@@ -201,7 +201,7 @@ export function HeroOrbitalSystem() {
             {/* Glass Node Surface */}
             <div
               className={cn(
-                "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center transition-all duration-500",
+                "w-9 h-9 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500",
                 isActive
                   ? "bg-[#8AD8B8] text-[#132D28] border-2 border-white shadow-[0_0_30px_rgba(138,216,184,0.8)]"
                   : "bg-[rgba(19,45,40,0.75)] text-[#8AD8B8] border border-[rgba(138,216,184,0.25)] hover:border-[#8AD8B8] shadow-lg backdrop-blur-xl hover:bg-[rgba(64,133,118,0.3)]"
@@ -212,19 +212,20 @@ export function HeroOrbitalSystem() {
                   : "0 10px 25px -5px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.15)",
               }}
             >
-              <Icon size={22} strokeWidth={isActive ? 2.4 : 1.8} />
+              <Icon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" strokeWidth={isActive ? 2.4 : 1.8} />
             </div>
 
             {/* Floating Text Pill */}
             <span
               className={cn(
-                "mt-1.5 px-2 py-0.5 rounded-md font-mono text-[10px] uppercase tracking-wider transition-all duration-300 backdrop-blur-md shadow-xs",
+                "mt-1 px-1.5 sm:px-2 py-0.5 rounded-md font-mono text-[8px] sm:text-[10px] uppercase tracking-wider transition-all duration-300 backdrop-blur-md shadow-xs",
                 isActive
                   ? "bg-[rgba(19,45,40,0.95)] text-[#FFF4E2] border border-[#8AD8B8] font-bold"
                   : "bg-[rgba(19,45,40,0.6)] text-[#8AD8B8]/80 border border-[rgba(138,216,184,0.15)] group-hover:text-[#FFF4E2]"
               )}
             >
-              {node.label}
+              <span className="hidden sm:inline">{node.label}</span>
+              <span className="sm:hidden">{node.shortLabel}</span>
             </span>
           </div>
         );

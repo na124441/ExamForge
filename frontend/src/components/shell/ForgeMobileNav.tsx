@@ -125,6 +125,7 @@ function getRoleNavigation(role: string): NavSection[] {
     {
       title: "Centres & Delivery",
       items: [
+        { label: "SafeBatch", path: "/safebatch", icon: Sparkles, badge: "Safe" },
         { label: "Centres", path: "/center-onboarding", icon: Building2 },
         { label: "Biometrics", path: "/candidate-verification", icon: Users },
         { label: "Anti-Collusion", path: "/seat-map", icon: Layers },
