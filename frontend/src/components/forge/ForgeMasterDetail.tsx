@@ -60,84 +60,84 @@ export function ForgeMasterDetail<T>({
   const showDetail = !isMobile || (isMobile && !!selectedItem);
 
   return (
-    <div className={cn("flex w-full h-full overflow-hidden", className)}>
+    <div className={cn("flex w-full h-full overflow-hidden font-sans", className)}>
+      {/* 1. MASTER LIST PANEL */}
       {showList && (
         <div 
           className={cn(
-            "flex flex-col h-full bg-[var(--surface-panel)] border-r border-[var(--border-subtle)] shrink-0",
+            "flex flex-col h-full bg-[var(--color-surface-raised)] border-r border-[var(--color-border)] shrink-0",
             isMobile ? "w-full" : ""
           )}
           style={{ width: !isMobile ? listWidth : undefined }}
         >
           {(onSearchChange !== undefined || filterSlot) && (
-            <div className="p-4 border-b border-[var(--border-subtle)] flex flex-col gap-3">
+            <div className="p-3.5 border-b border-[var(--color-border)] flex flex-col gap-2.5 bg-[var(--color-surface-sunken)]">
               {onSearchChange !== undefined && (
                 <div className="relative flex items-center w-full">
-                  <Search className="absolute left-3 w-4 h-4 text-[var(--text-muted)]" />
+                  <Search className="absolute left-3 w-4 h-4 text-[var(--color-ink-muted)]" />
                   <input
                     type="text"
                     value={searchValue || ''}
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder={searchPlaceholder}
-                    className="w-full bg-[var(--surface-interactive)] rounded-[var(--radius-control)] text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] pl-9 pr-3 py-2 outline-none focus:ring-1 focus:ring-[var(--accent-primary)]"
+                    className="w-full bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-lg text-xs text-[var(--color-ink)] placeholder:text-[var(--color-ink-muted)] pl-9 pr-3 py-2 outline-none focus:border-[var(--color-border-focus)] transition-colors font-sans"
                   />
                 </div>
               )}
               {filterSlot && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {filterSlot}
                 </div>
               )}
             </div>
           )}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto divide-y divide-[var(--color-border-subtle)]">
             {items.length === 0 ? (
-              <div className="p-8 text-center text-sm text-[var(--text-muted)]">
+              <div className="p-8 text-center text-xs text-[var(--color-ink-muted)] font-sans">
                 {emptyListMessage}
               </div>
             ) : (
-              <div className="flex flex-col">
-                {items.map((item) => {
-                  const id = getItemId(item);
-                  const isSelected = selectedId === id;
-                  return (
-                    <div
-                      key={id}
-                      onClick={() => onSelect(id)}
-                      className={cn(
-                        "w-full cursor-pointer transition-colors",
-                        isSelected 
-                          ? "bg-[var(--accent-primary-surface)] border-l-2 border-[var(--accent-primary)]" 
-                          : "border-l-2 border-transparent hover:bg-[var(--surface-interactive)]"
-                      )}
-                    >
-                      {renderListItem(item, isSelected)}
-                    </div>
-                  );
-                })}
-              </div>
+              items.map((item) => {
+                const id = getItemId(item);
+                const isSelected = selectedId === id;
+                return (
+                  <div
+                    key={id}
+                    onClick={() => onSelect(id)}
+                    className={cn(
+                      "w-full cursor-pointer transition-colors duration-[var(--duration-fast)]",
+                      isSelected 
+                        ? "bg-[var(--color-accent-surface)] border-l-3 border-[var(--color-accent)]" 
+                        : "border-l-3 border-transparent hover:bg-[var(--color-surface-sunken)]"
+                    )}
+                  >
+                    {renderListItem(item, isSelected)}
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
       )}
 
+      {/* 2. DETAIL PANEL */}
       {showDetail && (
-        <div className="flex flex-col flex-1 h-full bg-[var(--surface-workspace)] overflow-y-auto">
+        <div className="flex flex-col flex-1 h-full bg-[var(--color-surface)] overflow-y-auto">
           {isMobile && (
-            <div className="sticky top-0 z-10 flex items-center p-3 border-b border-[var(--border-subtle)] bg-[var(--surface-workspace)]">
+            <div className="sticky top-0 z-20 flex items-center p-3 border-b border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-xs">
               <button
                 onClick={() => onSelect('')}
-                className="flex items-center text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                className="flex items-center text-xs font-bold text-[var(--color-accent)] hover:text-[var(--color-ink)] transition-colors py-1 px-2 rounded-lg hover:bg-[var(--color-surface-sunken)] cursor-pointer"
               >
-                <ChevronLeft className="w-5 h-5 mr-1" />
-                Back
+                <ChevronLeft className="w-4 h-4 mr-0.5" />
+                Back to List
               </button>
             </div>
           )}
           
           <div className="flex-1 relative">
             {!selectedItem ? (
-              <div className="flex items-center justify-center h-full">
+              <div className="flex items-center justify-center h-full p-8 text-center">
                 <ForgeEmptyState
                   title={emptyDetailTitle}
                   description={emptyDetailDescription}
@@ -147,10 +147,10 @@ export function ForgeMasterDetail<T>({
               <AnimatePresence mode="wait">
                 <motion.div
                   key={selectedId}
-                  initial={{ opacity: 0, x: 12 }}
+                  initial={{ opacity: 0, x: 8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 12 }}
-                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  exit={{ opacity: 0, x: 8 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
                   className="h-full w-full"
                 >
                   {renderDetail(selectedItem)}

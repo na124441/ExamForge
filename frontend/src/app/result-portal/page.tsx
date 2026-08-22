@@ -545,7 +545,51 @@ function ResultPortalContent() {
                     </span>
                   </div>
 
-                  <div className="overflow-x-auto rounded-xl border border-[var(--color-border)]">
+                  {/* Mobile Subject Cards (< 640px) */}
+                  <div className="sm:hidden flex flex-col gap-3">
+                    {result.subjects.map((sub) => (
+                      <div 
+                        key={sub.subject_code} 
+                        className="p-4 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-2.5"
+                      >
+                        <div className="flex items-start justify-between gap-2 border-b border-[var(--color-border-subtle)] pb-2">
+                          <div>
+                            <span className="font-bold text-xs text-[var(--color-ink)] block">
+                              {sub.subject_name}
+                            </span>
+                            <span className="text-[10px] font-mono text-[var(--color-ink-muted)]">
+                              Code: {sub.subject_code}
+                            </span>
+                          </div>
+                          <span className="px-2 py-0.5 rounded bg-[var(--color-success-surface)] text-[var(--color-success-text)] font-sans text-[10px] font-bold shrink-0">
+                            {sub.status}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                          <div>
+                            <span className="text-[10px] text-[var(--color-ink-muted)] uppercase block font-sans">Marks Obtained</span>
+                            <span className="font-bold text-sm text-[var(--color-ink)]">{sub.marks_obtained.toFixed(1)} / {sub.max_marks.toFixed(1)}</span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-[var(--color-ink-muted)] uppercase block font-sans">Percentile Score</span>
+                            <span className="font-bold text-sm text-[var(--color-accent)]">{sub.percentile.toFixed(4)} %tile</span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-[var(--color-ink-muted)] uppercase block font-sans">Accuracy Rate</span>
+                            <span className="font-bold text-[var(--color-success)]">{sub.accuracy_percent}%</span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-[var(--color-ink-muted)] uppercase block font-sans">Att / Corr / Incorr</span>
+                            <span className="font-bold text-[var(--color-ink)]">{sub.attempted} / <strong className="text-[var(--color-success)]">{sub.correct}</strong> / <strong className="text-red-500">{sub.incorrect}</strong></span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop & Tablet Table (>= 640px) */}
+                  <div className="hidden sm:block overflow-x-auto rounded-xl border border-[var(--color-border)]">
                     <table className="w-full text-left text-xs whitespace-nowrap">
                       <thead className="bg-[var(--color-surface-sunken)] border-b border-[var(--color-border)] text-[var(--color-ink-muted)] text-[11px] font-mono uppercase tracking-wider">
                         <tr>

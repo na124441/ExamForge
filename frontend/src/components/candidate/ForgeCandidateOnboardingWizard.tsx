@@ -575,8 +575,77 @@ export function ForgeCandidateOnboardingWizard() {
           </div>
         </div>
 
-        {/* 2. HORIZONTAL STEPPER NAVIGATION VIEWPORT */}
-        <div className="relative w-full overflow-hidden">
+        {/* 2. ADAPTIVE STEPPER NAVIGATION */}
+        
+        {/* A. MOBILE COMPACT PROGRESS CARD (< 640px) */}
+        {(() => {
+          const currentStepIdx = ONBOARDING_STEPS.findIndex(s => s.key === activeStep);
+          const currentDef = ONBOARDING_STEPS[currentStepIdx] || ONBOARDING_STEPS[0];
+          const prevDef = currentStepIdx > 0 ? ONBOARDING_STEPS[currentStepIdx - 1] : null;
+          const nextDef = currentStepIdx < ONBOARDING_STEPS.length - 1 ? ONBOARDING_STEPS[currentStepIdx + 1] : null;
+          const isNextAllowed = nextDef ? getStepStatus(nextDef.key) !== "LOCKED" : false;
+
+          return (
+            <div className="sm:hidden p-4 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-3">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-[var(--color-ink-muted)] font-bold">
+                  Step {currentDef.number} of {ONBOARDING_STEPS.length}
+                </span>
+                <span className="text-[var(--color-accent)] font-extrabold">
+                  {progressPercent}% Complete
+                </span>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-full h-2 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] overflow-hidden">
+                <div 
+                  className="h-full bg-[var(--color-accent)] transition-all duration-300 rounded-full"
+                  style={{ width: `${Math.max(5, progressPercent)}%` }}
+                />
+              </div>
+
+              {/* Current Step Banner */}
+              <div className="flex items-center justify-between gap-3 pt-1">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-[var(--color-accent-surface)] text-[var(--color-accent)] border border-[var(--color-accent)]/20 flex items-center justify-center shrink-0">
+                    <currentDef.icon size={16} />
+                  </div>
+                  <div className="min-w-0">
+                    <h2 className="text-xs font-bold text-[var(--color-ink)] truncate">
+                      {currentDef.label}
+                    </h2>
+                    <p className="text-[10px] text-[var(--color-ink-secondary)] truncate">
+                      {currentDef.shortDesc}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Quick Step Switcher */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={() => prevDef && handleStepClick(prevDef.key)}
+                    disabled={!prevDef}
+                    className="p-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-[var(--color-ink)] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--color-surface)] active:scale-95"
+                    aria-label="Previous step"
+                  >
+                    <ChevronLeft size={14} />
+                  </button>
+                  <button
+                    onClick={() => nextDef && handleStepClick(nextDef.key)}
+                    disabled={!nextDef || !isNextAllowed}
+                    className="p-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-[var(--color-ink)] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--color-surface)] active:scale-95"
+                    aria-label="Next step"
+                  >
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* B. DESKTOP & TABLET HORIZONTAL STEPPER (>= 640px) */}
+        <div className="hidden sm:block relative w-full overflow-hidden">
           {canScrollLeft && (
             <button
               onClick={() => handleScrollStepper("left")}

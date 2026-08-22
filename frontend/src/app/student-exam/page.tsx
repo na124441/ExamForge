@@ -744,73 +744,89 @@ export default function StudentExamWindow() {
           </div>
         </main>
 
-        {/* Question Palette Navigator Drawer */}
+        {/* Question Palette Navigator Drawer / Mobile Bottom Sheet */}
         {showNavigator && (
-          <div className="w-80 bg-white border-l border-slate-200 p-6 flex flex-col justify-between shadow-lg font-sans">
-            <div>
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-mono">
-                  Question Palette
-                </h3>
-                <button 
-                  onClick={() => setShowNavigator(false)}
-                  className="text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100"
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:relative md:inset-auto md:z-auto md:w-80 md:flex-col md:bg-white md:border-l md:border-slate-200 shadow-xl md:shadow-lg font-sans">
+            <div 
+              className="w-full max-h-[85vh] md:max-h-none overflow-y-auto bg-white rounded-t-3xl md:rounded-none p-6 flex flex-col justify-between h-full space-y-4 animate-in slide-in-from-bottom-5 md:animate-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Mobile Drag Indicator */}
+              <div className="md:hidden w-12 h-1.5 rounded-full bg-slate-300 mx-auto -mt-2 mb-2 shrink-0" />
+
+              <div>
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-mono">
+                    Question Palette ({questions.length} Items)
+                  </h3>
+                  <button 
+                    onClick={() => setShowNavigator(false)}
+                    className="text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 cursor-pointer"
+                    aria-label="Close question roster"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Status Counters */}
+                <div className="grid grid-cols-2 gap-2 my-4 text-xs font-medium">
+                  <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-100 flex items-center justify-between font-mono">
+                    <span>Answered</span>
+                    <span className="font-bold">{answeredCount}</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-rose-50 text-rose-800 border border-rose-100 flex items-center justify-between font-mono">
+                    <span>Unanswered</span>
+                    <span className="font-bold">{unansweredCount}</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-100 flex items-center justify-between font-mono col-span-2">
+                    <span>Marked for Review</span>
+                    <span className="font-bold">{markedCount}</span>
+                  </div>
+                </div>
+
+                {/* Matrix Grid */}
+                <div className="grid grid-cols-5 sm:grid-cols-5 gap-2 pt-2">
+                  {questions.map((q, idx) => {
+                    const isCurrent = idx === currentIndex;
+                    const isAns = !!selectedAnswers[q.id];
+                    const isMarked = !!markedForReview[q.id];
+
+                    return (
+                      <button
+                        key={q.id}
+                        onClick={() => {
+                          setCurrentIndex(idx);
+                          // Auto close drawer on mobile for seamless answering
+                          if (window.innerWidth < 768) setShowNavigator(false);
+                        }}
+                        className={cn(
+                          "h-11 rounded-xl font-mono text-xs font-bold transition-all flex items-center justify-center cursor-pointer border shadow-2xs",
+                          isCurrent && "ring-2 ring-blue-600 ring-offset-2",
+                          isAns && !isMarked && "bg-emerald-600 text-white border-emerald-700",
+                          isMarked && "bg-amber-400 text-slate-900 border-amber-500",
+                          !isAns && !isMarked && "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
+                        )}
+                      >
+                        {idx + 1}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Final Submit Trigger in Navigator */}
+              <div className="pt-4 border-t border-slate-100">
+                <button
+                  onClick={() => {
+                    setShowNavigator(false);
+                    setShowSubmitModal(true);
+                  }}
+                  className="w-full py-3 min-h-[44px] bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
                 >
-                  <X className="w-4 h-4" />
+                  <CheckCircle2 className="w-4 h-4" />
+                  Finish & Submit Examination
                 </button>
               </div>
-
-              {/* Status Counters */}
-              <div className="grid grid-cols-2 gap-2 my-4 text-xs font-medium">
-                <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-100 flex items-center justify-between font-mono">
-                  <span>Answered</span>
-                  <span className="font-bold">{answeredCount}</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-rose-50 text-rose-800 border border-rose-100 flex items-center justify-between font-mono">
-                  <span>Unanswered</span>
-                  <span className="font-bold">{unansweredCount}</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-100 flex items-center justify-between font-mono col-span-2">
-                  <span>Marked for Review</span>
-                  <span className="font-bold">{markedCount}</span>
-                </div>
-              </div>
-
-              {/* Matrix Grid */}
-              <div className="grid grid-cols-5 gap-2 pt-2">
-                {questions.map((q, idx) => {
-                  const isCurrent = idx === currentIndex;
-                  const isAns = !!selectedAnswers[q.id];
-                  const isMarked = !!markedForReview[q.id];
-
-                  return (
-                    <button
-                      key={q.id}
-                      onClick={() => setCurrentIndex(idx)}
-                      className={cn(
-                        "h-10 rounded-xl font-mono text-xs font-bold transition-all flex items-center justify-center cursor-pointer border shadow-2xs",
-                        isCurrent && "ring-2 ring-blue-600 ring-offset-2",
-                        isAns && !isMarked && "bg-emerald-600 text-white border-emerald-700",
-                        isMarked && "bg-amber-400 text-slate-900 border-amber-500",
-                        !isAns && !isMarked && "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
-                      )}
-                    >
-                      {idx + 1}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Final Submit Trigger in Navigator */}
-            <div className="pt-4 border-t border-slate-100">
-              <button
-                onClick={() => setShowSubmitModal(true)}
-                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                Finish & Submit Examination
-              </button>
             </div>
           </div>
         )}

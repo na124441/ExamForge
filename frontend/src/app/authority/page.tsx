@@ -25,6 +25,7 @@ import { ForgeCard, ForgeCardHeader, ForgeCardTitle, ForgeCardContent } from "@/
 import { ForgeMetric } from "@/components/forge/ForgeMetric";
 import { ForgeStatusPill } from "@/components/forge/ForgeStatusPill";
 import { ForgeButton } from "@/components/forge/ForgeButton";
+import { ForgeTable } from "@/components/forge/ForgeTable";
 import { ForgeActivityFeed, ForgeActivityEvent } from "@/components/forge/ForgeActivityFeed";
 import { cn } from "@/lib/cn";
 
@@ -296,40 +297,17 @@ export default function AuthorityDashboard() {
                   </ForgeCardTitle>
                 </ForgeCardHeader>
                 <ForgeCardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm whitespace-nowrap">
-                      <thead>
-                        <tr className="border-b border-[var(--color-border)] text-[var(--color-ink-muted)] text-xs uppercase tracking-wider font-mono">
-                          <th className="pb-3 font-semibold">Exam Title</th>
-                          <th className="pb-3 font-semibold">ID</th>
-                          <th className="pb-3 font-semibold">Status</th>
-                          <th className="pb-3 font-semibold text-right">Candidates</th>
-                          <th className="pb-3 font-semibold text-right">Centres</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[var(--color-border-subtle)] font-mono text-xs">
-                        {exams.length === 0 ? (
-                          <tr>
-                            <td colSpan={5} className="py-6 text-center text-[var(--color-ink-muted)] font-sans">
-                              No active examination sessions found in database.
-                            </td>
-                          </tr>
-                        ) : (
-                          exams.map((exam) => (
-                            <tr key={exam.id} className="hover:bg-[var(--color-surface-sunken)] transition-colors">
-                              <td className="py-3 font-semibold text-[var(--color-ink)] font-sans">{exam.name}</td>
-                              <td className="py-3 text-[var(--color-ink-secondary)]">{exam.id}</td>
-                              <td className="py-3">
-                                <ForgeStatusPill status={exam.status as any} />
-                              </td>
-                              <td className="py-3 text-right text-[var(--color-ink)]">{exam.candidates.toLocaleString()}</td>
-                              <td className="py-3 text-right text-[var(--color-ink)]">{exam.centres}</td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                  <ForgeTable
+                    columns={[
+                      { key: "name", header: "Exam Title", isPrimary: true, render: (r) => <span className="font-semibold">{r.name}</span> },
+                      { key: "id", header: "Exam Code", mono: true },
+                      { key: "status", header: "Status", render: (r) => <ForgeStatusPill status={r.status as any} /> },
+                      { key: "candidates", header: "Candidates", mono: true, render: (r) => r.candidates.toLocaleString() },
+                      { key: "centres", header: "Centres", mono: true }
+                    ]}
+                    data={exams}
+                    emptyMessage="No active examination sessions found in database."
+                  />
                 </ForgeCardContent>
               </ForgeCard>
             </div>
