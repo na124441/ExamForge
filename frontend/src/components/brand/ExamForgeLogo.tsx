@@ -41,8 +41,8 @@ export function ExamForgeLogo({
         <div className="absolute inset-0 rounded-xl border border-[rgba(138,216,184,0.35)] bg-[rgba(19,45,40,0.7)] backdrop-blur-md shadow-[0_0_20px_-4px_rgba(138,216,184,0.3)] group-hover:shadow-[0_0_28px_-2px_rgba(138,216,184,0.5)] transition-all" />
         <img
           src="/logo-icon.png"
-          alt="EF"
-          className="relative z-10 w-full h-full object-contain p-1 mix-blend-screen"
+          alt="ExamForge"
+          className="relative z-10 w-full h-full object-contain p-0.5"
         />
       </div>
 
