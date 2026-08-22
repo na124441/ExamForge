@@ -101,29 +101,29 @@ export function ExamForgeHero({ onOpenAuthModal }: ExamForgeHeroProps) {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
-              <button
-                onClick={() => router.push("/student-exam")}
+              <Link
+                href="/candidate"
                 className={cn(
                   "px-6 py-3.5 rounded-2xl font-bold text-sm text-[#132D28] bg-[#8AD8B8] hover:bg-[#a0e8cb]",
                   "border border-white/40 flex items-center justify-center gap-2 shadow-[0_10px_30px_-8px_rgba(138,216,184,0.6)]",
-                  "hover:shadow-[0_15px_35px_-5px_rgba(138,216,184,0.8)] transition-all duration-300 active:scale-95 cursor-pointer font-sans"
+                  "hover:shadow-[0_15px_35px_-5px_rgba(138,216,184,0.8)] transition-all duration-300 active:scale-95 cursor-pointer font-sans no-underline"
                 )}
               >
                 <span>Register as Candidate</span>
                 <ArrowRight size={16} />
-              </button>
+              </Link>
 
-              <button
-                onClick={() => router.push("/create-exam")}
+              <Link
+                href="/create-exam"
                 className={cn(
                   "px-6 py-3.5 rounded-2xl font-semibold text-sm text-[#FFF4E2] bg-[rgba(255,244,226,0.06)] hover:bg-[rgba(255,244,226,0.12)]",
                   "border border-[rgba(138,216,184,0.25)] hover:border-[rgba(138,216,184,0.45)] flex items-center justify-center gap-2",
-                  "backdrop-blur-xl transition-all duration-300 active:scale-95 cursor-pointer font-sans"
+                  "backdrop-blur-xl transition-all duration-300 active:scale-95 cursor-pointer font-sans no-underline"
                 )}
               >
                 <span>Conduct an Exam</span>
                 <ArrowRight size={16} className="text-[#8AD8B8]" />
-              </button>
+              </Link>
             </div>
 
             {/* Trust Line */}
