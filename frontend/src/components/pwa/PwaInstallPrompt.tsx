@@ -71,18 +71,20 @@ export function PwaInstallPrompt() {
       console.log("[PWA] ExamForge installed to home screen successfully!");
     });
 
-    // If iOS and not dismissed recently, offer iOS guide
-    if (isIosDevice && isSafari) {
-      const iosDismissed = localStorage.getItem("examforge_ios_pwa_dismissed");
-      if (!iosDismissed || Date.now() - parseInt(iosDismissed, 10) > 86400000 * 5) {
-        setTimeout(() => setShowPrompt(true), 4000);
+    // 6. Global trigger listener from navbar / download buttons
+    const handleManualInstallTrigger = () => {
+      setShowPrompt(true);
+      if (!deferredPrompt) {
+        setShowIosGuide(true);
       }
-    }
+    };
+    window.addEventListener("open-pwa-install", handleManualInstallTrigger);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("open-pwa-install", handleManualInstallTrigger);
     };
-  }, []);
+  }, [deferredPrompt]);
 
   const handleInstallClick = async () => {
     if (isIos) {

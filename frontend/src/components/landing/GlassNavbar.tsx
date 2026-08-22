@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ExamForgeLogo } from "../brand/ExamForgeLogo";
-import { Menu, X, ChevronDown, Sparkles, Shield, User, GraduationCap, Building2 } from "lucide-react";
+import { Menu, X, ChevronDown, Sparkles, Shield, User, GraduationCap, Building2, Download, Smartphone } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 export interface GlassNavbarProps {
@@ -92,6 +92,19 @@ export function GlassNavbar({ onOpenAuthModal }: GlassNavbarProps) {
 
           {/* Action CTAs */}
           <div className="hidden sm:flex items-center gap-2.5">
+            <button
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("open-pwa-install"));
+                }
+              }}
+              className="px-3 py-2 rounded-lg text-xs font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all flex items-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer"
+              title="Install ExamForge Web App on this device"
+            >
+              <Download size={13} className="text-emerald-400 animate-bounce" />
+              <span>Install App</span>
+            </button>
+
             <Link
               href="/candidate"
               className="px-3.5 py-2 rounded-lg text-xs font-semibold text-[var(--color-ink)] bg-[var(--color-surface-sunken)] hover:bg-[var(--color-surface-inset)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
@@ -175,6 +188,19 @@ export function GlassNavbar({ onOpenAuthModal }: GlassNavbarProps) {
             </nav>
 
             <div className="pt-3 border-t border-[var(--color-border)] flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  if (typeof window !== "undefined") {
+                    window.dispatchEvent(new CustomEvent("open-pwa-install"));
+                  }
+                }}
+                className="w-full py-2.5 min-h-[44px] rounded-lg text-xs font-bold text-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+              >
+                <Download size={15} className="text-emerald-400 animate-bounce" />
+                <span>Install ExamForge App</span>
+              </button>
+
               <Link
                 href="/candidate"
                 onClick={() => setMobileMenuOpen(false)}
