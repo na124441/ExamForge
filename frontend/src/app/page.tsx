@@ -31,6 +31,7 @@ import {
   LogIn,
   UserCheck,
   Key,
+  FileCheck,
 } from "lucide-react";
 import { GlassNavbar } from "@/components/landing/GlassNavbar";
 import { ExamForgeHero } from "@/components/landing/ExamForgeHero";
@@ -278,6 +279,124 @@ export default function ExamForgeLanding() {
 
       {/* 4. EXAMINATION LIFECYCLE PIPELINE */}
       <ExamLifecycle />
+
+      {/* DIVIDER */}
+      <div className="w-full max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-12" />
+
+      {/* 4.5 SAFEBATCH BULK CHALLENGE SPOTLIGHT SHOWCASE */}
+      <section id="safebatch-spotlight" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 select-none">
+        <div className="rounded-3xl p-6 sm:p-10 bg-gradient-to-b from-[var(--color-surface-raised)] to-[var(--color-surface)] border border-[var(--color-border)] shadow-xl relative overflow-hidden">
+          {/* Ambient Lighting Background */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[radial-gradient(circle_at_100%_0%,rgba(245,158,11,0.15),transparent_70%)] pointer-events-none" />
+
+          {/* Top Header */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-[var(--color-border)] pb-8 relative z-10">
+            <div className="max-w-2xl space-y-3">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold uppercase tracking-wider">
+                <Sparkles size={13} className="text-amber-400" />
+                KILLER FEATURE // BULK CHALLENGE ENGINE
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-[var(--color-ink)] tracking-tight">
+                ExamForge SafeBatch™
+              </h2>
+              <p className="text-xs sm:text-sm text-[var(--color-ink-secondary)] leading-relaxed">
+                Bulk actions in high-stakes examinations must never be ambiguous or irreversible. SafeBatch validates blast radius before execution, isolates partial failures, and produces actionable operational handoff notes for downstream roles.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <Link
+                href="/safebatch"
+                className="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-md transition-all flex items-center gap-2 no-underline cursor-pointer active:scale-95"
+              >
+                <Sparkles size={14} />
+                <span>Launch SafeBatch Studio</span>
+                <ArrowRight size={14} />
+              </Link>
+              <Link
+                href="/safebatch/handoff/HO-2026-0822-0034"
+                className="px-4 py-3 rounded-xl bg-[var(--color-surface-sunken)] hover:bg-[var(--color-surface-inset)] border border-[var(--color-border)] text-[var(--color-ink)] font-semibold text-xs transition-all flex items-center gap-2 no-underline"
+              >
+                <span>Inspect Superintendent Handoff</span>
+                <ChevronRight size={14} className="text-amber-400" />
+              </Link>
+            </div>
+          </div>
+
+          {/* 5-Stage Architecture Flow Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mt-8 relative z-10">
+            <div className="p-4 rounded-2xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono text-amber-400 font-bold">
+                <span>01 SCOPE</span>
+                <Users size={14} />
+              </div>
+              <h4 className="text-xs font-bold text-[var(--color-ink)]">Candidate Cohort</h4>
+              <p className="text-[11px] text-[var(--color-ink-secondary)] leading-snug">
+                Select 2,847 candidates across 14 centres with PWD and domicile filters.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono text-amber-400 font-bold">
+                <span>02 PRE-FLIGHT</span>
+                <CheckCircle2 size={14} />
+              </div>
+              <h4 className="text-xs font-bold text-[var(--color-ink)]">Blast Radius Preview</h4>
+              <p className="text-[11px] text-[var(--color-ink-secondary)] leading-snug">
+                Simulate capacity, room limits, and geo-travel constraints before touching database.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono text-amber-400 font-bold">
+                <span>03 SAFETY GUARD</span>
+                <Lock size={14} />
+              </div>
+              <h4 className="text-xs font-bold text-[var(--color-ink)]">Confirm Intent</h4>
+              <p className="text-[11px] text-[var(--color-ink-secondary)] leading-snug">
+                Explicit phrase typing confirmation prevents accidental execution.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono text-emerald-400 font-bold">
+                <span>04 EXECUTION</span>
+                <ShieldCheck size={14} />
+              </div>
+              <h4 className="text-xs font-bold text-[var(--color-ink)]">Fault Isolation</h4>
+              <p className="text-[11px] text-[var(--color-ink-secondary)] leading-snug">
+                2,813 allocate safely. 34 exceptions isolated with zero data corruption.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono text-amber-400 font-bold">
+                <span>05 HANDOFF</span>
+                <FileCheck size={14} />
+              </div>
+              <h4 className="text-xs font-bold text-amber-300">Operational Note</h4>
+              <p className="text-[11px] text-amber-200/80 leading-snug">
+                Auto-generate signed Handoff (HO-0034) assigned to Superintendent.
+              </p>
+            </div>
+          </div>
+
+          {/* Live Simulator Preview Banner */}
+          <div className="mt-6 p-4 rounded-2xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-mono">
+            <div className="flex items-center gap-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="text-[var(--color-ink)] font-semibold">
+                Live State: <strong className="text-emerald-400">2,813 Allocated (98.8%)</strong> &middot; <strong className="text-amber-400">34 Exceptions Isolated</strong>
+              </span>
+            </div>
+
+            <div className="flex items-center gap-4 text-[11px] text-[var(--color-ink-secondary)]">
+              <span>Handoff: <strong className="text-[var(--color-ink)]">HO-2026-0822-0034</strong></span>
+              <span>Assigned: <strong className="text-[var(--color-ink)]">Centre Superintendent</strong></span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* DIVIDER */}
       <div className="w-full max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-12" />

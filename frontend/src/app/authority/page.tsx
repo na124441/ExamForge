@@ -16,7 +16,8 @@ import {
   FileCheck,
   AlertTriangle,
   Database,
-  HardDrive
+  HardDrive,
+  Sparkles
 } from "lucide-react";
 
 import { ForgeMetric } from "@/components/forge/ForgeMetric";
@@ -207,6 +208,14 @@ export default function AuthorityDashboard() {
         action={
           <div className="flex items-center gap-2.5">
             <ForgeButton
+              onClick={() => router.push("/safebatch")}
+              variant="tonal"
+              size="sm"
+              icon={<Sparkles className="w-4 h-4 text-amber-500" />}
+            >
+              SafeBatch Engine
+            </ForgeButton>
+            <ForgeButton
               onClick={handleAutoClearBlockers}
               variant="tonal"
               size="sm"
@@ -236,6 +245,29 @@ export default function AuthorityDashboard() {
       >
         <div className="flex flex-col gap-6 mt-6">
           
+          {/* SafeBatch Operational Callout */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 shadow-2xs">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-300 flex items-center justify-center font-bold">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold">SafeBatch Bulk Centre Allocation Engine (Evaluation Feature)</h4>
+                <p className="text-[11px] opacity-80">
+                  Pre-flight blast radius preview, exception isolation, and operational handoffs active.
+                </p>
+              </div>
+            </div>
+            <ForgeButton
+              onClick={() => router.push("/safebatch")}
+              variant="filled"
+              size="sm"
+              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold shrink-0 shadow-xs"
+            >
+              Open SafeBatch Studio &rarr;
+            </ForgeButton>
+          </div>
+
           {notification && (
             <div className="flex items-center gap-3 p-4 bg-[var(--md-sys-color-success-container)] border border-[var(--md-sys-color-success)] text-[var(--md-sys-color-on-success-container)] rounded-2xl shadow-xs animate-fade-in">
               <CheckCircle2 className="w-5 h-5 text-[var(--md-sys-color-success)] shrink-0" />

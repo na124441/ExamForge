@@ -60,9 +60,13 @@ export function GlassNavbar({ onOpenAuthModal }: GlassNavbarProps) {
             </a>
             <Link
               href="/safebatch"
-              className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)] transition-all"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-amber-300 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 transition-all flex items-center gap-1.5 shadow-2xs"
             >
-              SafeBatch
+              <Sparkles size={13} className="text-amber-400" />
+              <span>SafeBatch Engine</span>
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-amber-400 text-slate-950 font-black uppercase">
+                Challenge
+              </span>
             </Link>
             <Link
               href="/security"

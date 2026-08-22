@@ -99,6 +99,17 @@ export function ExamForgeHero({ onOpenAuthModal }: ExamForgeHeroProps) {
               one controlled workflow.
             </p>
 
+            {/* SafeBatch Killer Feature Spotlight Callout */}
+            <Link
+              href="/safebatch"
+              className="inline-flex items-center gap-2.5 p-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:border-amber-400 hover:bg-amber-500/15 transition-all text-xs text-amber-200 group no-underline shadow-xs"
+            >
+              <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+              <span className="font-bold text-amber-300">SafeBatch™ Engine:</span>
+              <span className="text-slate-300">Safeguarded bulk actions with operational handoff notes</span>
+              <ChevronRight size={14} className="text-amber-400 group-hover:translate-x-1 transition-transform ml-auto" />
+            </Link>
+
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
               <Link
