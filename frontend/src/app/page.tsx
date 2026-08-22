@@ -37,6 +37,7 @@ import { GlassNavbar } from "@/components/landing/GlassNavbar";
 import { ExamForgeHero } from "@/components/landing/ExamForgeHero";
 import { SystemStatus } from "@/components/landing/SystemStatus";
 import { ExamLifecycle } from "@/components/landing/ExamLifecycle";
+import { ExamSecurityArchitecture } from "@/components/landing/ExamSecurityArchitecture";
 import { ExamForgeLogo } from "@/components/brand/ExamForgeLogo";
 
 interface AccountPersona {
@@ -276,6 +277,9 @@ export default function ExamForgeLanding() {
 
       {/* 3. EXAMFORGE SYSTEM STATUS STRIP */}
       <SystemStatus />
+
+      {/* 3.5 STATE-OF-THE-ART EXAMINATION SECURITY ARCHITECTURE */}
+      <ExamSecurityArchitecture />
 
       {/* 4. EXAMINATION LIFECYCLE PIPELINE */}
       <ExamLifecycle />
