@@ -102,7 +102,7 @@ export default function AssetGovernancePage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] text-text-muted font-mono text-xs">
-        <span className="animate-spin text-lg mb-2">⚙️</span>
+        <span className="animate-spin text-lg mb-2"></span>
         DECRYPTING DATA ASSETS REGISTRY...
       </div>
     );
@@ -280,7 +280,7 @@ export default function AssetGovernancePage() {
 
             {error && (
               <div className="p-3 bg-accent-red/10 border border-accent-red/20 text-accent-red rounded text-[11px] leading-normal font-mono">
-                ⚠️ {error}
+                 {error}
               </div>
             )}
 

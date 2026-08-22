@@ -98,7 +98,7 @@ export default function RetentionPage() {
         throw new Error(data.detail || "Deletion dry run failed.");
       }
 
-      setSuccess(`✓ SUCCESS: Dry-run passed. Affected records count: ${data.affected_records}. details: ${data.details}`);
+      setSuccess(` SUCCESS: Dry-run passed. Affected records count: ${data.affected_records}. details: ${data.details}`);
       fetchPlan();
     } catch (err: any) {
       setError(err.message || "Deletion dry run failed.");
@@ -110,7 +110,7 @@ export default function RetentionPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] text-text-muted font-mono text-xs">
-        <span className="animate-spin text-lg mb-2">⚙️</span>
+        <span className="animate-spin text-lg mb-2"></span>
         DECRYPTING RETENTION & HOLD POLICIES...
       </div>
     );
@@ -127,7 +127,7 @@ export default function RetentionPage() {
 
         {error && (
           <div className="p-3 bg-accent-red/10 border border-accent-red/20 text-accent-red rounded text-xs leading-normal font-mono">
-            ⚠️ BLOCKED: {error}
+             BLOCKED: {error}
           </div>
         )}
 

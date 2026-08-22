@@ -59,7 +59,7 @@ export default function SecurityHardeningPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] text-text-muted font-mono text-xs">
-        <span className="animate-spin text-lg mb-2">⚙️</span>
+        <span className="animate-spin text-lg mb-2"></span>
         DECRYPTING OWASP COMPLIANCE METRICS...
       </div>
     );
@@ -105,7 +105,7 @@ export default function SecurityHardeningPage() {
                   </div>
                   
                   <span className={`text-xs font-bold font-mono ${isPassed ? "text-accent-emerald" : "text-accent-red"}`}>
-                    {isPassed ? "✓ PASSED" : "❌ FAILED"}
+                    {isPassed ? " PASSED" : " FAILED"}
                   </span>
                 </div>
               );

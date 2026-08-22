@@ -101,7 +101,7 @@ export default function ComplianceReportPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] text-text-muted font-mono text-xs">
-        <span className="animate-spin text-lg mb-2">⚙️</span>
+        <span className="animate-spin text-lg mb-2"></span>
         DECRYPTING COMPLIANCE POSTURE TELEMETRY...
       </div>
     );
@@ -118,7 +118,7 @@ export default function ComplianceReportPage() {
 
         {error && (
           <div className="p-3 bg-accent-red/10 border border-accent-red/20 text-accent-red rounded text-xs leading-normal font-mono">
-            ⚠️ ERROR: {error}
+             ERROR: {error}
           </div>
         )}
 
@@ -217,7 +217,7 @@ export default function ComplianceReportPage() {
                 : "border-accent-red/25 bg-accent-red/5 text-accent-red"
             }`}>
               <div className="font-bold text-xs uppercase tracking-wider mb-1">
-                {verifyResult.is_valid ? "✓ SIGNATURE VALID" : "❌ SIGNATURE INVALID"}
+                {verifyResult.is_valid ? " SIGNATURE VALID" : " SIGNATURE INVALID"}
               </div>
               <div className="text-white/80 mt-2">
                 Report ID: {verifyResult.report_id}<br />

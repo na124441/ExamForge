@@ -89,7 +89,7 @@ export default function PrivacyGuardPage() {
         throw new Error(data.detail || "Export blocked by Privacy Guard policies.");
       }
 
-      setSuccess("✓ SUCCESS: " + data.message);
+      setSuccess(" SUCCESS: " + data.message);
       fetchLogs(); // refresh log since it might have written access logging
     } catch (err: any) {
       setError(err.message || "Export validation failed.");
@@ -101,7 +101,7 @@ export default function PrivacyGuardPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] text-text-muted font-mono text-xs">
-        <span className="animate-spin text-lg mb-2">⚙️</span>
+        <span className="animate-spin text-lg mb-2"></span>
         DECRYPTING PII AUDIT TRAILS...
       </div>
     );
@@ -174,7 +174,7 @@ export default function PrivacyGuardPage() {
 
             {error && (
               <div className="p-3 bg-accent-red/10 border border-accent-red/20 text-accent-red rounded text-[11px] leading-normal font-mono break-all">
-                ⚠️ BLOCKED: {error}
+                 BLOCKED: {error}
               </div>
             )}
 

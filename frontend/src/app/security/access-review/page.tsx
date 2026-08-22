@@ -129,7 +129,7 @@ export default function AccessReviewPage() {
         throw new Error(data.detail || "Failed to finalize review.");
       }
 
-      setSuccess("✓ SUCCESS: Access review cycle successfully sealed and logged.");
+      setSuccess(" SUCCESS: Access review cycle successfully sealed and logged.");
       setCycle(data);
     } catch (err: any) {
       setError(err.message || "Seal cycle error.");
@@ -141,7 +141,7 @@ export default function AccessReviewPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] text-text-muted font-mono text-xs">
-        <span className="animate-spin text-lg mb-2">⚙️</span>
+        <span className="animate-spin text-lg mb-2"></span>
         DECRYPTING ACCESS SNAPSHOT LEDGER...
       </div>
     );
@@ -169,7 +169,7 @@ export default function AccessReviewPage() {
 
         {error && (
           <div className="p-3 bg-accent-red/10 border border-accent-red/20 text-accent-red rounded text-xs leading-normal font-mono">
-            ⚠️ {error}
+             {error}
           </div>
         )}
 

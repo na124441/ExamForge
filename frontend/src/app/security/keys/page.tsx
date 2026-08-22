@@ -146,7 +146,7 @@ export default function KeyLifecyclePage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] text-text-muted font-mono text-xs">
-        <span className="animate-spin text-lg mb-2">⚙️</span>
+        <span className="animate-spin text-lg mb-2"></span>
         DECRYPTING KEYSPACE SNAPSHOTS...
       </div>
     );
@@ -165,7 +165,7 @@ export default function KeyLifecyclePage() {
 
         {error && (
           <div className="p-3 bg-accent-red/10 border border-accent-red/20 text-accent-red rounded text-xs leading-normal font-mono">
-            ⚠️ {error}
+             {error}
           </div>
         )}
 

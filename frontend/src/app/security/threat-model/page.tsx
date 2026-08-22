@@ -126,7 +126,7 @@ export default function ThreatModelPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] text-text-muted font-mono text-xs">
-        <span className="animate-spin text-lg mb-2">⚙️</span>
+        <span className="animate-spin text-lg mb-2"></span>
         DECRYPTING THREAT MODEL REGISTRY...
       </div>
     );
@@ -186,7 +186,7 @@ export default function ThreatModelPage() {
                           : "bg-accent-red/15 text-accent-red border border-accent-red/35 hover:bg-accent-red/25"
                       }`}
                     >
-                      {isMitigated ? "✓ MITIGATED" : "⚠ MARK MITIGATED"}
+                      {isMitigated ? "MITIGATED" : "MARK MITIGATED"}
                     </button>
                   </div>
 
@@ -320,7 +320,7 @@ export default function ThreatModelPage() {
 
             {error && (
               <div className="p-3 bg-accent-red/10 border border-accent-red/20 text-accent-red rounded text-[11px] leading-normal font-mono">
-                ⚠️ {error}
+                 {error}
               </div>
             )}
 

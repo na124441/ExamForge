@@ -72,7 +72,7 @@ export default function ApprovalsPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] text-text-muted font-mono text-xs">
-        <span className="animate-spin text-lg mb-2">⚙️</span>
+        <span className="animate-spin text-lg mb-2"></span>
         DECRYPTING PENDING DUAL-CONTROL WORKFLOWS...
       </div>
     );
@@ -88,7 +88,7 @@ export default function ApprovalsPage() {
 
       {error && (
         <div className="p-3 bg-accent-red/10 border border-accent-red/20 text-accent-red rounded text-xs leading-normal font-mono">
-          ⚠️ ERROR: {error}
+           ERROR: {error}
         </div>
       )}
 
@@ -102,7 +102,7 @@ export default function ApprovalsPage() {
       <div className="grid grid-cols-1 gap-4">
         {requests.length === 0 ? (
           <div className="p-10 bg-card-bg rounded-2xl border border-border-color text-center text-text-muted text-xs leading-normal">
-            ⚙️ Zero pending dual-control approval requests active.<br />
+             Zero pending dual-control approval requests active.<br />
             System is fully synced and compliant.
           </div>
         ) : (
