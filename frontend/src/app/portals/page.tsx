@@ -132,6 +132,17 @@ const PORTALS: PortalCard[] = [
     borderAccent: "hover:border-cyan-500/50",
     gradient: "from-cyan-500/10 to-transparent",
   },
+  {
+    title: "SafeBatch Operations Hub",
+    category: "Vendor Controller, Centre Superintendent",
+    description: "Safeguarded bulk candidate allocations, blast-radius impact preview, and operational handoffs.",
+    href: "/safebatch",
+    icon: Sparkles,
+    badge: "Operational Safety",
+    badgeColor: "bg-[#8AD8B8]/15 text-[#8AD8B8] border-[#8AD8B8]/30",
+    borderAccent: "hover:border-[#8AD8B8]",
+    gradient: "from-[#408576]/20 to-transparent",
+  },
 ];
 
 export default function PortalsPage() {

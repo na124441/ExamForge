@@ -73,6 +73,7 @@ except ImportError:
     real_attack_router = None
 
 from app.vendors.routes import router as vendors_router
+from app.safebatch.routes import router as safebatch_router
 from app.pentest.routes import router as pentest_router
 
 from app.security_hardening.headers import SecurityHeadersMiddleware
@@ -175,6 +176,7 @@ app.include_router(crypto_vault_router)
 if real_attack_router is not None:
     app.include_router(real_attack_router)
 app.include_router(pentest_router)
+app.include_router(safebatch_router)
 
 
 @app.get("/api/health")

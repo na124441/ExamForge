@@ -64,6 +64,12 @@ export function GlassNavbar({ onOpenAuthModal }: GlassNavbarProps) {
               How It Works
             </a>
             <Link
+              href="/safebatch"
+              className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-[#FFF4E2]/80 hover:text-[#FFF4E2] hover:bg-[rgba(255,244,226,0.06)] transition-all"
+            >
+              SafeBatch
+            </Link>
+            <Link
               href="/security"
               className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-[#FFF4E2]/80 hover:text-[#FFF4E2] hover:bg-[rgba(255,244,226,0.06)] transition-all"
             >
@@ -132,6 +138,13 @@ export function GlassNavbar({ onOpenAuthModal }: GlassNavbarProps) {
               >
                 How It Works
               </a>
+              <Link
+                href="/safebatch"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-xl text-sm font-medium text-[#FFF4E2]/90 hover:bg-[rgba(255,244,226,0.08)]"
+              >
+                SafeBatch Operations
+              </Link>
               <Link
                 href="/security"
                 onClick={() => setMobileMenuOpen(false)}

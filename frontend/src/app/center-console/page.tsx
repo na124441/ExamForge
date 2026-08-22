@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { RefreshCw, Lock, Unlock, ShieldAlert, Key, Building2, UserCheck, AlertTriangle } from "lucide-react";
 
@@ -152,6 +153,13 @@ function CenterConsoleContent() {
         </div>
 
         <div className="flex gap-2 flex-wrap">
+          <Link
+            href="/safebatch/handoff/HO-2026-0822-0034"
+            className="text-xs px-3.5 py-1.5 bg-[#8AD8B8] text-[#132D28] font-bold rounded-md hover:bg-[#a0e8cb] transition cursor-pointer shadow-xs flex items-center gap-1.5 no-underline"
+          >
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+            <span>🔔 SafeBatch Handoff (34)</span>
+          </Link>
           {role === "CONTROLLER" && (
             <button onClick={() => router.push("/exam-ops")} className="text-xs px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md hover:bg-indigo-100 transition cursor-pointer font-semibold shadow-xs">
               Ops Room
@@ -174,6 +182,25 @@ function CenterConsoleContent() {
         
         {/* Left Columns (2 cols) */}
         <div className="lg:col-span-2 flex flex-col gap-6">
+          
+          {/* Operational Handoff Notification Card */}
+          <div className="p-4 rounded-2xl bg-[rgba(19,45,40,0.85)] border border-[rgba(138,216,184,0.3)] shadow-lg flex items-center justify-between gap-4 text-[#FFF4E2]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center justify-center font-bold">
+                HO
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-[#FFF4E2]">Operational Handoff Assigned: HO-2026-0822-0034</h4>
+                <p className="text-[11px] text-[#8AD8B8]/80">Vendor Controller assigned 34 unresolved candidate allocations for superintendent review.</p>
+              </div>
+            </div>
+            <Link
+              href="/safebatch/handoff/HO-2026-0822-0034"
+              className="px-3 py-1.5 rounded-xl bg-[#8AD8B8] text-[#132D28] font-bold text-xs shadow-sm hover:bg-[#a0e8cb] transition-all no-underline shrink-0"
+            >
+              Claim & Resolve &rarr;
+            </Link>
+          </div>
           
           {error && (
             <div className="p-3.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs font-medium">

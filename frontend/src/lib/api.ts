@@ -455,5 +455,219 @@ export async function getPaymentOrderStatus(orderId: string): Promise<any> {
   return apiRequest<any>(`/api/v1/payments/status/${orderId}`);
 }
 
+// ------------------------------------------------------------------------------
+// SafeBatch: Safeguarded Bulk Operations with Operational Handoff
+// ------------------------------------------------------------------------------
+
+export interface SafeBatchCentre {
+  id: string;
+  name: string;
+  total_capacity: number;
+  allocated_now: number;
+  status: string;
+  utilization: string;
+  remaining_buffer?: number;
+}
+
+export interface SafeBatchPreviewResponse {
+  preview_id: string;
+  exam_id: string;
+  exam_title: string;
+  action_type: string;
+  action_title: string;
+  risk_level: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  risk_badge: string;
+  protection_protocol: string;
+  warning_message: string;
+  cohort_scope: string;
+  scope_summary: {
+    total_candidates: number;
+    centres_available: number;
+    total_seats_capacity: number;
+    safe_allocations: number;
+    unresolved_exceptions: number;
+    conflict_breakdown: {
+      CENTRE_FULL: number;
+      ADDRESS_MISSING: number;
+    };
+  };
+  centre_distribution: SafeBatchCentre[];
+  exception_preview_sample: Array<{
+    name: string;
+    reg_no: string;
+    city: string;
+    code: string;
+    detail: string;
+  }>;
+  created_at: string;
+  can_execute: boolean;
+  recommended_action: string;
+}
+
+export interface SafeBatchExecuteResponse {
+  success: boolean;
+  action_id: string;
+  handoff_id: string;
+  status: string;
+  total_items: number;
+  successful_items: number;
+  exception_items: number;
+  audit_hash: string;
+  execution_summary: {
+    centres_filled: Array<{
+      name: string;
+      allocated: number;
+      capacity: number;
+      status: string;
+      remaining?: number;
+    }>;
+  };
+  handoff_note: {
+    handoff_id: string;
+    action_id: string;
+    title: string;
+    initiated_by: string;
+    assigned_to: string;
+    status: string;
+    affected_count: number;
+    reason: string;
+    next_action: string;
+  };
+}
+
+export interface HandoffSummary {
+  id: string;
+  bulk_action_id: string;
+  action_type: string;
+  title: string;
+  status: "CREATED" | "ASSIGNED" | "CLAIMED" | "IN_PROGRESS" | "RESOLVED" | "ESCALATED";
+  priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  initiated_by: string;
+  initiated_by_role: string;
+  assigned_to_role: string;
+  assigned_to_user: string;
+  claimed_by?: string | null;
+  claimed_at?: string | null;
+  affected_count: number;
+  resolved_count: number;
+  reason_for_handoff: string;
+  next_action: string;
+  created_at: string;
+}
+
+export interface HandoffExceptionItem {
+  id: string;
+  candidate_id: string;
+  candidate_name: string;
+  candidate_reg_no: string;
+  candidate_city?: string;
+  error_code: string;
+  error_detail: string;
+  status: string;
+  resolution_centre_id?: string | null;
+  resolution_centre_name?: string | null;
+}
+
+export interface HandoffDetail extends HandoffSummary {
+  resolution_notes?: string | null;
+  resolved_at?: string | null;
+  audit_receipt_hash?: string;
+  items: HandoffExceptionItem[];
+  available_override_centres: SafeBatchCentre[];
+}
+
+export async function previewSafeBatch(payload: {
+  exam_id?: string;
+  action_type?: string;
+  candidate_cohort?: string;
+  requested_by?: string;
+  requested_by_role?: string;
+}): Promise<SafeBatchPreviewResponse> {
+  return apiRequest<SafeBatchPreviewResponse>("/api/safebatch/preview", {
+    method: "POST",
+    body: JSON.stringify({
+      exam_id: payload.exam_id || "EXM-AIML-2026",
+      action_type: payload.action_type || "BULK_CENTRE_ALLOCATION",
+      candidate_cohort: payload.candidate_cohort || "ALL_REGISTERED",
+      requested_by: payload.requested_by || "Vendor Controller",
+      requested_by_role: payload.requested_by_role || "VENDOR",
+    }),
+  });
+}
+
+export async function executeSafeBatch(payload: {
+  preview_id?: string;
+  exam_id?: string;
+  action_type?: string;
+  confirmed?: boolean;
+  executed_by?: string;
+  executed_by_role?: string;
+}): Promise<SafeBatchExecuteResponse> {
+  return apiRequest<SafeBatchExecuteResponse>("/api/safebatch/execute", {
+    method: "POST",
+    body: JSON.stringify({
+      preview_id: payload.preview_id,
+      exam_id: payload.exam_id || "EXM-AIML-2026",
+      action_type: payload.action_type || "BULK_CENTRE_ALLOCATION",
+      confirmed: payload.confirmed ?? true,
+      executed_by: payload.executed_by || "Vendor Controller",
+      executed_by_role: payload.executed_by_role || "VENDOR",
+    }),
+  });
+}
+
+export async function getSafeBatchHandoffs(role?: string, status?: string): Promise<HandoffSummary[]> {
+  const params = new URLSearchParams();
+  if (role) params.set("role", role);
+  if (status) params.set("status", status);
+  const qs = params.toString() ? `?${params.toString()}` : "";
+  return apiRequest<HandoffSummary[]>(`/api/safebatch/handoffs${qs}`);
+}
+
+export async function getSafeBatchHandoffDetail(handoffId: string): Promise<HandoffDetail> {
+  return apiRequest<HandoffDetail>(`/api/safebatch/handoffs/${handoffId}`);
+}
+
+export async function claimSafeBatchHandoff(
+  handoffId: string,
+  claimedBy: string = "Centre Superintendent"
+): Promise<any> {
+  return apiRequest<any>(`/api/safebatch/handoffs/${handoffId}/claim`, {
+    method: "POST",
+    body: JSON.stringify({
+      claimed_by: claimedBy,
+      role: "OFFICER",
+    }),
+  });
+}
+
+export async function resolveSafeBatchHandoff(
+  handoffId: string,
+  data: {
+    resolved_by?: string;
+    resolution_notes?: string;
+    resolved_items?: Array<{
+      candidate_id: string;
+      target_centre_id: string;
+      target_centre_name: string;
+      notes?: string;
+    }>;
+  }
+): Promise<any> {
+  return apiRequest<any>(`/api/safebatch/handoffs/${handoffId}/resolve`, {
+    method: "POST",
+    body: JSON.stringify({
+      resolved_by: data.resolved_by || "Centre Superintendent",
+      role: "OFFICER",
+      resolution_notes: data.resolution_notes || "Manual seat matrix override applied for remaining candidates",
+      resolved_items: data.resolved_items || [],
+    }),
+  });
+}
+
+export async function getSafeBatchActions(): Promise<any[]> {
+  return apiRequest<any[]>("/api/safebatch/actions");
+}
+
 
 

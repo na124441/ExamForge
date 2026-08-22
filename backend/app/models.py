@@ -1464,5 +1464,80 @@ class IdentityVerificationEvent(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
+# ===========================================================================
+# SAFEBATCH: SAFEGUARDED BULK OPERATIONS WITH OPERATIONAL HANDOFF
+# ===========================================================================
+
+class BulkAction(Base):
+    __tablename__ = "bulk_actions"
+
+    id = Column(String, primary_key=True, default=generate_uuid) # e.g. BA-2026-00821-0047
+    exam_id = Column(String, nullable=False, default="EXM-AIML-2026")
+    institution_id = Column(String, nullable=True, default="INS-GENESIS")
+    action_type = Column(String, nullable=False, default="BULK_CENTRE_ALLOCATION") # BULK_CENTRE_ALLOCATION, BULK_ADMIT_CARD_GEN, BULK_RESULT_PUBLICATION, BULK_CANDIDATE_STATUS_CHANGE
+    risk_level = Column(String, nullable=False, default="MEDIUM") # LOW, MEDIUM, HIGH, CRITICAL
+    status = Column(String, nullable=False, default="DRAFT") # DRAFT, PREVIEWED, CONFIRMED, EXECUTING, COMPLETED, PARTIALLY_COMPLETED, FAILED, CANCELLED
+    created_by = Column(String, nullable=False, default="Vendor Controller")
+    created_by_role = Column(String, nullable=False, default="VENDOR")
+    scope_filters = Column(Text, nullable=True) # JSON filter description
+    total_items = Column(Integer, default=2847)
+    successful_items = Column(Integer, default=0)
+    failed_items = Column(Integer, default=0)
+    exception_items = Column(Integer, default=0)
+    requires_approval = Column(Boolean, default=False)
+    approved_by = Column(String, nullable=True)
+    preview_data = Column(Text, nullable=True) # JSON simulation results
+    execution_summary = Column(Text, nullable=True) # JSON execution report
+    audit_hash = Column(String, nullable=True) # SHA-256 link to Merkle audit chain
+    started_at = Column(DateTime(timezone=True), nullable=True)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class BulkActionItem(Base):
+    __tablename__ = "bulk_action_items"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    bulk_action_id = Column(String, ForeignKey("bulk_actions.id"), nullable=False)
+    candidate_id = Column(String, nullable=False)
+    candidate_name = Column(String, nullable=False)
+    candidate_reg_no = Column(String, nullable=False)
+    candidate_city = Column(String, nullable=True)
+    target_centre_id = Column(String, nullable=True)
+    target_centre_name = Column(String, nullable=True)
+    status = Column(String, nullable=False, default="SUCCESS") # SUCCESS, EXCEPTION, SKIPPED, FAILED, MANUALLY_RESOLVED
+    error_code = Column(String, nullable=True) # CENTRE_FULL, ADDRESS_MISSING, COHORT_MISMATCH, VERIFICATION_PENDING, PAYMENT_PENDING
+    error_detail = Column(Text, nullable=True)
+    resolution_centre_id = Column(String, nullable=True)
+    resolution_notes = Column(Text, nullable=True)
+    processed_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class Handoff(Base):
+    __tablename__ = "handoffs"
+
+    id = Column(String, primary_key=True, default=generate_uuid) # e.g. HO-2026-0822-0034
+    bulk_action_id = Column(String, ForeignKey("bulk_actions.id"), nullable=False)
+    action_type = Column(String, nullable=False, default="BULK_CENTRE_ALLOCATION")
+    title = Column(String, nullable=False, default="Bulk Centre Allocation Handoff")
+    status = Column(String, nullable=False, default="CREATED") # CREATED, ASSIGNED, CLAIMED, IN_PROGRESS, RESOLVED, ESCALATED
+    priority = Column(String, nullable=False, default="HIGH") # LOW, MEDIUM, HIGH, CRITICAL
+    initiated_by = Column(String, nullable=False, default="Vendor Controller")
+    initiated_by_role = Column(String, nullable=False, default="VENDOR")
+    assigned_to_role = Column(String, nullable=False, default="OFFICER") # Target role: Centre Superintendent
+    assigned_to_user = Column(String, nullable=True, default="Centre Superintendent")
+    claimed_by = Column(String, nullable=True)
+    claimed_at = Column(DateTime(timezone=True), nullable=True)
+    affected_count = Column(Integer, default=34)
+    resolved_count = Column(Integer, default=0)
+    reason_for_handoff = Column(Text, nullable=False)
+    next_action = Column(Text, nullable=False)
+    resolution_notes = Column(Text, nullable=True)
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
+    audit_receipt_hash = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+
 
 

@@ -62,6 +62,8 @@ export const ROUTE_REGISTRY: RouteRule[] = [
   makeRule("/verify-certificate/[certificate_id]", "PUBLIC", ["certificate.verify.public"], "Public certificate cryptographic verification", "public"),
   makeRule("/verify-result", "PUBLIC", ["result.verify.public"], "Public scorecard Merkle proof verification", "public"),
   makeRule("/receipt-verify", "PUBLIC", ["receipt.verify.public"], "Candidate submission receipt signature verification", "public"),
+  makeRule("/safebatch", "PUBLIC", [], "SafeBatch: Safeguarded Bulk Operations with Operational Handoff", "public"),
+  makeRule("/safebatch/handoff/[handoff_id]", "PUBLIC", [], "SafeBatch Operational Handoff Resolution Console", "public"),
 
   // ---------------------------------------------------------------------------
   // 2. CANDIDATE / STUDENT DOMAIN
