@@ -1,0 +1,3649 @@
+{
+  "backend_endpoints": [
+    {
+      "file": "backend\\app\\main.py",
+      "line": 182,
+      "method": "GET",
+      "path": "/api/health",
+      "has_auth": false,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\main.py",
+      "line": 190,
+      "method": "GET",
+      "path": "/",
+      "has_auth": false,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access\\routes.py",
+      "line": 45,
+      "method": "POST",
+      "path": "/api/access/invite-user",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access\\routes.py",
+      "line": 78,
+      "method": "POST",
+      "path": "/api/access/accept-invite",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access\\routes.py",
+      "line": 115,
+      "method": "GET",
+      "path": "/api/access/users",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access\\routes.py",
+      "line": 139,
+      "method": "POST",
+      "path": "/api/access/assign-role",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access\\routes.py",
+      "line": 170,
+      "method": "POST",
+      "path": "/api/access/revoke-role",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access\\routes.py",
+      "line": 191,
+      "method": "GET",
+      "path": "/api/access/permission-matrix",
+      "has_auth": true,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access_review\\routes.py",
+      "line": 48,
+      "method": "POST",
+      "path": "/start",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access_review\\routes.py",
+      "line": 128,
+      "method": "GET",
+      "path": "/{review_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access_review\\routes.py",
+      "line": 145,
+      "method": "POST",
+      "path": "/{review_id}/approve-user",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access_review\\routes.py",
+      "line": 174,
+      "method": "POST",
+      "path": "/{review_id}/revoke-user-role",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\access_review\\routes.py",
+      "line": 220,
+      "method": "POST",
+      "path": "/{review_id}/complete",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\ai_security\\routes.py",
+      "line": 12,
+      "method": "POST",
+      "path": "/analyze-collusion",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\ai_security\\routes.py",
+      "line": 30,
+      "method": "GET",
+      "path": "/evaluator-calibration",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\ai_security\\routes.py",
+      "line": 44,
+      "method": "POST",
+      "path": "/forensics/analyze",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\approvals\\routes.py",
+      "line": 48,
+      "method": "POST",
+      "path": "/request",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\approvals\\routes.py",
+      "line": 83,
+      "method": "GET",
+      "path": "/pending",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\approvals\\routes.py",
+      "line": 95,
+      "method": "POST",
+      "path": "/{approval_id}/approve",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\approvals\\routes.py",
+      "line": 163,
+      "method": "POST",
+      "path": "/{approval_id}/reject",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\approvals\\routes.py",
+      "line": 200,
+      "method": "GET",
+      "path": "/{approval_id}/history",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\audit\\timeline.py",
+      "line": 36,
+      "method": "GET",
+      "path": "/api/audit/timeline-explain/{exam_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\audit_namespace\\routes.py",
+      "line": 15,
+      "method": "GET",
+      "path": "/api/audit-namespace/verify",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\audit_namespace\\routes.py",
+      "line": 44,
+      "method": "GET",
+      "path": "/api/audit-namespaces/{institution_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\audit_namespace\\routes.py",
+      "line": 56,
+      "method": "GET",
+      "path": "/api/audit-namespaces/{institution_id}/verify",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\audit_namespace\\routes.py",
+      "line": 92,
+      "method": "GET",
+      "path": "/api/audit-namespaces/{institution_id}/head",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\audit_namespace\\routes.py",
+      "line": 116,
+      "method": "GET",
+      "path": "/api/audit-namespaces/{institution_id}/events",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\routes.py",
+      "line": 477,
+      "method": "POST",
+      "path": "/login",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\routes.py",
+      "line": 586,
+      "method": "POST",
+      "path": "/mfa/verify",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\routes.py",
+      "line": 611,
+      "method": "POST",
+      "path": "/switch-workspace",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\routes.py",
+      "line": 638,
+      "method": "GET",
+      "path": "/me",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\routes.py",
+      "line": 643,
+      "method": "GET",
+      "path": "/session",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\routes.py",
+      "line": 649,
+      "method": "POST",
+      "path": "/logout",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\routes.py",
+      "line": 657,
+      "method": "POST",
+      "path": "/revoke-sessions",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\v1_routes.py",
+      "line": 58,
+      "method": "POST",
+      "path": "/register",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\v1_routes.py",
+      "line": 116,
+      "method": "POST",
+      "path": "/email/send-otp",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\v1_routes.py",
+      "line": 175,
+      "method": "POST",
+      "path": "/phone/send-otp",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\v1_routes.py",
+      "line": 237,
+      "method": "POST",
+      "path": "/otp/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\v1_routes.py",
+      "line": 318,
+      "method": "GET",
+      "path": "/me",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\v1_routes.py",
+      "line": 351,
+      "method": "POST",
+      "path": "/logout",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\v1_routes.py",
+      "line": 367,
+      "method": "POST",
+      "path": "/session/revoke-all",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\v1_routes.py",
+      "line": 433,
+      "method": "GET",
+      "path": "/candidate/state/{candidate_student_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\v1_routes.py",
+      "line": 462,
+      "method": "POST",
+      "path": "/candidate/assert-step",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\auth\\v1_routes.py",
+      "line": 498,
+      "method": "PUT",
+      "path": "/candidate/profile",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\authority\\routes.py",
+      "line": 9,
+      "method": "GET",
+      "path": "/dashboard",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\backup\\routes.py",
+      "line": 49,
+      "method": "POST",
+      "path": "/api/backup/create",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\backup\\routes.py",
+      "line": 106,
+      "method": "GET",
+      "path": "/api/backup",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\backup\\routes.py",
+      "line": 117,
+      "method": "GET",
+      "path": "/api/backup/{backup_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\backup\\routes.py",
+      "line": 138,
+      "method": "POST",
+      "path": "/api/backup/{backup_id}/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\backup\\routes.py",
+      "line": 153,
+      "method": "POST",
+      "path": "/api/restore/dry-run",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\candidates\\routes.py",
+      "line": 71,
+      "method": "POST",
+      "path": "/api/candidates/register",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\candidates\\routes.py",
+      "line": 120,
+      "method": "GET",
+      "path": "/api/candidates",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\candidates\\routes.py",
+      "line": 179,
+      "method": "POST",
+      "path": "/api/candidates/generate-admit-card",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\candidates\\routes.py",
+      "line": 192,
+      "method": "POST",
+      "path": "/api/candidates/verify",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\candidates\\routes.py",
+      "line": 225,
+      "method": "POST",
+      "path": "/api/sessions/start",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\candidates\\routes.py",
+      "line": 308,
+      "method": "POST",
+      "path": "/api/sessions/answer",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\candidates\\routes.py",
+      "line": 344,
+      "method": "POST",
+      "path": "/api/sessions/submit",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\centers\\routes.py",
+      "line": 30,
+      "method": "POST",
+      "path": "/api/centers/register",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\centers\\routes.py",
+      "line": 60,
+      "method": "GET",
+      "path": "/api/centers",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\centers\\routes.py",
+      "line": 69,
+      "method": "GET",
+      "path": "/api/centers/{center_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\centers\\routes.py",
+      "line": 82,
+      "method": "POST",
+      "path": "/api/centers/{center_id}/approve",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\centers\\routes.py",
+      "line": 97,
+      "method": "POST",
+      "path": "/api/centers/{center_id}/suspend",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\centers\\routes.py",
+      "line": 112,
+      "method": "POST",
+      "path": "/api/centers/{center_id}/assign-to-exam",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\centers\\routes.py",
+      "line": 150,
+      "method": "GET",
+      "path": "/api/centers/{center_id}/history",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\certificates\\routes.py",
+      "line": 17,
+      "method": "POST",
+      "path": "/api/certificates/result/{result_id}/generate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\certificates\\routes.py",
+      "line": 102,
+      "method": "GET",
+      "path": "/api/certificates/result/{certificate_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\certificates\\routes.py",
+      "line": 109,
+      "method": "GET",
+      "path": "/api/certificates/verify/{certificate_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\certificates\\routes.py",
+      "line": 110,
+      "method": "GET",
+      "path": "/api/certificates/result/{certificate_id}/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\certificates\\routes.py",
+      "line": 171,
+      "method": "GET",
+      "path": "/api/certificates/result/{certificate_id}/download",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\compliance\\routes.py",
+      "line": 49,
+      "method": "GET",
+      "path": "/readiness-score",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\compliance\\routes.py",
+      "line": 94,
+      "method": "POST",
+      "path": "/report/generate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\compliance\\routes.py",
+      "line": 160,
+      "method": "GET",
+      "path": "/report/{report_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\compliance\\routes.py",
+      "line": 172,
+      "method": "GET",
+      "path": "/report/{report_id}/verify",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\compliance\\routes.py",
+      "line": 206,
+      "method": "POST",
+      "path": "/pentest/simulate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\crypto_vault\\routes.py",
+      "line": 11,
+      "method": "POST",
+      "path": "/sign",
+      "has_auth": false,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\crypto_vault\\routes.py",
+      "line": 21,
+      "method": "GET",
+      "path": "/zk-proof/{result_id}",
+      "has_auth": false,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\data_governance\\routes.py",
+      "line": 47,
+      "method": "POST",
+      "path": "/classify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 19,
+      "method": "POST",
+      "path": "/api/disputes/file",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 93,
+      "method": "GET",
+      "path": "/api/disputes/my",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 103,
+      "method": "GET",
+      "path": "/api/disputes/{dispute_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 122,
+      "method": "POST",
+      "path": "/api/disputes/{dispute_id}/withdraw",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 157,
+      "method": "POST",
+      "path": "/api/disputes/{dispute_id}/attach-note",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 180,
+      "method": "GET",
+      "path": "/api/dispute-ops/queue",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 187,
+      "method": "POST",
+      "path": "/api/dispute-ops/{dispute_id}/open-review",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 222,
+      "method": "POST",
+      "path": "/api/dispute-ops/{dispute_id}/assign-recheck",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 248,
+      "method": "POST",
+      "path": "/api/dispute-ops/{dispute_id}/trigger-omr-review",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 281,
+      "method": "POST",
+      "path": "/api/dispute-ops/{dispute_id}/trigger-written-recheck",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 314,
+      "method": "POST",
+      "path": "/api/dispute-ops/{dispute_id}/decision",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\disputes\\routes.py",
+      "line": 354,
+      "method": "POST",
+      "path": "/api/dispute-ops/{dispute_id}/close",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 36,
+      "method": "POST",
+      "path": "/api/evaluation/anonymize-booklet",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 49,
+      "method": "POST",
+      "path": "/api/evaluation/assign",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 64,
+      "method": "GET",
+      "path": "/api/evaluation/my-queue",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 71,
+      "method": "GET",
+      "path": "/api/evaluation/copy/{anonymous_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 96,
+      "method": "POST",
+      "path": "/api/evaluation/copy/{anonymous_id}/start",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 121,
+      "method": "POST",
+      "path": "/api/evaluation/marks/submit",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 161,
+      "method": "PATCH",
+      "path": "/api/evaluation/marks/{evaluation_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 193,
+      "method": "POST",
+      "path": "/api/evaluation/marks/{evaluation_id}/lock",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 227,
+      "method": "POST",
+      "path": "/api/evaluation/double-assign",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 250,
+      "method": "GET",
+      "path": "/api/evaluation/conflicts",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 254,
+      "method": "GET",
+      "path": "/api/evaluation/conflicts/{conflict_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 261,
+      "method": "POST",
+      "path": "/api/evaluation/conflicts/{conflict_id}/resolve",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 282,
+      "method": "POST",
+      "path": "/api/evaluation/conflicts/{conflict_id}/senior-review",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 302,
+      "method": "GET",
+      "path": "/api/evaluation/marks-chain/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation\\routes.py",
+      "line": 343,
+      "method": "GET",
+      "path": "/api/evaluation/marks-chain/{anonymous_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation_analytics\\routes.py",
+      "line": 14,
+      "method": "GET",
+      "path": "/api/evaluation/analytics/evaluators",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation_analytics\\routes.py",
+      "line": 21,
+      "method": "GET",
+      "path": "/api/evaluation/analytics/evaluator/{evaluator_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation_analytics\\routes.py",
+      "line": 37,
+      "method": "GET",
+      "path": "/api/evaluation/analytics/conflict-rate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evaluation_analytics\\routes.py",
+      "line": 44,
+      "method": "GET",
+      "path": "/api/evaluation/analytics/risk",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evidence\\routes.py",
+      "line": 25,
+      "method": "POST",
+      "path": "/api/evidence/result/{result_id}/generate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evidence\\routes.py",
+      "line": 136,
+      "method": "POST",
+      "path": "/api/evidence/dispute/{dispute_id}/generate",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evidence\\routes.py",
+      "line": 162,
+      "method": "GET",
+      "path": "/api/evidence/{packet_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evidence\\routes.py",
+      "line": 217,
+      "method": "GET",
+      "path": "/api/evidence/{packet_id}/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\evidence\\routes.py",
+      "line": 242,
+      "method": "GET",
+      "path": "/api/evidence/{packet_id}/export",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\exams\\lifecycle.py",
+      "line": 89,
+      "method": "GET",
+      "path": "/api/exams",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\exams\\lifecycle.py",
+      "line": 140,
+      "method": "GET",
+      "path": "/api/exams/{exam_id}/state",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\exams\\lifecycle.py",
+      "line": 147,
+      "method": "POST",
+      "path": "/api/exams/{exam_id}/transition",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\exams\\routes.py",
+      "line": 109,
+      "method": "GET",
+      "path": "/{exam_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\exams\\routes.py",
+      "line": 151,
+      "method": "POST",
+      "path": "/validate-eligibility",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\identity\\routes.py",
+      "line": 23,
+      "method": "POST",
+      "path": "/aadhaar/qr-verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\identity\\routes.py",
+      "line": 56,
+      "method": "POST",
+      "path": "/aadhaar/online-auth",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\identity\\routes.py",
+      "line": 88,
+      "method": "GET",
+      "path": "/verification/{candidate_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\incidents\\routes.py",
+      "line": 31,
+      "method": "POST",
+      "path": "/api/incidents/report",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\incidents\\routes.py",
+      "line": 74,
+      "method": "GET",
+      "path": "/api/incidents",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\incidents\\routes.py",
+      "line": 92,
+      "method": "GET",
+      "path": "/api/incidents/{incident_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\incidents\\routes.py",
+      "line": 99,
+      "method": "POST",
+      "path": "/api/incidents/{incident_id}/resolve",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\incidents\\routes.py",
+      "line": 133,
+      "method": "POST",
+      "path": "/api/incidents/{incident_id}/escalate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\ingestion\\routes.py",
+      "line": 39,
+      "method": "POST",
+      "path": "/api/omr/scans/upload",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\ingestion\\routes.py",
+      "line": 100,
+      "method": "POST",
+      "path": "/api/evaluations/submit",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\ingestion\\routes.py",
+      "line": 148,
+      "method": "GET",
+      "path": "/api/candidates/{candidate_id}/booklet/cover",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\ingestion\\routes.py",
+      "line": 179,
+      "method": "POST",
+      "path": "/api/evaluations/ai-insight",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\institutions\\routes.py",
+      "line": 13,
+      "method": "POST",
+      "path": "/api/institutions/create",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\institutions\\routes.py",
+      "line": 48,
+      "method": "GET",
+      "path": "/api/institutions",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\institutions\\routes.py",
+      "line": 66,
+      "method": "GET",
+      "path": "/api/institutions/{institution_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\institutions\\routes.py",
+      "line": 81,
+      "method": "PATCH",
+      "path": "/api/institutions/{institution_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\institutions\\routes.py",
+      "line": 106,
+      "method": "POST",
+      "path": "/api/institutions/{institution_id}/activate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\institutions\\routes.py",
+      "line": 120,
+      "method": "POST",
+      "path": "/api/institutions/{institution_id}/suspend",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\jobs\\routes.py",
+      "line": 31,
+      "method": "POST",
+      "path": "/omr/process-scan",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\jobs\\routes.py",
+      "line": 45,
+      "method": "POST",
+      "path": "/reports/generate",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\jobs\\routes.py",
+      "line": 59,
+      "method": "POST",
+      "path": "/certificates/generate",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\jobs\\routes.py",
+      "line": 84,
+      "method": "GET",
+      "path": "/{job_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\jobs\\routes.py",
+      "line": 109,
+      "method": "POST",
+      "path": "/{job_id}/cancel",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\keyspace\\routes.py",
+      "line": 36,
+      "method": "POST",
+      "path": "/api/keyspace/institution/{institution_id}/initialize",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\keyspace\\routes.py",
+      "line": 71,
+      "method": "GET",
+      "path": "/api/keyspace/institution/{institution_id}/keys",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\keyspace\\routes.py",
+      "line": 93,
+      "method": "POST",
+      "path": "/api/keyspace/keys/{key_id}/rotate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\keyspace\\routes.py",
+      "line": 123,
+      "method": "POST",
+      "path": "/api/keyspace/keys/{key_id}/revoke",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\keyspace\\routes.py",
+      "line": 138,
+      "method": "GET",
+      "path": "/api/keyspace/keys/{key_id}/public",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\key_lifecycle\\routes.py",
+      "line": 44,
+      "method": "POST",
+      "path": "/{key_id}/rotate/request",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\key_lifecycle\\routes.py",
+      "line": 84,
+      "method": "POST",
+      "path": "/{key_id}/rotate/approve",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\key_lifecycle\\routes.py",
+      "line": 131,
+      "method": "POST",
+      "path": "/{key_id}/revoke/request",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\key_lifecycle\\routes.py",
+      "line": 158,
+      "method": "POST",
+      "path": "/{key_id}/mark-compromised",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\key_lifecycle\\routes.py",
+      "line": 205,
+      "method": "GET",
+      "path": "/{key_id}/lifecycle",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\messaging\\vendor_routes.py",
+      "line": 41,
+      "method": "GET",
+      "path": "/config/{vendor_id}",
+      "has_auth": false,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\messaging\\vendor_routes.py",
+      "line": 59,
+      "method": "POST",
+      "path": "/config/save",
+      "has_auth": false,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\messaging\\vendor_routes.py",
+      "line": 87,
+      "method": "POST",
+      "path": "/test-send",
+      "has_auth": false,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\observability\\routes.py",
+      "line": 16,
+      "method": "GET",
+      "path": "/health/live",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\observability\\routes.py",
+      "line": 21,
+      "method": "GET",
+      "path": "/health/ready",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\observability\\routes.py",
+      "line": 29,
+      "method": "GET",
+      "path": "/health/deep",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\observability\\routes.py",
+      "line": 78,
+      "method": "GET",
+      "path": "/api/ops/metrics",
+      "has_auth": false,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\omr_review\\routes.py",
+      "line": 17,
+      "method": "GET",
+      "path": "/api/omr/review-queue",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\omr_review\\routes.py",
+      "line": 21,
+      "method": "GET",
+      "path": "/api/omr/review/{review_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\omr_review\\routes.py",
+      "line": 28,
+      "method": "POST",
+      "path": "/api/omr/review/{review_id}/finalize",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\omr_review\\routes.py",
+      "line": 46,
+      "method": "POST",
+      "path": "/api/omr/review/{review_id}/lock",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\omr_review\\routes.py",
+      "line": 62,
+      "method": "GET",
+      "path": "/api/omr/review/{review_id}/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\ops\\real_attack_engine.py",
+      "line": 12,
+      "method": "POST",
+      "path": "/mutate-database",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\ops\\real_attack_engine.py",
+      "line": 74,
+      "method": "POST",
+      "path": "/remediate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\ops\\routes.py",
+      "line": 11,
+      "method": "GET",
+      "path": "/api/ops/exam-ops-summary/{exam_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\packages\\center_package.py",
+      "line": 31,
+      "method": "GET",
+      "path": "/api/packages/{center_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\packages\\center_package.py",
+      "line": 47,
+      "method": "POST",
+      "path": "/api/packages/generate-center-package",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\packages\\center_package.py",
+      "line": 80,
+      "method": "POST",
+      "path": "/api/packages/{package_id}/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\packages\\center_package.py",
+      "line": 100,
+      "method": "POST",
+      "path": "/api/packages/{package_id}/release",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\packages\\center_package.py",
+      "line": 191,
+      "method": "POST",
+      "path": "/api/packages/{package_id}/revoke",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\payments\\routes.py",
+      "line": 73,
+      "method": "GET",
+      "path": "/config",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\payments\\routes.py",
+      "line": 94,
+      "method": "POST",
+      "path": "/create-order",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\payments\\routes.py",
+      "line": 211,
+      "method": "POST",
+      "path": "/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\payments\\routes.py",
+      "line": 313,
+      "method": "GET",
+      "path": "/status/{order_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\payments\\routes.py",
+      "line": 328,
+      "method": "POST",
+      "path": "/webhook",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pentest\\routes.py",
+      "line": 31,
+      "method": "GET",
+      "path": "/scorecard",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pentest\\routes.py",
+      "line": 136,
+      "method": "POST",
+      "path": "/run-attack",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pentest\\routes.py",
+      "line": 347,
+      "method": "POST",
+      "path": "/remediate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pilot\\routes.py",
+      "line": 16,
+      "method": "POST",
+      "path": "/reset-and-seed",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pilot\\routes.py",
+      "line": 35,
+      "method": "POST",
+      "path": "/runs",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pilot\\routes.py",
+      "line": 45,
+      "method": "GET",
+      "path": "/runs",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pilot\\routes.py",
+      "line": 58,
+      "method": "GET",
+      "path": "/runs/{run_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pilot\\routes.py",
+      "line": 74,
+      "method": "POST",
+      "path": "/runs/{run_id}/stages/{stage_id}/advance",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pilot\\routes.py",
+      "line": 86,
+      "method": "POST",
+      "path": "/evidence-binder/generate",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pilot\\routes.py",
+      "line": 96,
+      "method": "GET",
+      "path": "/evidence-binder/{binder_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pilot\\routes.py",
+      "line": 107,
+      "method": "GET",
+      "path": "/evidence-binder/{binder_id}/verify",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\pilot\\routes.py",
+      "line": 115,
+      "method": "GET",
+      "path": "/readiness-verdict",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\policies\\routes.py",
+      "line": 46,
+      "method": "POST",
+      "path": "/api/policies/create",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\policies\\routes.py",
+      "line": 71,
+      "method": "GET",
+      "path": "/api/policies/institution/{institution_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\policies\\routes.py",
+      "line": 80,
+      "method": "POST",
+      "path": "/api/policies/{policy_id}/lock",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\policies\\routes.py",
+      "line": 97,
+      "method": "POST",
+      "path": "/api/policies/{policy_id}/clone",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\policies\\routes.py",
+      "line": 126,
+      "method": "POST",
+      "path": "/api/policies/{policy_id}/apply-to-exam",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\policies\\routes.py",
+      "line": 158,
+      "method": "GET",
+      "path": "/api/policies/{policy_id}/validate",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\privacy\\routes.py",
+      "line": 34,
+      "method": "POST",
+      "path": "/redact",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\privacy\\routes.py",
+      "line": 62,
+      "method": "GET",
+      "path": "/policy",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\privacy\\routes.py",
+      "line": 72,
+      "method": "POST",
+      "path": "/validate-export",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\privacy\\routes.py",
+      "line": 124,
+      "method": "GET",
+      "path": "/pii-access-log",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\questions\\routes.py",
+      "line": 116,
+      "method": "POST",
+      "path": "/api/questions",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\questions\\routes.py",
+      "line": 176,
+      "method": "GET",
+      "path": "/api/questions",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\questions\\routes.py",
+      "line": 215,
+      "method": "POST",
+      "path": "/api/exams/{exam_id}/blueprint",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\questions\\routes.py",
+      "line": 250,
+      "method": "POST",
+      "path": "/api/exams/{exam_id}/generate-paper",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\questions\\routes.py",
+      "line": 381,
+      "method": "GET",
+      "path": "/api/questions/ai-models",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\questions\\routes.py",
+      "line": 394,
+      "method": "POST",
+      "path": "/api/questions/generate-ai",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\reports\\routes.py",
+      "line": 23,
+      "method": "POST",
+      "path": "/api/reports/exam/{exam_id}/generate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\reports\\routes.py",
+      "line": 99,
+      "method": "GET",
+      "path": "/api/reports/{report_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\reports\\routes.py",
+      "line": 119,
+      "method": "GET",
+      "path": "/api/reports/{report_id}/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\reports\\routes.py",
+      "line": 143,
+      "method": "GET",
+      "path": "/api/reports/{report_id}/download",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 54,
+      "method": "POST",
+      "path": "/api/exams/{exam_id}/publish-results",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 149,
+      "method": "POST",
+      "path": "/api/exams/{exam_id}/simulate-tamper",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 200,
+      "method": "GET",
+      "path": "/api/audit/logs",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 204,
+      "method": "GET",
+      "path": "/api/audit/verify-chain",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 224,
+      "method": "GET",
+      "path": "/api/trust/score/{exam_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 228,
+      "method": "POST",
+      "path": "/api/risk/simulate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 232,
+      "method": "POST",
+      "path": "/api/risk/clear",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 236,
+      "method": "GET",
+      "path": "/api/risk/status/{exam_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 245,
+      "method": "GET",
+      "path": "/api/risk/omr-queue/{exam_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 249,
+      "method": "GET",
+      "path": "/api/risk/evaluator-conflicts/{exam_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 256,
+      "method": "GET",
+      "path": "/api/candidates/{candidate_id}/receipt",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 282,
+      "method": "POST",
+      "path": "/api/receipts/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 301,
+      "method": "GET",
+      "path": "/api/exams/{exam_id}/gate-status",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 315,
+      "method": "GET",
+      "path": "/api/results/{result_id}/versions",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 320,
+      "method": "GET",
+      "path": "/api/results/{result_id}/diff/{version_a}/{version_b}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 347,
+      "method": "POST",
+      "path": "/api/results/{result_id}/create-version",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 471,
+      "method": "GET",
+      "path": "/api/v1/results/recent-published",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\results\\routes.py",
+      "line": 494,
+      "method": "POST",
+      "path": "/api/v1/results/lookup",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\retention\\routes.py",
+      "line": 50,
+      "method": "POST",
+      "path": "/policy/create",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\retention\\routes.py",
+      "line": 81,
+      "method": "POST",
+      "path": "/legal-hold",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\retention\\routes.py",
+      "line": 113,
+      "method": "POST",
+      "path": "/legal-hold/{hold_id}/release",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\retention\\routes.py",
+      "line": 138,
+      "method": "GET",
+      "path": "/deletion-plan",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\retention\\routes.py",
+      "line": 166,
+      "method": "POST",
+      "path": "/run-dry",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\rubrics\\routes.py",
+      "line": 15,
+      "method": "POST",
+      "path": "/api/rubrics/create",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\rubrics\\routes.py",
+      "line": 80,
+      "method": "POST",
+      "path": "/api/rubrics/{rubric_id}/lock",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\rubrics\\routes.py",
+      "line": 105,
+      "method": "GET",
+      "path": "/api/rubrics/exam/{exam_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\rubrics\\routes.py",
+      "line": 113,
+      "method": "GET",
+      "path": "/api/rubrics/question/{question_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\safebatch\\routes.py",
+      "line": 102,
+      "method": "POST",
+      "path": "/preview",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\safebatch\\routes.py",
+      "line": 177,
+      "method": "POST",
+      "path": "/execute",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\safebatch\\routes.py",
+      "line": 308,
+      "method": "GET",
+      "path": "/handoffs",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\safebatch\\routes.py",
+      "line": 375,
+      "method": "GET",
+      "path": "/handoffs/{handoff_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\safebatch\\routes.py",
+      "line": 471,
+      "method": "POST",
+      "path": "/handoffs/{handoff_id}/claim",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": true
+    },
+    {
+      "file": "backend\\app\\safebatch\\routes.py",
+      "line": 517,
+      "method": "POST",
+      "path": "/handoffs/{handoff_id}/resolve",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\safebatch\\routes.py",
+      "line": 590,
+      "method": "GET",
+      "path": "/actions",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_hardening\\routes.py",
+      "line": 23,
+      "method": "GET",
+      "path": "/status",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_hardening\\routes.py",
+      "line": 32,
+      "method": "GET",
+      "path": "/checklist",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_hardening\\routes.py",
+      "line": 47,
+      "method": "POST",
+      "path": "/run-check",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_incidents\\routes.py",
+      "line": 49,
+      "method": "POST",
+      "path": "/report",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_incidents\\routes.py",
+      "line": 90,
+      "method": "POST",
+      "path": "/{incident_id}/triage",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_incidents\\routes.py",
+      "line": 116,
+      "method": "POST",
+      "path": "/{incident_id}/contain",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_incidents\\routes.py",
+      "line": 140,
+      "method": "POST",
+      "path": "/{incident_id}/resolve",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_incidents\\routes.py",
+      "line": 165,
+      "method": "GET",
+      "path": "/{incident_id}/timeline",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_ops\\routes.py",
+      "line": 22,
+      "method": "GET",
+      "path": "/incidents",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_ops\\routes.py",
+      "line": 35,
+      "method": "POST",
+      "path": "/incidents/{incident_id}/resolve",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_ops\\routes.py",
+      "line": 50,
+      "method": "GET",
+      "path": "/rate-limits",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_ops\\routes.py",
+      "line": 57,
+      "method": "GET",
+      "path": "/abuse-alerts",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_ops\\routes.py",
+      "line": 64,
+      "method": "POST",
+      "path": "/maintenance/toggle",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_review\\routes.py",
+      "line": 46,
+      "method": "POST",
+      "path": "/create",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_review\\routes.py",
+      "line": 85,
+      "method": "GET",
+      "path": "/risk-summary",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_review\\routes.py",
+      "line": 115,
+      "method": "GET",
+      "path": "/{threat_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\security_review\\routes.py",
+      "line": 127,
+      "method": "PATCH",
+      "path": "/{threat_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\storage\\routes.py",
+      "line": 18,
+      "method": "POST",
+      "path": "/upload",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\storage\\routes.py",
+      "line": 61,
+      "method": "GET",
+      "path": "/objects",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\storage\\routes.py",
+      "line": 72,
+      "method": "GET",
+      "path": "/keys/{object_id}/url",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\storage\\routes.py",
+      "line": 98,
+      "method": "GET",
+      "path": "/download",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\templates\\routes.py",
+      "line": 32,
+      "method": "POST",
+      "path": "/api/templates/create",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\templates\\routes.py",
+      "line": 60,
+      "method": "GET",
+      "path": "/api/templates",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\templates\\routes.py",
+      "line": 81,
+      "method": "GET",
+      "path": "/api/templates/{template_id}",
+      "has_auth": true,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\templates\\routes.py",
+      "line": 105,
+      "method": "POST",
+      "path": "/api/templates/{template_id}/create-exam",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\templates\\routes.py",
+      "line": 146,
+      "method": "POST",
+      "path": "/api/templates/{template_id}/clone",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\templates\\routes.py",
+      "line": 173,
+      "method": "PATCH",
+      "path": "/api/templates/{template_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\transparency\\routes.py",
+      "line": 18,
+      "method": "POST",
+      "path": "/api/transparency/result/lookup",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\transparency\\routes.py",
+      "line": 64,
+      "method": "GET",
+      "path": "/api/transparency/result/{result_id}/integrity-summary",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\transparency\\routes.py",
+      "line": 104,
+      "method": "POST",
+      "path": "/api/transparency/result/verify-receipt",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\transparency\\routes.py",
+      "line": 115,
+      "method": "GET",
+      "path": "/api/transparency/result/{result_id}/public-proof",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\verification\\routes.py",
+      "line": 38,
+      "method": "POST",
+      "path": "/api/candidates/generate-admit-card",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\verification\\routes.py",
+      "line": 63,
+      "method": "POST",
+      "path": "/api/center/scan-admit-card",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\verification\\routes.py",
+      "line": 102,
+      "method": "POST",
+      "path": "/api/center/verify-candidate",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\verification\\routes.py",
+      "line": 172,
+      "method": "POST",
+      "path": "/api/center/seats/assign",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\verification\\routes.py",
+      "line": 246,
+      "method": "POST",
+      "path": "/api/center/seats/lock",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\verification\\routes.py",
+      "line": 267,
+      "method": "GET",
+      "path": "/api/center/seats/map/{center_id}",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\verification\\routes.py",
+      "line": 284,
+      "method": "POST",
+      "path": "/api/center/seats/mark-attendance",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\warroom\\router.py",
+      "line": 22,
+      "method": "GET",
+      "path": "/telemetry",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\warroom\\router.py",
+      "line": 47,
+      "method": "POST",
+      "path": "/emergency-lockdown",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\warroom\\router.py",
+      "line": 74,
+      "method": "POST",
+      "path": "/reset-lockdown",
+      "has_auth": false,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\warroom\\router.py",
+      "line": 85,
+      "method": "GET",
+      "path": "/stream",
+      "has_auth": false,
+      "has_db": false,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\written\\routes.py",
+      "line": 18,
+      "method": "POST",
+      "path": "/api/written/booklets/create",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\written\\routes.py",
+      "line": 65,
+      "method": "POST",
+      "path": "/api/written/booklets/{booklet_id}/upload-page",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": true,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\written\\routes.py",
+      "line": 109,
+      "method": "POST",
+      "path": "/api/written/booklets/{booklet_id}/lock",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\written\\routes.py",
+      "line": 142,
+      "method": "GET",
+      "path": "/api/written/booklets/{booklet_id}/verify",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    },
+    {
+      "file": "backend\\app\\written\\routes.py",
+      "line": 163,
+      "method": "GET",
+      "path": "/api/written/booklets/{booklet_id}/pages",
+      "has_auth": false,
+      "has_db": true,
+      "has_commit": false,
+      "has_rollback": false
+    }
+  ],
+  "tx_issues": [
+    {
+      "file": "backend\\app\\backup\\routes.py",
+      "line": 49,
+      "path": "/api/backup/create",
+      "issue": "Commit without explicit rollback in exception block"
+    },
+    {
+      "file": "backend\\app\\ops\\real_attack_engine.py",
+      "line": 12,
+      "path": "/mutate-database",
+      "issue": "Commit without explicit rollback in exception block"
+    },
+    {
+      "file": "backend\\app\\ops\\real_attack_engine.py",
+      "line": 74,
+      "path": "/remediate",
+      "issue": "Commit without explicit rollback in exception block"
+    },
+    {
+      "file": "backend\\app\\pentest\\routes.py",
+      "line": 347,
+      "path": "/remediate",
+      "issue": "Commit without explicit rollback in exception block"
+    },
+    {
+      "file": "backend\\app\\storage\\routes.py",
+      "line": 98,
+      "path": "/download",
+      "issue": "Commit without explicit rollback in exception block"
+    }
+  ],
+  "frontend_pages": [
+    {
+      "route": "/",
+      "file": "frontend\\src\\app\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/admin/communication",
+      "file": "frontend\\src\\app\\admin\\communication\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/admin/login",
+      "file": "frontend\\src\\app\\admin\\login\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/audit/login",
+      "file": "frontend\\src\\app\\audit\\login\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/audit-timeline",
+      "file": "frontend\\src\\app\\audit-timeline\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/auditor",
+      "file": "frontend\\src\\app\\auditor\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/authority",
+      "file": "frontend\\src\\app\\authority\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/candidate",
+      "file": "frontend\\src\\app\\candidate\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/candidate/login",
+      "file": "frontend\\src\\app\\candidate\\login\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/candidate-verification",
+      "file": "frontend\\src\\app\\candidate-verification\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/center-console",
+      "file": "frontend\\src\\app\\center-console\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/center-onboarding",
+      "file": "frontend\\src\\app\\center-onboarding\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/center-risk",
+      "file": "frontend\\src\\app\\center-risk\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/centers",
+      "file": "frontend\\src\\app\\centers\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/centers/onboard",
+      "file": "frontend\\src\\app\\centers\\onboard\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/centers/[center_id]",
+      "file": "frontend\\src\\app\\centers\\[center_id]\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/controller",
+      "file": "frontend\\src\\app\\controller\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/create-exam",
+      "file": "frontend\\src\\app\\create-exam\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/demo",
+      "file": "frontend\\src\\app\\demo\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/dispute/login",
+      "file": "frontend\\src\\app\\dispute\\login\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/dispute-ops",
+      "file": "frontend\\src\\app\\dispute-ops\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/dispute-ops/[dispute_id]",
+      "file": "frontend\\src\\app\\dispute-ops\\[dispute_id]\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/disputes",
+      "file": "frontend\\src\\app\\disputes\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/disputes/file",
+      "file": "frontend\\src\\app\\disputes\\file\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/disputes/[dispute_id]",
+      "file": "frontend\\src\\app\\disputes\\[dispute_id]\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/evaluation/login",
+      "file": "frontend\\src\\app\\evaluation\\login\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/evaluation-conflicts",
+      "file": "frontend\\src\\app\\evaluation-conflicts\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/evaluation-ops",
+      "file": "frontend\\src\\app\\evaluation-ops\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/evaluator",
+      "file": "frontend\\src\\app\\evaluator\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/evaluator/copy/[anonymous_id]",
+      "file": "frontend\\src\\app\\evaluator\\copy\\[anonymous_id]\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/evaluator/queue",
+      "file": "frontend\\src\\app\\evaluator\\queue\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/evaluator-analytics",
+      "file": "frontend\\src\\app\\evaluator-analytics\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/evidence-packet/[packet_id]",
+      "file": "frontend\\src\\app\\evidence-packet\\[packet_id]\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/exam-ops",
+      "file": "frontend\\src\\app\\exam-ops\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/exam-templates",
+      "file": "frontend\\src\\app\\exam-templates\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/exam-templates/create",
+      "file": "frontend\\src\\app\\exam-templates\\create\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/examinations",
+      "file": "frontend\\src\\app\\examinations\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/exams/[exam_id]/control-room",
+      "file": "frontend\\src\\app\\exams\\[exam_id]\\control-room\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/incidents",
+      "file": "frontend\\src\\app\\incidents\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/institution-audit-report",
+      "file": "frontend\\src\\app\\institution-audit-report\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/institution-settings",
+      "file": "frontend\\src\\app\\institution-settings\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/institution-users",
+      "file": "frontend\\src\\app\\institution-users\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/institutions",
+      "file": "frontend\\src\\app\\institutions\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/institutions/create",
+      "file": "frontend\\src\\app\\institutions\\create\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/institutions/[institution_id]",
+      "file": "frontend\\src\\app\\institutions\\[institution_id]\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/keyspace",
+      "file": "frontend\\src\\app\\keyspace\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/marks-chain",
+      "file": "frontend\\src\\app\\marks-chain\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/omr-review",
+      "file": "frontend\\src\\app\\omr-review\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/omr-scanner",
+      "file": "frontend\\src\\app\\omr-scanner\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/ops",
+      "file": "frontend\\src\\app\\ops\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/ops/backups",
+      "file": "frontend\\src\\app\\ops\\backups\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/ops/config",
+      "file": "frontend\\src\\app\\ops\\config\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/ops/health",
+      "file": "frontend\\src\\app\\ops\\health\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/ops/jobs",
+      "file": "frontend\\src\\app\\ops\\jobs\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/ops/jobs/[job_id]",
+      "file": "frontend\\src\\app\\ops\\jobs\\[job_id]\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/ops/login",
+      "file": "frontend\\src\\app\\ops\\login\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/ops/maintenance",
+      "file": "frontend\\src\\app\\ops\\maintenance\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/ops/metrics",
+      "file": "frontend\\src\\app\\ops\\metrics\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/ops/rate-limits",
+      "file": "frontend\\src\\app\\ops\\rate-limits\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/ops/storage",
+      "file": "frontend\\src\\app\\ops\\storage\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/pilot-run",
+      "file": "frontend\\src\\app\\pilot-run\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/platform-admin",
+      "file": "frontend\\src\\app\\platform-admin\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/policies",
+      "file": "frontend\\src\\app\\policies\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/policies/create",
+      "file": "frontend\\src\\app\\policies\\create\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/portals",
+      "file": "frontend\\src\\app\\portals\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/publication-gate",
+      "file": "frontend\\src\\app\\publication-gate\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/question-bank",
+      "file": "frontend\\src\\app\\question-bank\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/receipt-verify",
+      "file": "frontend\\src\\app\\receipt-verify\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/result-certificate/[certificate_id]",
+      "file": "frontend\\src\\app\\result-certificate\\[certificate_id]\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/result-integrity/[result_id]",
+      "file": "frontend\\src\\app\\result-integrity\\[result_id]\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/result-portal",
+      "file": "frontend\\src\\app\\result-portal\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/result-versions/[result_id]",
+      "file": "frontend\\src\\app\\result-versions\\[result_id]\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/risk-dashboard",
+      "file": "frontend\\src\\app\\risk-dashboard\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/role-matrix",
+      "file": "frontend\\src\\app\\role-matrix\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/rubrics",
+      "file": "frontend\\src\\app\\rubrics\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/rubrics/create",
+      "file": "frontend\\src\\app\\rubrics\\create\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/safebatch",
+      "file": "frontend\\src\\app\\safebatch\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/safebatch/handoff/[handoff_id]",
+      "file": "frontend\\src\\app\\safebatch\\handoff\\[handoff_id]\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/seat-map",
+      "file": "frontend\\src\\app\\seat-map\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/security",
+      "file": "frontend\\src\\app\\security\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/security/access-review",
+      "file": "frontend\\src\\app\\security\\access-review\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/security/approvals",
+      "file": "frontend\\src\\app\\security\\approvals\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/security/assets",
+      "file": "frontend\\src\\app\\security\\assets\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/security/command",
+      "file": "frontend\\src\\app\\security\\command\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/security/compliance-report",
+      "file": "frontend\\src\\app\\security\\compliance-report\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/security/hardening",
+      "file": "frontend\\src\\app\\security\\hardening\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/security/incidents",
+      "file": "frontend\\src\\app\\security\\incidents\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/security/keys",
+      "file": "frontend\\src\\app\\security\\keys\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/security/login",
+      "file": "frontend\\src\\app\\security\\login\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/security/privacy",
+      "file": "frontend\\src\\app\\security\\privacy\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/security/retention",
+      "file": "frontend\\src\\app\\security\\retention\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/security/threat-model",
+      "file": "frontend\\src\\app\\security\\threat-model\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/security-pentest",
+      "file": "frontend\\src\\app\\security-pentest\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/staff/login",
+      "file": "frontend\\src\\app\\staff\\login\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/student-exam",
+      "file": "frontend\\src\\app\\student-exam\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/tenant-audit",
+      "file": "frontend\\src\\app\\tenant-audit\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/unauthorized",
+      "file": "frontend\\src\\app\\unauthorized\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/vendor",
+      "file": "frontend\\src\\app\\vendor\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": true
+    },
+    {
+      "route": "/vendor/login",
+      "file": "frontend\\src\\app\\vendor\\login\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": true,
+      "has_form": false
+    },
+    {
+      "route": "/verify-certificate/[certificate_id]",
+      "file": "frontend\\src\\app\\verify-certificate\\[certificate_id]\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": false
+    },
+    {
+      "route": "/verify-result",
+      "file": "frontend\\src\\app\\verify-result\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/war-room",
+      "file": "frontend\\src\\app\\war-room\\page.tsx",
+      "has_auth_check": false,
+      "has_role_check": false,
+      "has_form": true
+    },
+    {
+      "route": "/workspace/select",
+      "file": "frontend\\src\\app\\workspace\\select\\page.tsx",
+      "has_auth_check": true,
+      "has_role_check": true,
+      "has_form": true
+    }
+  ]
+}

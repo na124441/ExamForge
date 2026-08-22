@@ -336,11 +336,68 @@ async def handle_payment_webhook(
     Webhook endpoint for payment gateways (Razorpay, Cashfree, PhonePe)
     to asynchronously notify payment success/failure with signature verification.
     """
-    body_bytes = await request.body()
-    body_str = body_bytes.decode("utf-8")
-    
-    # In production, verify gateway signature header
-    return {
-        "status": "RECEIVED",
-        "timestamp": datetime.now(timezone.utc).isoformat()
-    }
+    try:
+        body_bytes = await request.body()
+        body_str = body_bytes.decode("utf-8")
+        
+        # Verify webhook signature if configured in environment
+        webhook_secret = os.getenv("PAYMENT_WEBHOOK_SECRET", "examforge_webhook_secret_2026")
+        expected_sig = hmac.new(
+            webhook_secret.encode("utf-8"),
+            body_bytes,
+            hashlib.sha256
+        ).hexdigest()
+        
+        incoming_sig = x_razorpay_signature or x_webhook_signature
+        if incoming_sig and not hmac.compare_digest(incoming_sig, expected_sig):
+            raise HTTPException(status_code=400, detail="Invalid webhook signature")
+            
+        payload = {}
+        if body_str:
+            try:
+                payload = json.loads(body_str)
+            except Exception:
+                payload = {}
+                
+        order_id = payload.get("order_id") or payload.get("id")
+        event = payload.get("event", "payment.captured")
+        
+        if order_id and event in ["payment.captured", "payment.success", "ORDER_PAID"]:
+            order = db.query(models.PaymentOrder).filter(
+                (models.PaymentOrder.id == order_id) | (models.PaymentOrder.transaction_ref == order_id)
+            ).first()
+            if order and order.status != "SUCCESS":
+                now = datetime.now(timezone.utc)
+                order.status = "SUCCESS"
+                order.paid_at = now
+                order.bank_ref_no = payload.get("bank_ref_no", f"UTR-{order.transaction_ref[-8:]}")
+                
+                # Advance Candidate Application & Profile state
+                app = db.query(models.ExamApplication).filter(
+                    models.ExamApplication.candidate_id == order.candidate_id,
+                    models.ExamApplication.exam_id == order.exam_id
+                ).first()
+                if app:
+                    app.payment_status = "PAID"
+                    app.status = "PAYMENT_COMPLETED"
+                    
+                profile = db.query(models.CandidateProfile).filter(
+                    models.CandidateProfile.id == order.candidate_id
+                ).first()
+                if profile:
+                    profile.registration_state = "PAYMENT_COMPLETED"
+                    
+                db.commit()
+                
+        return {
+            "status": "PROCESSED",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+    except Exception as e:
+        db.rollback()
+        if isinstance(e, HTTPException):
+            raise e
+        return {
+            "status": "ERROR",
+            "message": str(e)
+        }

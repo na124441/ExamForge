@@ -155,38 +155,44 @@ def release_package(
         raise HTTPException(status_code=400, detail="Active security intrusion alert. Decryption keys frozen.")
 
     # 5. Success - Transition state and release package
-    pkg.status = "RELEASED"
-    pkg.released_by = current_user.id
-    pkg.release_signature = request.signature
-    
-    # Try transitioning exam state to IN_PROGRESS
     try:
-        set_exam_state(db, pkg.exam_id, "IN_PROGRESS", current_user.id)
-    except Exception:
-        # Already transitioned or ignore
-        pass
+        pkg.status = "RELEASED"
+        pkg.released_by = current_user.id
+        pkg.release_signature = request.signature
         
-    db.commit()
-    
-    log_event(
-        db=db,
-        actor_id=current_user.id,
-        action="PACKAGE_RELEASED",
-        resource_type="EncryptedPackage",
-        resource_id=package_id,
-        payload_data=json.dumps({
+        # Try transitioning exam state to IN_PROGRESS
+        try:
+            set_exam_state(db, pkg.exam_id, "IN_PROGRESS", current_user.id)
+        except Exception:
+            # Already transitioned or ignore
+            pass
+            
+        db.commit()
+        
+        log_event(
+            db=db,
+            actor_id=current_user.id,
+            action="PACKAGE_RELEASED",
+            resource_type="EncryptedPackage",
+            resource_id=package_id,
+            payload_data=json.dumps({
+                "released_by": current_user.id,
+                "center_id": request.center_id,
+                "signature": request.signature
+            })
+        )
+        
+        return {
+            "status": "RELEASED",
+            "decrypted_payload": pkg.encrypted_payload,
             "released_by": current_user.id,
-            "center_id": request.center_id,
-            "signature": request.signature
-        })
-    )
-    
-    return {
-        "status": "RELEASED",
-        "decrypted_payload": pkg.encrypted_payload,
-        "released_by": current_user.id,
-        "release_signature": request.signature
-    }
+            "release_signature": request.signature
+        }
+    except Exception as e:
+        db.rollback()
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=f"Failed to release package: {str(e)}")
 
 @router.post("/api/packages/{package_id}/revoke")
 def revoke_package(

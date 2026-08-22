@@ -94,46 +94,58 @@ def get_institution_keys(
 def rotate_key(
     key_id: str,
     db: Session = Depends(get_db),
-    current_user: UserResponse = Depends(RoleChecker(["CONTROLLER"]))
+    current_user: UserResponse = Depends(RoleChecker(["CONTROLLER", "SECURITY_OFFICER", "PLATFORM_ADMIN", "AUTHORITY"]))
 ):
-    key = db.query(InstitutionKey).filter(InstitutionKey.id == key_id).first()
-    if not key:
-        raise HTTPException(status_code=404, detail="Key not found")
+    try:
+        key = db.query(InstitutionKey).filter(InstitutionKey.id == key_id).first()
+        if not key:
+            raise HTTPException(status_code=404, detail="Key not found")
+            
+        guard_tenant_access(key.institution_id)
+
+        # Mark old key as rotated
+        key.status = "ROTATED"
         
-    guard_tenant_access(key.institution_id)
+        # Generate real ECDSA keypair
+        pub_k, priv_k = generate_ecdsa_keypair()
 
-    # Mark old key as rotated
-    key.status = "ROTATED"
-    
-    # Generate real ECDSA keypair
-    pub_k, priv_k = generate_ecdsa_keypair()
-
-    new_key = InstitutionKey(
-        institution_id=key.institution_id,
-        key_type=key.key_type,
-        algorithm="ECDSA_P256",
-        public_key=pub_k,
-        private_key=priv_k,
-        status="ACTIVE"
-    )
-    db.add(new_key)
-    db.commit()
-    return {"status": "KEY_ROTATED", "new_key_id": new_key.id}
+        new_key = InstitutionKey(
+            institution_id=key.institution_id,
+            key_type=key.key_type,
+            algorithm="ECDSA_P256",
+            public_key=pub_k,
+            private_key=priv_k,
+            status="ACTIVE"
+        )
+        db.add(new_key)
+        db.commit()
+        return {"status": "KEY_ROTATED", "new_key_id": new_key.id}
+    except Exception as e:
+        db.rollback()
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=f"Failed to rotate cryptographic key: {str(e)}")
 
 @router.post("/api/keyspace/keys/{key_id}/revoke")
 def revoke_key(
     key_id: str,
     db: Session = Depends(get_db),
-    current_user: UserResponse = Depends(RoleChecker(["CONTROLLER"]))
+    current_user: UserResponse = Depends(RoleChecker(["CONTROLLER", "SECURITY_OFFICER", "PLATFORM_ADMIN", "AUTHORITY"]))
 ):
-    key = db.query(InstitutionKey).filter(InstitutionKey.id == key_id).first()
-    if not key:
-        raise HTTPException(status_code=404, detail="Key not found")
-        
-    guard_tenant_access(key.institution_id)
-    key.status = "REVOKED"
-    db.commit()
-    return {"status": "KEY_REVOKED", "key_id": key_id}
+    try:
+        key = db.query(InstitutionKey).filter(InstitutionKey.id == key_id).first()
+        if not key:
+            raise HTTPException(status_code=404, detail="Key not found")
+            
+        guard_tenant_access(key.institution_id)
+        key.status = "REVOKED"
+        db.commit()
+        return {"status": "KEY_REVOKED", "key_id": key_id}
+    except Exception as e:
+        db.rollback()
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=f"Failed to revoke cryptographic key: {str(e)}")
 
 @router.get("/api/keyspace/keys/{key_id}/public")
 def get_public_key(key_id: str, db: Session = Depends(get_db)):

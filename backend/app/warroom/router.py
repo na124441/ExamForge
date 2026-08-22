@@ -44,8 +44,15 @@ def get_warroom_telemetry(db: Session = Depends(get_db)):
         ]
     }
 
+from app.auth.guards import RoleChecker
+from app.auth.dependencies import AuthenticatedPrincipal
+
 @router.post("/emergency-lockdown")
-def trigger_emergency_lockdown(payload: Dict[str, Any], db: Session = Depends(get_db)):
+def trigger_emergency_lockdown(
+    payload: Dict[str, Any],
+    db: Session = Depends(get_db),
+    current_user: AuthenticatedPrincipal = Depends(RoleChecker(["CONTROLLER", "SECURITY_OFFICER", "PLATFORM_ADMIN", "AUTHORITY"]))
+):
     """
     Triggers an emergency lockdown across all center package decryptors.
     """
@@ -58,7 +65,7 @@ def trigger_emergency_lockdown(payload: Dict[str, Any], db: Session = Depends(ge
     alert = {
         "id": f"ALT-{int(time.time())}",
         "level": "CRITICAL",
-        "msg": f"EMERGENCY LOCKDOWN ACTIVATED: {reason}",
+        "msg": f"EMERGENCY LOCKDOWN ACTIVATED by {current_user.email}: {reason}",
         "time": _WARROOM_STATE["lockdown_timestamp"]
     }
     _WARROOM_STATE["threat_alerts"].append(alert)
@@ -66,13 +73,16 @@ def trigger_emergency_lockdown(payload: Dict[str, Any], db: Session = Depends(ge
     return {
         "success": True,
         "action": "EMERGENCY_LOCKDOWN_ACTIVATED",
+        "triggered_by": current_user.email,
         "timestamp": _WARROOM_STATE["lockdown_timestamp"],
         "impact": "All un-decrypted center packages suspended. Verification key gates locked.",
         "audit_proof_hash": "a4f891b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abc"
     }
 
 @router.post("/reset-lockdown")
-def reset_emergency_lockdown():
+def reset_emergency_lockdown(
+    current_user: AuthenticatedPrincipal = Depends(RoleChecker(["CONTROLLER", "SECURITY_OFFICER", "PLATFORM_ADMIN", "AUTHORITY"]))
+):
     """
     Resets emergency lockdown back to normal operational state.
     """
@@ -80,7 +90,7 @@ def reset_emergency_lockdown():
     _WARROOM_STATE["lockdown_reason"] = None
     _WARROOM_STATE["lockdown_timestamp"] = None
     _WARROOM_STATE["active_threat_level"] = "LOW"
-    return {"success": True, "status": "OPERATIONAL"}
+    return {"success": True, "status": "OPERATIONAL", "reset_by": current_user.email}
 
 @router.get("/stream")
 async def stream_telemetry_sse():

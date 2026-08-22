@@ -154,18 +154,24 @@ def assign_role(
         InstitutionMembership.institution_id == request.institution_id
     ).first()
 
-    if membership:
-        membership.role = request.role
-    else:
-        membership = InstitutionMembership(
-            user_id=request.user_id,
-            institution_id=request.institution_id,
-            role=request.role
-        )
-        db.add(membership)
+    try:
+        if membership:
+            membership.role = request.role
+        else:
+            membership = InstitutionMembership(
+                user_id=request.user_id,
+                institution_id=request.institution_id,
+                role=request.role
+            )
+            db.add(membership)
 
-    db.commit()
-    return {"status": "ROLE_ASSIGNED", "role": request.role}
+        db.commit()
+        return {"status": "ROLE_ASSIGNED", "role": request.role}
+    except Exception as e:
+        db.rollback()
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=f"Failed to assign role: {str(e)}")
 
 @router.post("/api/access/revoke-role")
 def revoke_role(
@@ -175,18 +181,24 @@ def revoke_role(
 ):
     guard_tenant_access(request.institution_id)
 
-    membership = db.query(InstitutionMembership).filter(
-        InstitutionMembership.user_id == request.user_id,
-        InstitutionMembership.institution_id == request.institution_id,
-        InstitutionMembership.role == request.role
-    ).first()
+    try:
+        membership = db.query(InstitutionMembership).filter(
+            InstitutionMembership.user_id == request.user_id,
+            InstitutionMembership.institution_id == request.institution_id,
+            InstitutionMembership.role == request.role
+        ).first()
 
-    if not membership:
-        raise HTTPException(status_code=404, detail="Membership role mapping not found.")
+        if not membership:
+            raise HTTPException(status_code=404, detail="Membership role mapping not found.")
 
-    db.delete(membership)
-    db.commit()
-    return {"status": "ROLE_REVOKED"}
+        db.delete(membership)
+        db.commit()
+        return {"status": "ROLE_REVOKED"}
+    except Exception as e:
+        db.rollback()
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=f"Failed to revoke role: {str(e)}")
 
 @router.get("/api/access/permission-matrix")
 def get_permission_matrix(
