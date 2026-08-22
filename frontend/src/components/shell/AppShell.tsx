@@ -34,9 +34,26 @@ function isStandaloneRoute(pathname: string): boolean {
   );
 }
 
+/**
+ * Determine workspace type from pathname for theme scoping.
+ */
+function getWorkspace(pathname: string): string {
+  if (pathname === "/") return "landing";
+  if (pathname.startsWith("/candidate") || pathname.startsWith("/student-exam") || pathname.startsWith("/result-portal") || pathname.startsWith("/receipt-verify") || pathname.startsWith("/verify-certificate") || pathname.startsWith("/verify-result") || pathname.startsWith("/result-certificate")) return "candidate";
+  if (pathname.startsWith("/vendor") || pathname.startsWith("/create-exam") || pathname.startsWith("/exam-templates") || pathname.startsWith("/question-bank") || pathname.startsWith("/rubrics") || pathname.startsWith("/institution")) return "vendor";
+  if (pathname.startsWith("/war-room") || pathname.startsWith("/controller")) return "controller";
+  if (pathname.startsWith("/evaluator") || pathname.startsWith("/evaluation") || pathname.startsWith("/omr")) return "evaluator";
+  if (pathname.startsWith("/auditor") || pathname.startsWith("/audit") || pathname.startsWith("/tenant-audit")) return "auditor";
+  if (pathname.startsWith("/center") || pathname.startsWith("/seat-map") || pathname.startsWith("/candidate-verification")) return "centre";
+  if (pathname.startsWith("/portals")) return "landing";
+  // Default: vendor-style (professional light)
+  return "vendor";
+}
+
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const workspace = getWorkspace(pathname);
 
   // Auto-authenticate default controller session if not logged in
   useEffect(() => {
@@ -121,23 +138,30 @@ export function AppShell({ children }: AppShellProps) {
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
-  // Standalone routes — full screen dark canvas
+  // Standalone routes — workspace-themed full screen
   if (isStandaloneRoute(pathname)) {
     return (
-      <div className="min-h-[100dvh] bg-[#081310] text-[#FFF4E2] font-sans">
+      <div
+        data-workspace={workspace}
+        className="min-h-[100dvh] bg-[var(--color-surface)] text-[var(--color-ink)] font-sans"
+      >
         {children}
       </div>
     );
   }
 
-  // All admin routes — full dark theme layout
+  // All admin routes — themed layout with nav
   return (
     <ForgeAdminLayout
       isCommandPaletteOpen={isCommandPaletteOpen}
       onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
       onCloseCommandPalette={() => setIsCommandPaletteOpen(false)}
+      workspace={workspace}
     >
-      <div className="w-full max-w-[var(--content-max-width)] mx-auto p-4 sm:p-6 lg:p-8 animate-fade-in">
+      <div
+        data-workspace={workspace}
+        className="w-full max-w-[var(--content-max-width)] mx-auto p-4 sm:p-6 lg:p-8 animate-fade-in bg-[var(--color-surface)] text-[var(--color-ink)]"
+      >
         {children}
       </div>
     </ForgeAdminLayout>

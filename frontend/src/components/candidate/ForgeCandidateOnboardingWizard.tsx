@@ -652,7 +652,7 @@ export function ForgeCandidateOnboardingWizard() {
     <div className="space-y-6 font-sans w-full max-w-7xl mx-auto text-[#FFF4E2] select-none">
       
       {/* 1. TOP HEADER & HORIZONTAL STEPPER CARD */}
-      <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-5">
+      <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs text-[var(--color-ink)]">
         
         {/* Title Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[rgba(138,216,184,0.15)] pb-4">
@@ -868,7 +868,7 @@ export function ForgeCandidateOnboardingWizard() {
           
           {/* STEP 1: IDENTITY ACCOUNT & CREATION */}
           {activeStep === "ACCOUNT" && (
-            <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6">
+            <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)]">
               <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
                 <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
                   <User className="w-5 h-5 text-[#8AD8B8]" />
@@ -945,7 +945,7 @@ export function ForgeCandidateOnboardingWizard() {
 
           {/* STEP 2: EMAIL OTP */}
           {activeStep === "EMAIL_OTP" && (
-            <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6">
+            <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)]">
               <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
                 <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
                   <Mail className="w-5 h-5 text-[#8AD8B8]" />
@@ -1027,7 +1027,7 @@ export function ForgeCandidateOnboardingWizard() {
 
           {/* STEP 3: PHONE OTP */}
           {activeStep === "PHONE_OTP" && (
-            <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6">
+            <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)]">
               <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
                 <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
                   <Phone className="w-5 h-5 text-[#8AD8B8]" />
@@ -1109,7 +1109,7 @@ export function ForgeCandidateOnboardingWizard() {
 
           {/* STEP 4: PERSONAL PROFILE */}
           {activeStep === "PERSONAL_PROFILE" && (
-            <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6">
+            <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)]">
               <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
                 <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
                   <UserCheck className="w-5 h-5 text-[#8AD8B8]" />
@@ -1209,7 +1209,7 @@ export function ForgeCandidateOnboardingWizard() {
 
           {/* STEP 5: ADDRESS DETAILS */}
           {activeStep === "ADDRESS_DETAILS" && (
-            <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6">
+            <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)]">
               <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
                 <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-[#8AD8B8]" />
@@ -1289,7 +1289,7 @@ export function ForgeCandidateOnboardingWizard() {
 
           {/* STEP 6: EDUCATION BACKGROUND */}
           {activeStep === "EDUCATION_BACKGROUND" && (
-            <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6">
+            <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)]">
               <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
                 <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
                   <GraduationCap className="w-5 h-5 text-[#8AD8B8]" />
@@ -1385,7 +1385,7 @@ export function ForgeCandidateOnboardingWizard() {
 
           {/* STEP 8: EXAM DISCOVERY & SELECTION */}
           {activeStep === "EXAM_SELECTION" && (
-            <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6">
+            <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)]">
               <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
                 <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-[#8AD8B8]" />
@@ -1480,7 +1480,7 @@ export function ForgeCandidateOnboardingWizard() {
 
           {/* STEP 9: PRE-PAYMENT APPLICATION AUDIT */}
           {activeStep === "PRE_PAYMENT_REVIEW" && (
-            <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6">
+            <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)]">
               <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
                 <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
                   <FileCheck className="w-5 h-5 text-[#8AD8B8]" />
@@ -1565,7 +1565,7 @@ export function ForgeCandidateOnboardingWizard() {
 
           {/* STEP 11: CENTRE ALLOCATION */}
           {activeStep === "CENTRE_SELECTION" && (
-            <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6">
+            <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)]">
               <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
                 <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
                   <Building2 className="w-5 h-5 text-[#8AD8B8]" />
@@ -1622,7 +1622,7 @@ export function ForgeCandidateOnboardingWizard() {
 
           {/* STEP 12: CRYPTOGRAPHIC ADMIT CARD ISSUANCE */}
           {activeStep === "ADMIT_CARD" && (
-            <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6">
+            <div className="p-6 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)]">
               <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-[rgba(64,133,118,0.3)] text-[#8AD8B8] flex items-center justify-center border border-[rgba(138,216,184,0.3)]">

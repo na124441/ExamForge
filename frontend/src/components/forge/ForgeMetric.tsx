@@ -49,32 +49,32 @@ export function ForgeMetric({
     else if (trend.direction === "down") isNegative = true;
   }
 
-  let statusTextColor = "text-[var(--md-sys-color-on-surface)]";
-  if (status === "ok" || status === "success") statusTextColor = "text-[var(--md-sys-color-success)]";
-  else if (status === "warn" || status === "warning") statusTextColor = "text-[var(--md-sys-color-warning)]";
-  else if (status === "danger" || status === "error") statusTextColor = "text-[var(--md-sys-color-error)]";
+  let statusTextColor = "text-[var(--color-ink)]";
+  if (status === "ok" || status === "success") statusTextColor = "text-[var(--color-success)]";
+  else if (status === "warn" || status === "warning") statusTextColor = "text-[var(--color-warning)]";
+  else if (status === "danger" || status === "error") statusTextColor = "text-[var(--color-danger)]";
 
   return (
     <div
       className={cn(
-        "flex flex-col gap-1.5 p-5 rounded-2xl bg-[var(--md-sys-color-surface-container-lowest)] border border-[var(--md-sys-color-outline-variant)] shadow-[var(--md-sys-elevation-1)] hover:shadow-[var(--md-sys-elevation-2)] transition-all duration-[var(--duration-normal)] select-none",
+        "flex flex-col gap-1.5 p-5 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs hover:shadow-sm transition-all duration-[var(--duration-normal)] select-none",
         className
       )}
       {...props}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[11px] font-bold text-[var(--md-sys-color-on-surface-variant)] font-sans uppercase tracking-wider">
+        <span className="text-[11px] font-bold text-[var(--color-ink-secondary)] font-sans uppercase tracking-wider">
           {displayLabel}
         </span>
         {icon && (
-          <div className="w-8 h-8 rounded-full bg-[var(--md-sys-color-surface-container-high)] flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)]">
+          <div className="w-8 h-8 rounded-lg bg-[var(--color-surface-sunken)] border border-[var(--color-border)] flex items-center justify-center text-[var(--color-ink-secondary)]">
             {icon}
           </div>
         )}
       </div>
 
       <div className="flex items-baseline gap-2 mt-1">
-        <span className={cn("text-3xl font-bold tracking-tight", statusTextColor, mono ? "font-mono" : "font-sans")}>
+        <span className={cn("text-2xl sm:text-3xl font-bold tracking-tight ef-metric", statusTextColor, mono ? "font-mono" : "font-sans")}>
           {value}
         </span>
         {trendText && (
@@ -82,10 +82,10 @@ export function ForgeMetric({
             className={cn(
               "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold font-mono",
               isPositive
-                ? "bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-on-success-container)]"
+                ? "bg-[var(--color-success-surface)] text-[var(--color-success-text)]"
                 : isNegative
-                ? "bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]"
-                : "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+                ? "bg-[var(--color-danger-surface)] text-[var(--color-danger-text)]"
+                : "bg-[var(--color-surface-sunken)] text-[var(--color-ink-secondary)]"
             )}
           >
             {isPositive && <ArrowUpRight className="mr-0.5 h-3 w-3" />}
@@ -97,7 +97,7 @@ export function ForgeMetric({
       </div>
 
       {description && (
-        <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-1">{description}</span>
+        <span className="text-xs text-[var(--color-ink-secondary)] mt-1">{description}</span>
       )}
     </div>
   );

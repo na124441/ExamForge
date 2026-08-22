@@ -128,7 +128,7 @@ export default function VendorPortalPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/safebatch"
-              className="px-3.5 py-2 rounded-xl bg-[#8AD8B8] hover:bg-[#a0e8cb] text-[#132D28] text-xs font-bold flex items-center gap-1.5 shadow-sm"
+              className="px-3.5 py-2 rounded-xl bg-blue-50 border border-blue-200 hover:bg-blue-100 text-blue-700 text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5" />
               SafeBatch Operations

@@ -12,15 +12,15 @@ export const ForgeCard = React.forwardRef<HTMLDivElement, ForgeCardProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-3xl transition-all duration-[var(--duration-normal)] font-sans",
+        "rounded-xl transition-all duration-[var(--duration-normal)] font-sans",
         (variant === "default" || variant === "elevated") &&
-          "bg-[rgba(19,45,40,0.75)] border border-[rgba(138,216,184,0.22)] shadow-xl backdrop-blur-xl text-[#FFF4E2]",
+          "bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs hover:shadow-sm text-[var(--color-ink)]",
         variant === "filled" &&
-          "bg-[rgba(19,45,40,0.9)] border border-[rgba(138,216,184,0.25)] text-[#FFF4E2]",
+          "bg-[var(--color-surface-sunken)] border border-[var(--color-border)] text-[var(--color-ink)]",
         variant === "outlined" &&
-          "bg-[rgba(8,19,16,0.8)] border border-[rgba(138,216,184,0.25)] text-[#FFF4E2]",
+          "bg-[var(--color-surface)] border border-[var(--color-border-strong)] text-[var(--color-ink)]",
         (variant === "dark" || variant === "black") &&
-          "bg-[#081310] border border-[rgba(138,216,184,0.2)] text-[#FFF4E2] shadow-2xl",
+          "bg-[var(--color-surface-inset)] border border-[var(--color-border)] text-[var(--color-ink)] shadow-md",
         className
       )}
       {...props}
@@ -48,7 +48,7 @@ export const ForgeCardTitle = React.forwardRef<HTMLHeadingElement, ForgeCardTitl
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn("text-base font-semibold text-[var(--md-sys-color-on-surface)] leading-snug tracking-tight m3-title-md", className)}
+      className={cn("text-sm font-bold text-[var(--color-ink)] leading-snug tracking-tight font-sans", className)}
       {...props}
     />
   )
@@ -61,7 +61,7 @@ export const ForgeCardContent = React.forwardRef<HTMLDivElement, ForgeCardConten
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("p-5 pt-0 text-[var(--md-sys-color-on-surface-variant)]", className)}
+      className={cn("p-5 pt-0 text-[var(--color-ink-secondary)] text-sm", className)}
       {...props}
     />
   )
@@ -74,7 +74,7 @@ export const ForgeCardFooter = React.forwardRef<HTMLDivElement, ForgeCardFooterP
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("flex items-center justify-end gap-3 p-5 pt-3 border-t border-[var(--md-sys-color-outline-variant)]", className)}
+      className={cn("flex items-center justify-end gap-3 p-5 pt-3 border-t border-[var(--color-border-subtle)]", className)}
       {...props}
     />
   )

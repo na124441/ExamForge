@@ -257,15 +257,15 @@ export default function ExamForgeLanding() {
   };
 
   return (
-    <div className="ef-root relative w-full min-h-screen bg-[#081310] text-[#FFF4E2] overflow-x-hidden font-sans select-none">
+    <div data-workspace="landing" className="ef-root relative w-full min-h-screen bg-[var(--color-surface)] text-[var(--color-ink)] overflow-x-hidden font-sans select-none">
       
-      {/* Background Environmental Grid & Light Fields */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(138,216,184,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(138,216,184,0.05)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none [mask-image:radial-gradient(ellipse_80%_60%_at_50%_20%,black_40%,transparent_90%)]" />
+      {/* Background Environmental Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none [mask-image:radial-gradient(ellipse_80%_60%_at_50%_20%,black_40%,transparent_90%)]" />
 
-      {/* Atmospheric Glowing Light Fields */}
-      <div className="absolute top-[-10%] left-[-10%] w-[650px] h-[650px] rounded-full bg-[radial-gradient(circle,rgba(64,133,118,0.25),transparent_70%)] blur-[100px] pointer-events-none" />
-      <div className="absolute top-[25%] right-[-10%] w-[750px] h-[750px] rounded-full bg-[radial-gradient(circle,rgba(138,216,184,0.18),transparent_70%)] blur-[120px] pointer-events-none" />
-      <div className="absolute top-[60%] left-[15%] w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(64,133,118,0.15),transparent_70%)] blur-[90px] pointer-events-none" />
+      {/* Atmospheric Light Fields */}
+      <div className="absolute top-[-10%] left-[-10%] w-[650px] h-[650px] rounded-full bg-[radial-gradient(circle,rgba(45,122,107,0.2),transparent_70%)] blur-[100px] pointer-events-none" />
+      <div className="absolute top-[25%] right-[-10%] w-[750px] h-[750px] rounded-full bg-[radial-gradient(circle,rgba(138,216,184,0.12),transparent_70%)] blur-[120px] pointer-events-none" />
+      <div className="absolute top-[60%] left-[15%] w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(45,122,107,0.1),transparent_70%)] blur-[90px] pointer-events-none" />
 
       {/* 1. FLOATING GLASS NAVBAR */}
       <GlassNavbar onOpenAuthModal={() => setShowLoginModal(true)} />
@@ -280,19 +280,19 @@ export default function ExamForgeLanding() {
       <ExamLifecycle />
 
       {/* DIVIDER */}
-      <div className="w-full max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-[rgba(138,216,184,0.2)] to-transparent my-12" />
+      <div className="w-full max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-12" />
 
       {/* 5. WHY EXAMFORGE — PROBLEM / SOLUTION */}
       <section id="platform" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 select-none">
         <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(64,133,118,0.2)] border border-[rgba(138,216,184,0.25)] text-[#8AD8B8] font-mono text-xs uppercase tracking-widest mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-surface)] border border-[var(--color-accent)]/20 text-[var(--color-accent)] font-mono text-xs uppercase tracking-widest mb-3">
             <AlertTriangle size={13} />
             The Stakes
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#FFF4E2] tracking-tight font-sans">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--color-ink)] tracking-tight font-sans">
             Built for what actually breaks exams
           </h2>
-          <p className="text-sm sm:text-base text-[#8AD8B8]/80 mt-3 font-sans leading-relaxed">
+          <p className="text-sm sm:text-base text-[var(--color-ink-secondary)] mt-3 font-sans leading-relaxed">
             Five failure modes have quietly undermined high-stakes testing for decades. Each one now has a cryptographic answer instead of a policy memo.
           </p>
         </div>
@@ -301,7 +301,7 @@ export default function ExamForgeLanding() {
           {PROBLEMS.map((p) => (
             <div
               key={p.problem}
-              className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-5 sm:p-6 rounded-2xl bg-[rgba(19,45,40,0.6)] border border-[rgba(138,216,184,0.18)] hover:border-[rgba(138,216,184,0.45)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-md"
+              className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-5 sm:p-6 rounded-2xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-md"
             >
               <div className="md:col-span-5 flex items-start gap-3.5">
                 <div className="w-10 h-10 rounded-xl bg-[rgba(64,133,118,0.25)] border border-[rgba(138,216,184,0.25)] flex items-center justify-center text-[#8AD8B8] shrink-0 mt-0.5">
@@ -335,19 +335,19 @@ export default function ExamForgeLanding() {
       </section>
 
       {/* DIVIDER */}
-      <div className="w-full max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-[rgba(138,216,184,0.2)] to-transparent my-12" />
+      <div className="w-full max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-12" />
 
       {/* 6. PILLARS OF VERIFIABLE TRUST */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 select-none">
         <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(64,133,118,0.2)] border border-[rgba(138,216,184,0.25)] text-[#8AD8B8] font-mono text-xs uppercase tracking-widest mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-surface)] border border-[var(--color-accent)]/20 text-[var(--color-accent)] font-mono text-xs uppercase tracking-widest mb-3">
             <ShieldCheck size={13} />
             Core Capabilities
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#FFF4E2] tracking-tight font-sans">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--color-ink)] tracking-tight font-sans">
             Six pillars of verifiable trust
           </h2>
-          <p className="text-sm sm:text-base text-[#8AD8B8]/80 mt-3 font-sans leading-relaxed">
+          <p className="text-sm sm:text-base text-[var(--color-ink-secondary)] mt-3 font-sans leading-relaxed">
             Every pillar produces cryptographic evidence, not just a log line, so nothing in the lifecycle depends on taking someone's word for it.
           </p>
         </div>
@@ -356,7 +356,7 @@ export default function ExamForgeLanding() {
           {PILLARS.map((p) => (
             <div
               key={p.title}
-              className="p-6 rounded-3xl bg-[rgba(19,45,40,0.6)] border border-[rgba(138,216,184,0.18)] hover:border-[rgba(138,216,184,0.45)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1.5 shadow-md hover:shadow-xl group"
+              className="p-6 rounded-3xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1.5 shadow-md hover:shadow-xl group"
             >
               <div className="w-12 h-12 rounded-2xl bg-[rgba(64,133,118,0.25)] border border-[rgba(138,216,184,0.25)] flex items-center justify-center text-[#8AD8B8] mb-5 group-hover:scale-110 group-hover:bg-[#8AD8B8] group-hover:text-[#132D28] transition-all duration-300">
                 <p.Icon size={22} />
@@ -373,19 +373,19 @@ export default function ExamForgeLanding() {
       </section>
 
       {/* DIVIDER */}
-      <div className="w-full max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-[rgba(138,216,184,0.2)] to-transparent my-12" />
+      <div className="w-full max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-12" />
 
       {/* 7. ROLES & WORKSPACES */}
       <section id="solutions" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 select-none">
         <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(64,133,118,0.2)] border border-[rgba(138,216,184,0.25)] text-[#8AD8B8] font-mono text-xs uppercase tracking-widest mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-surface)] border border-[var(--color-accent)]/20 text-[var(--color-accent)] font-mono text-xs uppercase tracking-widest mb-3">
             <Users size={13} />
             Role-Based Access
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#FFF4E2] tracking-tight font-sans">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--color-ink)] tracking-tight font-sans">
             One platform, seven specialized workspaces
           </h2>
-          <p className="text-sm sm:text-base text-[#8AD8B8]/80 mt-3 font-sans leading-relaxed">
+          <p className="text-sm sm:text-base text-[var(--color-ink-secondary)] mt-3 font-sans leading-relaxed">
             From candidates in distraction-free CBT to external vendor checkers and controllers &mdash; choose your workspace to launch immediately.
           </p>
         </div>
@@ -395,7 +395,7 @@ export default function ExamForgeLanding() {
             <div
               key={r.id}
               onClick={() => handleLaunchPersona(r)}
-              className="p-6 rounded-3xl bg-[rgba(19,45,40,0.6)] border border-[rgba(138,216,184,0.18)] hover:border-[rgba(138,216,184,0.45)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1.5 shadow-md hover:shadow-xl cursor-pointer flex flex-col justify-between group text-left"
+              className="p-6 rounded-3xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1.5 shadow-md hover:shadow-xl cursor-pointer flex flex-col justify-between group text-left"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -428,16 +428,16 @@ export default function ExamForgeLanding() {
       </section>
 
       {/* DIVIDER */}
-      <div className="w-full max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-[rgba(138,216,184,0.2)] to-transparent my-12" />
+      <div className="w-full max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-12" />
 
       {/* 8. TRUST INFRASTRUCTURE STRIP */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 select-none">
         <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(64,133,118,0.2)] border border-[rgba(138,216,184,0.25)] text-[#8AD8B8] font-mono text-xs uppercase tracking-widest mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-surface)] border border-[var(--color-accent)]/20 text-[var(--color-accent)] font-mono text-xs uppercase tracking-widest mb-3">
             <ClipboardCheck size={13} />
             Verification Infrastructure
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#FFF4E2] tracking-tight font-sans">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--color-ink)] tracking-tight font-sans">
             The plumbing behind every guarantee
           </h2>
         </div>

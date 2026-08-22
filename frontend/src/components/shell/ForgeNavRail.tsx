@@ -214,30 +214,30 @@ export function ForgeNavRail() {
       <aside
         className={cn(
           "h-full shrink-0 flex flex-col select-none transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-20",
-          "bg-[var(--md-sys-color-surface-container-low)] border-r border-[var(--md-sys-color-outline-variant)]",
+          "bg-[var(--color-surface-raised)] border-r border-[var(--color-border)]",
           isExpanded ? "w-[256px]" : "w-[76px]"
         )}
       >
         {/* Top: Header / Logo & Collapse Toggle */}
-        <div className="h-16 flex items-center justify-between shrink-0 px-3.5 border-b border-[var(--md-sys-color-outline-variant)]">
+        <div className="h-16 flex items-center justify-between shrink-0 px-3.5 border-b border-[var(--color-border)]">
           <Link
             href="/"
             className={cn(
-              "flex items-center gap-3 overflow-hidden rounded-xl p-1 transition-colors hover:bg-[var(--md-sys-color-surface-container-high)]",
+              "flex items-center gap-3 overflow-hidden rounded-xl p-1 transition-colors hover:bg-[var(--color-surface-sunken)]",
               !isExpanded && "justify-center w-full"
             )}
           >
             <img
               src="/logo-icon.png"
               alt="ExamForge Logo"
-              className="w-10 h-10 rounded-2xl object-cover shadow-[var(--md-sys-elevation-1)] shrink-0 border border-[var(--md-sys-color-outline-variant)]"
+              className="w-10 h-10 rounded-lg object-cover shadow-sm shrink-0 border border-[var(--color-border)]"
             />
             {isExpanded && (
               <div className="flex flex-col min-w-0">
-                <span className="text-sm font-bold tracking-tight text-[var(--md-sys-color-on-surface)] truncate">
+                <span className="text-sm font-bold tracking-tight text-[var(--color-ink)] truncate">
                   ExamForge
                 </span>
-                <span className="text-[10px] font-mono text-[var(--md-sys-color-on-surface-variant)] -mt-0.5">
+                <span className="text-[10px] font-mono text-[var(--color-ink-secondary)] -mt-0.5">
                   M3 OS v2.0
                 </span>
               </div>
@@ -247,7 +247,7 @@ export function ForgeNavRail() {
           {isExpanded && (
             <button
               onClick={toggleExpanded}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container-high)] transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-sunken)] transition-colors cursor-pointer"
               title="Collapse Navigation"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -260,7 +260,7 @@ export function ForgeNavRail() {
           {isExpanded ? (
             <button
               onClick={() => router.push("/create-exam")}
-              className="w-full h-12 rounded-2xl bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] shadow-[var(--md-sys-elevation-2)] hover:shadow-[var(--md-sys-elevation-3)] flex items-center justify-center gap-2.5 font-semibold text-sm transition-all duration-[var(--duration-fast)] active:scale-[0.98] cursor-pointer"
+              className="w-full h-12 rounded-xl bg-[var(--color-accent-surface)] text-[var(--color-accent)] shadow-sm hover:shadow-md flex items-center justify-center gap-2.5 font-semibold text-sm transition-all active:scale-[0.98] cursor-pointer"
             >
               <Plus className="w-5 h-5" />
               <span>Create Exam</span>
@@ -270,7 +270,7 @@ export function ForgeNavRail() {
               <Tooltip.Trigger asChild>
                 <button
                   onClick={() => router.push("/create-exam")}
-                  className="w-12 h-12 rounded-2xl bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] shadow-[var(--md-sys-elevation-2)] hover:shadow-[var(--md-sys-elevation-3)] flex items-center justify-center transition-all duration-[var(--duration-fast)] active:scale-[0.98] cursor-pointer"
+                  className="w-12 h-12 rounded-xl bg-[var(--color-accent-surface)] text-[var(--color-accent)] shadow-sm hover:shadow-md flex items-center justify-center transition-all active:scale-[0.98] cursor-pointer"
                 >
                   <Plus className="w-5 h-5" />
                 </button>
@@ -279,7 +279,7 @@ export function ForgeNavRail() {
                 <Tooltip.Content
                   side="right"
                   sideOffset={12}
-                  className="z-[200] px-3 py-1.5 bg-[var(--md-sys-color-inverse-surface)] text-[var(--md-sys-color-inverse-on-surface)] text-xs font-medium rounded-lg shadow-md"
+                  className="z-[200] px-3 py-1.5 bg-[var(--color-surface-sunken)] text-[var(--color-ink)] text-xs font-medium rounded-lg shadow-md"
                 >
                   Create Exam
                 </Tooltip.Content>
@@ -293,12 +293,12 @@ export function ForgeNavRail() {
           {sections.map((section, sIdx) => (
             <div key={sIdx} className="space-y-1">
               {isExpanded && section.title && (
-                <div className="px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)]">
+                <div className="px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-ink-secondary)]">
                   {section.title}
                 </div>
               )}
               {!isExpanded && section.title && (
-                <div className="w-8 h-px bg-[var(--md-sys-color-outline-variant)] mx-auto my-2" />
+                <div className="w-8 h-px bg-[var(--color-border)] mx-auto my-2" />
               )}
 
               <div className="space-y-1">
@@ -314,16 +314,16 @@ export function ForgeNavRail() {
                         key={item.path}
                         href={item.path}
                         className={cn(
-                          "flex items-center gap-3.5 px-4 py-2.5 rounded-full transition-all duration-[var(--duration-fast)] text-sm font-medium",
+                          "flex items-center gap-3.5 px-4 py-2.5 rounded-lg transition-all text-sm font-medium",
                           isActive
-                            ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] font-semibold shadow-xs"
-                            : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)]"
+                            ? "bg-[var(--color-accent-surface)] text-[var(--color-accent)] font-semibold shadow-xs"
+                            : "text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)]"
                         )}
                       >
-                        <Icon className={cn("w-5 h-5 shrink-0", isActive ? "text-[var(--md-sys-color-on-secondary-container)]" : "")} />
+                        <Icon className={cn("w-5 h-5 shrink-0", isActive ? "text-[var(--color-accent)]" : "")} />
                         <span className="truncate flex-1">{item.label}</span>
                         {item.badge && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shrink-0">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--color-accent)] text-[var(--color-ink-inverse)] shrink-0">
                             {item.badge}
                           </span>
                         )}
@@ -331,7 +331,7 @@ export function ForgeNavRail() {
                     );
                   }
 
-                  // Collapsed M3 Rail Item (Active Pill + Label Underneath)
+                  // Collapsed Rail Item (Active Pill + Label Underneath)
                   return (
                     <Tooltip.Root key={item.path}>
                       <Tooltip.Trigger asChild>
@@ -341,23 +341,23 @@ export function ForgeNavRail() {
                         >
                           <div
                             className={cn(
-                              "w-14 h-8 rounded-full flex items-center justify-center transition-all duration-[var(--duration-fast)] relative",
+                              "w-14 h-8 rounded-full flex items-center justify-center transition-all relative",
                               isActive
-                                ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] shadow-xs"
-                                : "text-[var(--md-sys-color-on-surface-variant)] group-hover:bg-[var(--md-sys-color-surface-container-high)] group-hover:text-[var(--md-sys-color-on-surface)]"
+                                ? "bg-[var(--color-accent-surface)] text-[var(--color-accent)] shadow-xs"
+                                : "text-[var(--color-ink-secondary)] group-hover:bg-[var(--color-surface-sunken)] group-hover:text-[var(--color-ink)]"
                             )}
                           >
                             <Icon className="w-5 h-5" />
                             {item.badge && (
-                              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--md-sys-color-primary)] ring-2 ring-[var(--md-sys-color-surface-container-low)]" />
+                              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--color-accent)] ring-2 ring-[var(--color-surface-raised)]" />
                             )}
                           </div>
                           <span
                             className={cn(
                               "text-[10px] font-medium mt-1 truncate max-w-[64px] text-center leading-tight transition-colors",
                               isActive
-                                ? "text-[var(--md-sys-color-on-surface)] font-semibold"
-                                : "text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-on-surface)]"
+                                ? "text-[var(--color-ink)] font-semibold"
+                                : "text-[var(--color-ink-secondary)] group-hover:text-[var(--color-ink)]"
                             )}
                           >
                             {item.label}
@@ -368,11 +368,11 @@ export function ForgeNavRail() {
                         <Tooltip.Content
                           side="right"
                           sideOffset={12}
-                          className="z-[200] px-3 py-1.5 bg-[var(--md-sys-color-inverse-surface)] text-[var(--md-sys-color-inverse-on-surface)] text-xs font-medium rounded-lg shadow-md flex items-center gap-2"
+                          className="z-[200] px-3 py-1.5 bg-[var(--color-surface-sunken)] text-[var(--color-ink)] text-xs font-medium rounded-lg shadow-md flex items-center gap-2"
                         >
                           <span>{item.label}</span>
                           {item.badge && (
-                            <span className="px-1.5 py-0.5 text-[9px] font-mono rounded bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] font-bold">
+                            <span className="px-1.5 py-0.5 text-[9px] font-mono rounded bg-[var(--color-accent)] text-[var(--color-ink-inverse)] font-bold">
                               {item.badge}
                             </span>
                           )}
@@ -387,26 +387,26 @@ export function ForgeNavRail() {
         </div>
 
         {/* Bottom: Settings, Persona Switcher & Expand */}
-        <div className="shrink-0 border-t border-[var(--md-sys-color-outline-variant)] p-2.5 flex flex-col items-center gap-1.5 bg-[var(--md-sys-color-surface-container)]">
+        <div className="shrink-0 border-t border-[var(--color-border)] p-2.5 flex flex-col items-center gap-1.5 bg-[var(--color-surface-sunken)]">
           {/* Persona Switcher Popover */}
           <Popover.Root>
             <Popover.Trigger asChild>
               <button
                 className={cn(
-                  "flex items-center rounded-2xl transition-all duration-[var(--duration-fast)] text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)] cursor-pointer",
+                  "flex items-center rounded-xl transition-all text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] cursor-pointer",
                   isExpanded ? "w-full p-2.5 gap-3 justify-start" : "w-12 h-12 justify-center"
                 )}
                 title="Switch Operational Persona"
               >
-                <div className="w-8 h-8 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center font-bold text-xs shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[var(--color-accent-surface)] text-[var(--color-accent)] flex items-center justify-center font-bold text-xs shrink-0">
                   {role.slice(0, 2)}
                 </div>
                 {isExpanded && (
                   <div className="flex flex-col items-start min-w-0 overflow-hidden flex-1">
-                    <span className="text-[10px] uppercase font-bold text-[var(--md-sys-color-on-surface-variant)] tracking-wider">
+                    <span className="text-[10px] uppercase font-bold text-[var(--color-ink-secondary)] tracking-wider">
                       Role Active
                     </span>
-                    <span className="text-xs font-semibold text-[var(--md-sys-color-on-surface)] truncate w-full text-left">
+                    <span className="text-xs font-semibold text-[var(--color-ink)] truncate w-full text-left">
                       {role}
                     </span>
                   </div>
@@ -418,9 +418,9 @@ export function ForgeNavRail() {
                 side="right"
                 align="end"
                 sideOffset={14}
-                className="z-[200] w-64 p-2 bg-[var(--md-sys-color-surface-container-high)] border border-[var(--md-sys-color-outline-variant)] rounded-3xl shadow-[var(--md-sys-elevation-3)]"
+                className="z-[200] w-64 p-2 bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-xl shadow-lg"
               >
-                <div className="px-3 py-2 text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">
+                <div className="px-3 py-2 text-xs font-bold text-[var(--color-ink-secondary)] uppercase tracking-wider">
                   Switch Operational Role
                 </div>
                 <div className="space-y-1">
@@ -429,10 +429,10 @@ export function ForgeNavRail() {
                       key={r.value}
                       onClick={() => handleRoleChange(r.value)}
                       className={cn(
-                        "w-full text-left px-3 py-2 text-sm rounded-xl transition-colors cursor-pointer",
+                        "w-full text-left px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer",
                         role === r.value
-                          ? "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] font-semibold"
-                          : "text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-highest)]"
+                          ? "bg-[var(--color-accent-surface)] text-[var(--color-accent)] font-semibold"
+                          : "text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)]"
                       )}
                     >
                       {r.label}
@@ -448,7 +448,7 @@ export function ForgeNavRail() {
             <Link
               href="/institution-settings"
               className={cn(
-                "flex items-center justify-center rounded-xl transition-colors text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)]",
+                "flex items-center justify-center rounded-lg transition-colors text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)]",
                 isExpanded ? "flex-1 py-2 gap-2 text-xs font-medium" : "w-10 h-10"
               )}
               title="Settings"
@@ -460,7 +460,7 @@ export function ForgeNavRail() {
             <button
               onClick={handleLogout}
               className={cn(
-                "flex items-center justify-center rounded-xl transition-colors text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error-container)]/30 cursor-pointer",
+                "flex items-center justify-center rounded-lg transition-colors text-[var(--color-ink-secondary)] hover:text-[var(--color-danger)] hover:bg-[var(--color-danger-surface)] cursor-pointer",
                 isExpanded ? "flex-1 py-2 gap-2 text-xs font-medium" : "w-10 h-10"
               )}
               title="Sign Out"
@@ -473,7 +473,7 @@ export function ForgeNavRail() {
           {!isExpanded && (
             <button
               onClick={toggleExpanded}
-              className="w-full h-8 flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)] rounded-xl transition-colors cursor-pointer mt-1"
+              className="w-full h-8 flex items-center justify-center text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)] rounded-lg transition-colors cursor-pointer mt-1"
               title="Expand Navigation Rail"
             >
               <ChevronRight className="w-4 h-4" />

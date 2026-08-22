@@ -34,24 +34,24 @@ export function ForgeTable<T extends Record<string, any>>({
   className,
 }: ForgeTableProps<T>) {
   return (
-    <div className={cn("w-full overflow-auto rounded-2xl border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-lowest)] shadow-[var(--md-sys-elevation-1)]", className)}>
-      <table className="w-full text-sm text-left">
-        <thead className="bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] text-[11px] font-sans font-semibold uppercase tracking-wider select-none">
+    <div className={cn("w-full overflow-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-xs", className)}>
+      <table className="w-full text-xs sm:text-sm text-left">
+        <thead className="bg-[var(--color-surface-sunken)] border-b border-[var(--color-border)] text-[var(--color-ink-muted)] text-[11px] font-sans font-semibold uppercase tracking-wider select-none sticky top-0 z-10">
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
                 onClick={() => onSort && onSort(col.key)}
                 className={cn(
-                  "px-5 py-3.5",
-                  onSort && "cursor-pointer select-none hover:text-[var(--md-sys-color-on-surface)]",
+                  "px-4 sm:px-5 py-3",
+                  onSort && "cursor-pointer select-none hover:text-[var(--color-ink)]",
                   col.className
                 )}
               >
                 <div className="flex items-center gap-1.5">
                   <span>{col.header}</span>
                   {sortKey === col.key && (
-                    <span className="text-[var(--md-sys-color-primary)]">
+                    <span className="text-[var(--color-accent)]">
                       {sortDir === "asc" ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
                     </span>
                   )}
@@ -60,12 +60,12 @@ export function ForgeTable<T extends Record<string, any>>({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-[var(--md-sys-color-outline-variant)]">
+        <tbody className="divide-y divide-[var(--color-border-subtle)]">
           {data.length === 0 ? (
             <tr>
               <td
                 colSpan={columns.length}
-                className="px-5 py-8 text-center text-[var(--md-sys-color-on-surface-variant)] font-sans"
+                className="px-5 py-8 text-center text-[var(--color-ink-muted)] font-sans"
               >
                 {emptyMessage}
               </td>
@@ -77,7 +77,7 @@ export function ForgeTable<T extends Record<string, any>>({
                 <tr
                   key={rowKey}
                   tabIndex={0}
-                  className="hover:bg-[var(--md-sys-color-surface-container-low)] transition-colors duration-[var(--duration-fast)]"
+                  className="hover:bg-[var(--color-surface-sunken)] transition-colors duration-[var(--duration-fast)]"
                 >
                   {columns.map((col) => {
                     const cellValue = row[col.key];
@@ -85,7 +85,7 @@ export function ForgeTable<T extends Record<string, any>>({
                       <td
                         key={col.key}
                         className={cn(
-                          "px-5 py-3.5 text-[var(--md-sys-color-on-surface)]",
+                          "px-4 sm:px-5 py-3 text-[var(--color-ink)]",
                           col.mono ? "font-mono text-xs" : "font-sans",
                           col.className
                         )}

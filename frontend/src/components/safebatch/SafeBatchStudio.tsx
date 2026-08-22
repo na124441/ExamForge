@@ -251,7 +251,7 @@ export function SafeBatchStudio() {
       {/* ========================================================================= */}
       {step === 1 && (
         <div className="space-y-6 animate-in fade-in duration-300">
-          <div className="bg-[rgba(19,45,40,0.85)] border border-[rgba(138,216,184,0.25)] rounded-3xl p-6 sm:p-8 shadow-xl backdrop-blur-xl space-y-6">
+          <div className="bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-xl p-6 sm:p-8 shadow-xs text-[var(--color-ink)]">
             <div>
               <h2 className="text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
                 <Layers size={18} className="text-[#8AD8B8]" />
@@ -378,7 +378,7 @@ export function SafeBatchStudio() {
       {step === 2 && (
         <div className="space-y-6 animate-in fade-in duration-300">
           {/* IMPACT PREVIEW SUMMARY */}
-          <div className="bg-[rgba(19,45,40,0.85)] border border-[rgba(138,216,184,0.25)] rounded-3xl p-6 sm:p-8 shadow-xl backdrop-blur-xl space-y-6">
+          <div className="bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-xl p-6 sm:p-8 shadow-xs text-[var(--color-ink)]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[rgba(138,216,184,0.15)] pb-5">
               <div>
                 <span className="text-[10px] font-mono uppercase text-[#8AD8B8] block tracking-wider">
@@ -547,7 +547,7 @@ export function SafeBatchStudio() {
       {/* ========================================================================= */}
       {step === 3 && (
         <div className="space-y-6 animate-in fade-in duration-300">
-          <div className="bg-[rgba(19,45,40,0.85)] border border-[rgba(138,216,184,0.25)] rounded-3xl p-6 sm:p-8 shadow-xl backdrop-blur-xl space-y-6 max-w-3xl mx-auto">
+          <div className="bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-xl p-6 sm:p-8 shadow-xs text-[var(--color-ink)] max-w-3xl mx-auto">
             <div className="text-center space-y-2">
               <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/30 text-amber-300 mx-auto flex items-center justify-center shadow-lg">
                 <Lock size={26} />

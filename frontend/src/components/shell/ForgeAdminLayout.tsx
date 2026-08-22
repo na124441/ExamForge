@@ -12,6 +12,7 @@ interface ForgeAdminLayoutProps {
   isCommandPaletteOpen?: boolean;
   onOpenCommandPalette?: () => void;
   onCloseCommandPalette?: () => void;
+  workspace?: string;
 }
 
 export function ForgeAdminLayout({
@@ -19,36 +20,40 @@ export function ForgeAdminLayout({
   isCommandPaletteOpen,
   onOpenCommandPalette,
   onCloseCommandPalette,
+  workspace = "vendor",
 }: ForgeAdminLayoutProps) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[var(--md-sys-color-surface)] flex flex-row font-sans text-[var(--md-sys-color-on-surface)]">
-      {/* M3 Navigation Rail (Desktop) */}
+    <div
+      data-workspace={workspace}
+      className="min-h-screen bg-[var(--color-surface)] flex flex-row font-sans text-[var(--color-ink)]"
+    >
+      {/* Navigation Rail (Desktop) */}
       <div className="hidden md:block h-screen sticky top-0 z-30">
         <ForgeNavRail />
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen bg-[var(--md-sys-color-surface)]">
-        {/* M3 Top App Bar */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+        {/* Top Header Bar */}
         <ForgeHeaderLight 
           onOpenCommandPalette={onOpenCommandPalette}
           onToggleMobileNav={() => setIsMobileNavOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto bg-[var(--md-sys-color-surface)] relative">
+        <main className="flex-1 overflow-y-auto relative">
           {children}
         </main>
       </div>
 
-      {/* M3 Mobile Navigation Drawer */}
+      {/* Mobile Navigation Drawer */}
       <ForgeMobileNav 
         open={isMobileNavOpen}
         onOpenChange={setIsMobileNavOpen}
       />
 
-      {/* M3 Search Dialog / Command Palette */}
+      {/* Command Palette */}
       <CommandPalette
         isOpen={isCommandPaletteOpen ?? false}
         onClose={onCloseCommandPalette || (() => {})}

@@ -5,47 +5,40 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/cn";
 
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center whitespace-nowrap font-sans font-medium transition-all duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] disabled:pointer-events-none disabled:opacity-38 cursor-pointer select-none overflow-hidden active:scale-[0.98]",
+  "relative inline-flex items-center justify-center whitespace-nowrap font-sans font-semibold transition-all duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] disabled:pointer-events-none disabled:opacity-40 cursor-pointer select-none overflow-hidden active:scale-[0.98]",
   {
     variants: {
       variant: {
-        // M3 Filled Button (High Emphasis)
         primary:
-          "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-[var(--md-sys-elevation-1)] hover:shadow-[var(--md-sys-elevation-2)] rounded-full hover:brightness-105 active:shadow-[var(--md-sys-elevation-1)]",
+          "bg-[var(--color-accent)] text-[var(--color-ink-inverse)] shadow-xs hover:bg-[var(--color-accent-hover)] rounded-lg",
         filled:
-          "bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-[var(--md-sys-elevation-1)] hover:shadow-[var(--md-sys-elevation-2)] rounded-full hover:brightness-105 active:shadow-[var(--md-sys-elevation-1)]",
-        // M3 Filled Tonal Button (Medium Emphasis)
+          "bg-[var(--color-accent)] text-[var(--color-ink-inverse)] shadow-xs hover:bg-[var(--color-accent-hover)] rounded-lg",
         secondary:
-          "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] hover:brightness-95 rounded-full",
+          "bg-[var(--color-surface-sunken)] text-[var(--color-ink)] border border-[var(--color-border)] hover:bg-[var(--color-surface-inset)] hover:border-[var(--color-border-strong)] rounded-lg",
         tonal:
-          "bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] hover:brightness-95 rounded-full",
-        // M3 Elevated Button
+          "bg-[var(--color-accent-surface)] text-[var(--color-accent)] hover:brightness-95 rounded-lg",
         elevated:
-          "bg-[var(--md-sys-color-surface-container-low)] text-[var(--md-sys-color-primary)] shadow-[var(--md-sys-elevation-1)] hover:shadow-[var(--md-sys-elevation-2)] rounded-full",
-        // M3 Outlined Button
+          "bg-[var(--color-surface-raised)] text-[var(--color-ink)] border border-[var(--color-border)] shadow-xs hover:shadow-sm hover:border-[var(--color-border-strong)] rounded-lg",
         outline:
-          "bg-transparent border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary-container)]/20 rounded-full",
+          "bg-transparent border border-[var(--color-border)] text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)] hover:border-[var(--color-border-strong)] rounded-lg",
         outlined:
-          "bg-transparent border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary-container)]/20 rounded-full",
-        // M3 Text Button
+          "bg-transparent border border-[var(--color-border)] text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)] hover:border-[var(--color-border-strong)] rounded-lg",
         ghost:
-          "bg-transparent text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary-container)]/20 rounded-full",
+          "bg-transparent text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)] rounded-lg",
         text:
-          "bg-transparent text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary-container)]/20 rounded-full",
-        // M3 Error / Danger Button
+          "bg-transparent text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)] rounded-lg",
         danger:
-          "bg-[var(--md-sys-color-error)] text-[var(--md-sys-color-on-error)] shadow-[var(--md-sys-elevation-1)] hover:brightness-105 rounded-full",
-        // M3 Floating Action Button (FAB)
+          "bg-[var(--color-danger)] text-white shadow-xs hover:bg-[var(--color-danger-hover)] rounded-lg",
         fab:
-          "bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] shadow-[var(--md-sys-elevation-3)] hover:shadow-[var(--md-sys-elevation-4)] active:shadow-[var(--md-sys-elevation-2)] rounded-2xl",
+          "bg-[var(--color-accent)] text-[var(--color-ink-inverse)] shadow-md hover:shadow-lg rounded-xl",
       },
       size: {
-        sm: "h-8 px-3.5 text-xs rounded-full gap-1.5",
-        md: "h-10 px-5 text-sm rounded-full gap-2",
-        lg: "h-12 px-6 text-base rounded-full gap-2.5",
-        compact: "h-8 px-3 text-xs rounded-full gap-1.5",
-        icon: "h-10 w-10 p-0 rounded-full justify-center",
-        fab: "h-14 min-w-14 px-4 text-sm font-semibold rounded-2xl gap-3",
+        sm: "h-8 px-3 text-xs rounded-md gap-1.5",
+        md: "h-9 px-4 text-xs font-semibold rounded-lg gap-2",
+        lg: "h-11 px-5 text-sm font-semibold rounded-lg gap-2.5",
+        compact: "h-7 px-2.5 text-xs rounded-md gap-1",
+        icon: "h-9 w-9 p-0 rounded-lg justify-center",
+        fab: "h-12 min-w-12 px-4 text-sm font-semibold rounded-xl gap-2.5",
       },
     },
     defaultVariants: {

@@ -184,7 +184,7 @@ export function SafeBatchHandoffDetail({ handoffId }: SafeBatchHandoffDetailProp
       )}
 
       {/* HANDOFF HEADER CARD */}
-      <div className="bg-[rgba(19,45,40,0.88)] border border-[rgba(138,216,184,0.3)] rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6">
+      <div className="bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-xl p-6 sm:p-8 shadow-xs space-y-6 text-[var(--color-ink)]">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-[rgba(138,216,184,0.18)] pb-6">
           <div className="flex items-start gap-4">
             <div className="w-14 h-14 rounded-2xl bg-[rgba(64,133,118,0.35)] border border-[rgba(138,216,184,0.4)] flex items-center justify-center text-[#8AD8B8] shadow-lg shrink-0">

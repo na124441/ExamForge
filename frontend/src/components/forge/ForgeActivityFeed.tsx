@@ -23,12 +23,12 @@ export interface ForgeActivityFeedProps {
 }
 
 const severityConfig: Record<string, { color: string; bg: string; icon: LucideIcon }> = {
-  info: { color: "var(--md-sys-color-info)", bg: "var(--md-sys-color-info-container)", icon: Info },
-  warning: { color: "var(--md-sys-color-warning)", bg: "var(--md-sys-color-warning-container)", icon: AlertTriangle },
-  danger: { color: "var(--md-sys-color-error)", bg: "var(--md-sys-color-error-container)", icon: AlertCircle },
-  error: { color: "var(--md-sys-color-error)", bg: "var(--md-sys-color-error-container)", icon: AlertCircle },
-  success: { color: "var(--md-sys-color-success)", bg: "var(--md-sys-color-success-container)", icon: CheckCircle },
-  default: { color: "var(--md-sys-color-on-surface-variant)", bg: "var(--md-sys-color-surface-container-high)", icon: Info },
+  info: { color: "var(--color-info)", bg: "var(--color-info-surface)", icon: Info },
+  warning: { color: "var(--color-warning)", bg: "var(--color-warning-surface)", icon: AlertTriangle },
+  danger: { color: "var(--color-danger)", bg: "var(--color-danger-surface)", icon: AlertCircle },
+  error: { color: "var(--color-danger)", bg: "var(--color-danger-surface)", icon: AlertCircle },
+  success: { color: "var(--color-success)", bg: "var(--color-success-surface)", icon: CheckCircle },
+  default: { color: "var(--color-ink-secondary)", bg: "var(--color-surface-sunken)", icon: Info },
 };
 
 export function ForgeActivityFeed({
@@ -43,12 +43,12 @@ export function ForgeActivityFeed({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 overflow-y-auto max-h-96 pr-1 font-sans",
+        "flex flex-col gap-1 overflow-y-auto max-h-96 pr-1 font-sans",
         className
       )}
     >
       {displayEvents.length === 0 ? (
-        <div className="text-xs text-[var(--md-sys-color-on-surface-variant)] italic p-4 text-center">
+        <div className="text-xs text-[var(--color-ink-muted)] italic p-4 text-center">
           No activity to display.
         </div>
       ) : (
@@ -59,33 +59,33 @@ export function ForgeActivityFeed({
           const displayMessage = event.message || (
             <span>
               {event.title && (
-                <strong className="font-semibold text-[var(--md-sys-color-on-surface)] mr-1.5">
+                <strong className="font-semibold text-[var(--color-ink)] mr-1.5">
                   {event.title}:
                 </strong>
               )}
-              <span className="text-[var(--md-sys-color-on-surface-variant)]">{event.description}</span>
+              <span className="text-[var(--color-ink-secondary)]">{event.description}</span>
             </span>
           );
 
           return (
             <div
               key={event.id}
-              className="flex items-start gap-3 rounded-xl hover:bg-[var(--md-sys-color-surface-container-high)] p-2 transition-colors duration-[var(--duration-fast)] text-xs"
+              className="flex items-start gap-3 rounded-lg hover:bg-[var(--color-surface-sunken)] p-2 transition-colors duration-[var(--duration-fast)] text-xs"
             >
-              <span className="font-mono text-[11px] text-[var(--md-sys-color-on-surface-variant)] shrink-0 pt-0.5 w-18 text-right font-medium">
+              <span className="font-mono text-[11px] text-[var(--color-ink-muted)] shrink-0 pt-0.5 w-18 text-right font-medium">
                 {event.timestamp}
               </span>
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-current/20"
                 style={{ backgroundColor: config.bg, color: config.color }}
               >
                 {event.icon ? (
                   <span className="w-3.5 h-3.5 flex items-center">{event.icon}</span>
                 ) : (
-                  <DefaultIcon size={14} />
+                  <DefaultIcon size={13} />
                 )}
               </div>
-              <div className="text-[var(--md-sys-color-on-surface)] leading-relaxed pt-0.5 flex-1 min-w-0">
+              <div className="text-[var(--color-ink)] leading-relaxed pt-0.5 flex-1 min-w-0">
                 {displayMessage}
               </div>
             </div>
