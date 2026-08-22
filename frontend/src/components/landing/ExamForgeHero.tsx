@@ -13,7 +13,8 @@ import {
   Layers,
   ChevronRight,
   UserCheck,
-  Download
+  Download,
+  Smartphone
 } from "lucide-react";
 import { HeroOrbitalSystem } from "./HeroOrbitalSystem";
 import { GlassStatusCard } from "./GlassStatusCard";
@@ -125,8 +126,8 @@ export function ExamForgeHero({ onOpenAuthModal }: ExamForgeHeroProps) {
                   "hover:shadow-[0_15px_35px_-5px_rgba(138,216,184,0.8)] transition-all duration-300 active:scale-95 cursor-pointer font-sans"
                 )}
               >
-                <Download size={16} className="animate-bounce" />
-                <span>Download App</span>
+                <Smartphone size={16} className="animate-pulse" />
+                <span>Install Web App</span>
               </button>
 
               <Link
