@@ -32,7 +32,7 @@ class PolicyResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class LegalHoldResponse(BaseModel):
     id: str
@@ -45,7 +45,7 @@ class LegalHoldResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 @router.post("/policy/create", response_model=PolicyResponse)
 def create_retention_policy(

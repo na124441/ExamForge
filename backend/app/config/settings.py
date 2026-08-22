@@ -1,4 +1,10 @@
 import os
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from pydantic_settings import BaseSettings
 from typing import List, Optional
 
@@ -29,7 +35,15 @@ class Settings(BaseSettings):
     # Key Signing Security Mode
     SIGNING_KEY_MODE: str = os.getenv("SIGNING_KEY_MODE", "MOCK") # ECDSA, MOCK
 
+    # Messaging Infrastructure
+    RESEND_API_KEY: Optional[str] = os.getenv("RESEND_API_KEY", None)
+    RESEND_FROM_EMAIL: Optional[str] = os.getenv("RESEND_FROM_EMAIL", "onboarding@resend.dev")
+    MSG91_AUTH_KEY: Optional[str] = os.getenv("MSG91_AUTH_KEY", None)
+    MSG91_TEMPLATE_ID: Optional[str] = os.getenv("MSG91_TEMPLATE_ID", None)
+    MSG91_SENDER_ID: Optional[str] = os.getenv("MSG91_SENDER_ID", "EXAMFG")
+
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()

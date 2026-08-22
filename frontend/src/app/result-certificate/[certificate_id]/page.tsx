@@ -68,8 +68,12 @@ export default function ResultCertificatePage() {
             <div className="absolute inset-0 opacity-[0.02] pointer-events-none select-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
             
             {/* Top Seal */}
-            <div className="text-center flex flex-col items-center gap-1.5 z-10">
-              <span className="text-4xl">🛡️</span>
+            <div className="text-center flex flex-col items-center gap-2 z-10">
+              <img
+                src="/logo-icon.png"
+                alt="ExamForge"
+                className="w-12 h-12 rounded-xl object-cover shadow-lg border border-accent-amber/40"
+              />
               <h2 className="text-xs font-bold text-accent-amber uppercase tracking-[0.2em]">ExamForge Zero-Trust Authority</h2>
               <div className="h-[2px] w-20 bg-accent-amber/50 my-1"></div>
             </div>

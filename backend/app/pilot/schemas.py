@@ -15,7 +15,7 @@ class PilotStageEventResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PilotStageResponse(BaseModel):
     id: str
@@ -28,7 +28,7 @@ class PilotStageResponse(BaseModel):
     events: List[PilotStageEventResponse] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PilotRunResponse(BaseModel):
     id: str
@@ -40,7 +40,7 @@ class PilotRunResponse(BaseModel):
     stages: List[PilotStageResponse] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PilotEvidenceBinderResponse(BaseModel):
     id: str
@@ -53,4 +53,4 @@ class PilotEvidenceBinderResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True

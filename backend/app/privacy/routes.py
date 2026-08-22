@@ -29,7 +29,7 @@ class PIIAccessLogResponse(BaseModel):
     accessed_at: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 @router.post("/redact")
 def redact_data(

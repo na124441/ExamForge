@@ -49,5 +49,15 @@ class TenantContext:
     def tenant_slug(self, val: Optional[str]):
         tenant_slug_var.set(val)
 
+    def set_context(self, tenant_id: Optional[str] = None, user_id: Optional[str] = None, role: Optional[str] = None, permissions: Optional[List[str]] = None):
+        if tenant_id is not None:
+            tenant_id_var.set(tenant_id)
+        if user_id is not None:
+            user_id_var.set(user_id)
+        if role is not None:
+            active_role_var.set(role)
+        if permissions is not None:
+            permissions_var.set(permissions)
+
 # Global helper instance
 tenant_context = TenantContext()

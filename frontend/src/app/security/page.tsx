@@ -14,7 +14,8 @@ import {
   EyeOff,
   UserCheck,
   CheckCircle,
-  Key
+  Key,
+  RefreshCw
 } from "lucide-react";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 
@@ -100,9 +101,9 @@ export default function SecurityOverviewPage() {
 
   if (loading || !stats) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 font-mono text-xs gap-3">
-        <span className="animate-spin text-xl">🛡️</span>
-        <span>AUDITING CRYPTOGRAPHIC THREAT MATRIX...</span>
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 text-xs gap-3 font-sans">
+        <RefreshCw className="w-5 h-5 animate-spin text-indigo-600" />
+        <span>Auditing Security Posture & Hardening...</span>
       </div>
     );
   }
@@ -110,26 +111,26 @@ export default function SecurityOverviewPage() {
   const score = stats.readiness_score ?? 100;
 
   return (
-    <div className="space-y-6">
-      {/* Sub-Header */}
-      <div className="flex justify-between items-center bg-[#101524]/60 backdrop-blur-xl p-4 rounded-xl border border-white/[0.06] shadow-lg">
+    <div className="space-y-6 font-sans">
+      {/* Header */}
+      <div className="flex justify-between items-center bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
         <div>
-          <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
-            <span>Security Command Center</span>
-            <span className="text-[9px] px-2 py-0.5 bg-red-600/10 border border-red-500/20 text-red-400 rounded uppercase font-mono font-bold tracking-widest shadow-[0_0_8px_rgba(239,68,68,0.05)]">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <span>Security Operations & Hardening</span>
+            <span className="text-xs px-2.5 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-full font-medium">
               Security Hub
             </span>
           </h1>
-          <p className="text-[11px] text-slate-500 mt-0.5 font-mono">
-            Real-time verification of keyspaces, threat mitigation status, and compliance levels.
+          <p className="text-xs text-slate-500 mt-1">
+            Real-time verification of keyspaces, threat mitigation status, and compliance posture.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push("/authority")}
-            className="text-xs px-3 py-2 bg-slate-950/60 hover:bg-slate-900 border border-white/[0.08] hover:border-white/[0.15] text-white rounded-lg transition cursor-pointer"
+            className="text-xs px-3.5 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 rounded-md transition font-medium shadow-xs cursor-pointer"
           >
-            🏢 Authority Console
+            Authority Console
           </button>
         </div>
       </div>
@@ -137,46 +138,46 @@ export default function SecurityOverviewPage() {
       {/* Row 1: High Level Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Compliance Readiness Card */}
-        <div className="bg-[#101524]/60 backdrop-blur-xl p-6 rounded-2xl border border-white/[0.06] flex flex-col justify-between min-h-[150px] shadow-lg">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 flex flex-col justify-between shadow-xs">
           <div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Compliance readiness</span>
-            <div className="text-3xl font-black text-white mt-1 font-mono">{score}%</div>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Compliance Readiness</span>
+            <div className="text-3xl font-bold text-slate-900 mt-1 font-mono">{score}%</div>
           </div>
-          <div className="flex items-center gap-2.5 mt-4">
-            <span className={`w-2.5 h-2.5 rounded-full ${score >= 90 ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)] animate-pulse" : score >= 70 ? "bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]" : "bg-red-400 animate-ping shadow-[0_0_8px_rgba(239,68,68,0.5)]"}`}></span>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 font-mono">
+          <div className="flex items-center gap-2 mt-4">
+            <span className={`w-2.5 h-2.5 rounded-full ${score >= 90 ? "bg-emerald-500" : score >= 70 ? "bg-amber-500" : "bg-red-500"}`}></span>
+            <span className="text-xs font-semibold text-slate-700">
               Posture: {stats.status || "EXCELLENT"}
             </span>
           </div>
         </div>
 
         {/* Threat Mitigation Card */}
-        <div className="bg-[#101524]/60 backdrop-blur-xl p-6 rounded-2xl border border-white/[0.06] flex flex-col justify-between min-h-[150px] shadow-lg">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 flex flex-col justify-between shadow-xs">
           <div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Mitigated Threat Nodes</span>
-            <div className="text-3xl font-black text-white mt-1 font-mono">
-              {stats.threats.total - stats.threats.unmitigated} <span className="text-xs text-slate-500">/ {stats.threats.total} mitigated</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mitigated Threat Nodes</span>
+            <div className="text-3xl font-bold text-slate-900 mt-1 font-mono">
+              {stats.threats.total - stats.threats.unmitigated} <span className="text-xs font-sans text-slate-500 font-medium">/ {stats.threats.total} mitigated</span>
             </div>
           </div>
           <div className="flex items-center gap-2 mt-4">
-            <span className={`w-2.5 h-2.5 rounded-full ${stats.threats.unmitigated === 0 ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)] animate-pulse" : "bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)] animate-pulse"}`}></span>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 font-mono">
+            <span className={`w-2.5 h-2.5 rounded-full ${stats.threats.unmitigated === 0 ? "bg-emerald-500" : "bg-amber-500"}`}></span>
+            <span className="text-xs font-semibold text-slate-700">
               {stats.threats.unmitigated === 0 ? "All mitigations active" : `${stats.threats.unmitigated} open vulnerabilities`}
             </span>
           </div>
         </div>
 
         {/* Open Incidents Card */}
-        <div className="bg-[#101524]/60 backdrop-blur-xl p-6 rounded-2xl border border-white/[0.06] flex flex-col justify-between min-h-[150px] shadow-lg">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 flex flex-col justify-between shadow-xs">
           <div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Unmitigated Breaches</span>
-            <div className={`text-3xl font-black mt-1 font-mono ${stats.incidents.open === 0 ? "text-white" : "text-red-400 animate-pulse"}`}>
-              {stats.incidents.open} <span className="text-xs text-slate-500 font-sans font-normal">/ {stats.incidents.total} logged</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Unmitigated Breaches</span>
+            <div className={`text-3xl font-bold mt-1 font-mono ${stats.incidents.open === 0 ? "text-slate-900" : "text-red-600"}`}>
+              {stats.incidents.open} <span className="text-xs font-sans text-slate-500 font-medium">/ {stats.incidents.total} logged</span>
             </div>
           </div>
           <div className="flex items-center gap-2 mt-4">
-            <span className={`w-2.5 h-2.5 rounded-full ${stats.incidents.open === 0 ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" : "bg-red-400 animate-ping shadow-[0_0_8px_rgba(239,68,68,0.5)]"}`}></span>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 font-mono">
+            <span className={`w-2.5 h-2.5 rounded-full ${stats.incidents.open === 0 ? "bg-emerald-500" : "bg-red-500"}`}></span>
+            <span className="text-xs font-semibold text-slate-700">
               {stats.incidents.open === 0 ? "Platform status: secure" : "Active Incident response"}
             </span>
           </div>
@@ -185,8 +186,8 @@ export default function SecurityOverviewPage() {
 
       {/* Row 2: Sub-Console Grid */}
       <div className="space-y-4">
-        <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
-          Security Sub-Control Modules
+        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          Security Control Modules
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -203,17 +204,17 @@ export default function SecurityOverviewPage() {
               <div
                 key={item.path}
                 onClick={() => router.push(item.path)}
-                className="bg-[#101524]/60 p-4.5 rounded-xl border border-white/[0.06] shadow-sm hover:border-violet-500/20 hover:shadow-[0_0_15px_rgba(124,58,237,0.05)] hover:bg-[#101524]/80 transition duration-150 cursor-pointer flex gap-4 items-start group"
+                className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 hover:shadow-md transition duration-150 cursor-pointer flex gap-4 items-start group"
               >
-                <div className="p-2 bg-slate-950/60 border border-white/[0.04] text-slate-400 rounded-lg group-hover:text-violet-400 group-hover:border-violet-500/30 group-hover:shadow-[0_0_8px_rgba(139,92,246,0.15)] shrink-0 transition">
+                <div className="p-2.5 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-lg group-hover:bg-indigo-100 shrink-0 transition">
                   <Icon className="w-5 h-5 stroke-[2]" />
                 </div>
-                <div className="min-w-0">
-                  <h4 className="text-xs font-bold text-slate-200 tracking-wide font-mono flex items-center justify-between">
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-sm font-bold text-slate-900 tracking-tight flex items-center justify-between group-hover:text-indigo-600 transition-colors">
                     <span>{item.name}</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-slate-400 transition" />
+                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition" />
                   </h4>
-                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{item.desc}</p>
+                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             );

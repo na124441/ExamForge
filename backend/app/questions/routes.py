@@ -4,7 +4,7 @@ from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from app.database import get_db
 from app.models import Question, PaperBlueprint, GeneratedPaper, EncryptedPackage
 from app.security import (
@@ -15,9 +15,18 @@ from app.security import (
     generate_uuid,
     STORAGE_AES_KEY
 )
-from app.auth.routes import get_current_user, UserResponse
+from app.auth.dependencies import (
+    require_authenticated_principal,
+    require_permission,
+    AuthenticatedPrincipal
+)
 from app.audit.ledger import log_event
 from app.config import settings
+from app.questions.generator import (
+    generate_questions_with_ollama,
+    list_available_models,
+    OLLAMA_HOST
+)
 
 router = APIRouter(tags=["questions"])
 
@@ -40,6 +49,41 @@ class QuestionResponse(BaseModel):
     marks: int
     status: str
     content_hash: str
+
+class AIGenerateRequest(BaseModel):
+    subject: str
+    topic: str
+    difficulty: str = "MEDIUM"
+    count: int = 5
+    model: str = "phi:latest"
+    question_type: str = "MCQ_SINGLE"
+    custom_instructions: Optional[str] = None
+    auto_save_to_bank: bool = True
+
+class AIGeneratedQuestion(BaseModel):
+    id: Optional[str] = None
+    text: str
+    options: Dict[str, str]
+    answer: str
+    explanation: str
+    difficulty: str
+    marks: int
+    content_hash: str
+    status: str = "GENERATED"
+
+class AIGenerateResponse(BaseModel):
+    subject: str
+    topic: str
+    difficulty: str
+    model_used: str
+    count: int
+    questions: List[AIGeneratedQuestion]
+    saved_to_bank: bool
+    ollama_endpoint: str
+
+AIGenerateRequest.model_rebuild()
+AIGeneratedQuestion.model_rebuild()
+AIGenerateResponse.model_rebuild()
 
 class BlueprintCreate(BaseModel):
     total_marks: int
@@ -73,11 +117,8 @@ class PaperResponse(BaseModel):
 def create_question(
     request: QuestionCreate, 
     db: Session = Depends(get_db),
-    current_user: UserResponse = Depends(get_current_user)
+    current_user: AuthenticatedPrincipal = Depends(require_permission("question-bank.create"))
 ):
-    if current_user.role not in ["CONTROLLER", "AUTHOR"]:
-        raise HTTPException(status_code=403, detail="Unauthorized role for creating questions")
-        
     # Serialize content and answer
     content_str = json.dumps(request.content)
     answer_str = json.dumps({"answer": request.answer})
@@ -133,17 +174,31 @@ def create_question(
     )
 
 @router.get("/api/questions", response_model=List[QuestionResponse])
-def list_questions(db: Session = Depends(get_db)):
+def list_questions(
+    db: Session = Depends(get_db),
+    current_user: AuthenticatedPrincipal = Depends(require_permission("question-bank.read"))
+):
     questions = db.query(Question).all()
     res = []
     for q in questions:
-        # Reconstruct content hash for response validation
-        payload = json.loads(q.encrypted_content)
-        plain_content = decrypt_payload(payload["nonce"], payload["ciphertext"], STORAGE_AES_KEY)
-        payload_ans = json.loads(q.encrypted_answer)
-        plain_answer = decrypt_payload(payload_ans["nonce"], payload_ans["ciphertext"], STORAGE_AES_KEY)
-        raw_hash_input = f"{q.subject}|{q.topic}|{plain_content}|{plain_answer}"
-        content_hash = calculate_sha256(raw_hash_input)
+        # Reconstruct content hash for response validation safely
+        try:
+            if q.encrypted_content and q.encrypted_content.strip().startswith("{"):
+                payload = json.loads(q.encrypted_content)
+                plain_content = decrypt_payload(payload["nonce"], payload["ciphertext"], STORAGE_AES_KEY)
+            else:
+                plain_content = str(q.encrypted_content or "")
+
+            if q.encrypted_answer and q.encrypted_answer.strip().startswith("{"):
+                payload_ans = json.loads(q.encrypted_answer)
+                plain_answer = decrypt_payload(payload_ans["nonce"], payload_ans["ciphertext"], STORAGE_AES_KEY)
+            else:
+                plain_answer = str(q.encrypted_answer or "")
+
+            raw_hash_input = f"{q.subject}|{q.topic}|{plain_content}|{plain_answer}"
+            content_hash = calculate_sha256(raw_hash_input)
+        except Exception:
+            content_hash = calculate_sha256(f"{q.id}|{q.subject}|{q.topic}")
         
         res.append(QuestionResponse(
             id=q.id,
@@ -162,10 +217,8 @@ def create_blueprint(
     exam_id: str,
     request: BlueprintCreate,
     db: Session = Depends(get_db),
-    current_user: UserResponse = Depends(get_current_user)
+    current_user: AuthenticatedPrincipal = Depends(require_permission("question-bank.create"))
 ):
-    if current_user.role != "CONTROLLER":
-        raise HTTPException(status_code=403, detail="Only Exam Controllers can create blueprints")
         
     bp = PaperBlueprint(
         exam_id=exam_id,
@@ -199,11 +252,8 @@ def generate_paper(
     exam_id: str,
     request: PaperGenerateRequest,
     db: Session = Depends(get_db),
-    current_user: UserResponse = Depends(get_current_user)
+    current_user: AuthenticatedPrincipal = Depends(require_permission("question-bank.create"))
 ):
-    if current_user.role != "CONTROLLER":
-        raise HTTPException(status_code=403, detail="Only Exam Controllers can generate papers")
-        
     # 1. Fetch Blueprint
     bp = db.query(PaperBlueprint).filter(PaperBlueprint.exam_id == exam_id).order_by(PaperBlueprint.created_at.desc()).first()
     if not bp:
@@ -325,3 +375,102 @@ def generate_paper(
         paper_hash=paper.paper_hash,
         status=paper.status
     )
+
+# --- Ollama AI Question Generator Endpoints ---
+
+@router.get("/api/questions/ai-models")
+def get_ai_models(
+    current_user: AuthenticatedPrincipal = Depends(require_permission("question-bank.read"))
+):
+    """Returns available Ollama models and cloud configuration."""
+    models = list_available_models()
+    return {
+        "models": models,
+        "default_model": "llama3.2",
+        "ollama_host": OLLAMA_HOST,
+        "status": "ONLINE"
+    }
+
+@router.post("/api/questions/generate-ai", response_model=AIGenerateResponse)
+def generate_questions_ai(
+    request: AIGenerateRequest,
+    db: Session = Depends(get_db),
+    current_user: AuthenticatedPrincipal = Depends(require_permission("question-bank.generate-ai"))
+):
+    """
+    Generates examination questions using Ollama Python client and stores them into the Question Bank.
+    """
+    raw_questions = generate_questions_with_ollama(
+        subject=request.subject,
+        topic=request.topic,
+        difficulty=request.difficulty,
+        count=request.count,
+        model=request.model,
+        question_type=request.question_type,
+        custom_instructions=request.custom_instructions
+    )
+    
+    formatted_questions: List[AIGeneratedQuestion] = []
+    
+    for q in raw_questions:
+        q_text = q.get("text", "")
+        q_options = q.get("options", {"A": "A", "B": "B", "C": "C", "D": "D"})
+        q_ans = q.get("answer", "A")
+        q_exp = q.get("explanation", "")
+        q_diff = q.get("difficulty", request.difficulty).upper()
+        q_marks = q.get("marks", 2)
+        
+        # Calculate SHA-256 integrity hash
+        content_str = json.dumps({"text": q_text, "options": q_options, "explanation": q_exp})
+        answer_str = json.dumps({"answer": q_ans})
+        raw_hash_input = f"{request.subject}|{request.topic}|{content_str}|{answer_str}"
+        content_hash = calculate_sha256(raw_hash_input)
+        
+        q_id = f"QST-AI-{content_hash[:8].upper()}"
+        
+        if request.auto_save_to_bank:
+            # Encrypt sensitive data using AES-GCM
+            nonce_c, cipher_c = encrypt_payload(content_str, STORAGE_AES_KEY)
+            nonce_a, cipher_a = encrypt_payload(answer_str, STORAGE_AES_KEY)
+            
+            db_qst = Question(
+                id=q_id,
+                subject=request.subject,
+                topic=request.topic,
+                difficulty=q_diff,
+                question_type=request.question_type,
+                marks=q_marks,
+                encrypted_content=json.dumps({"nonce": nonce_c, "ciphertext": cipher_c}),
+                encrypted_answer=json.dumps({"nonce": nonce_a, "ciphertext": cipher_a}),
+                status="APPROVED",
+                author_id="SYSTEM_OLLAMA_AI"
+            )
+            # Upsert into Question Bank
+            existing = db.query(Question).filter(Question.id == q_id).first()
+            if not existing:
+                db.add(db_qst)
+                db.commit()
+        
+        formatted_questions.append(AIGeneratedQuestion(
+            id=q_id,
+            text=q_text,
+            options=q_options,
+            answer=q_ans,
+            explanation=q_exp,
+            difficulty=q_diff,
+            marks=q_marks,
+            content_hash=content_hash,
+            status="SAVED_TO_BANK" if request.auto_save_to_bank else "GENERATED"
+        ))
+        
+    return AIGenerateResponse(
+        subject=request.subject,
+        topic=request.topic,
+        difficulty=request.difficulty,
+        model_used=request.model,
+        count=len(formatted_questions),
+        questions=formatted_questions,
+        saved_to_bank=request.auto_save_to_bank,
+        ollama_endpoint=OLLAMA_HOST
+    )
+

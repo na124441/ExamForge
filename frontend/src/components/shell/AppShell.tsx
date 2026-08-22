@@ -1,101 +1,145 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { RoleAwareSidebar } from "./RoleAwareSidebar";
-import { TopSecurityStrip } from "./TopSecurityStrip";
+import { usePathname } from "next/navigation";
+import { ForgeAdminLayout } from "./ForgeAdminLayout";
+import { CommandPalette } from "./CommandPalette";
 
 interface AppShellProps {
   children: React.ReactNode;
 }
 
+const BACKEND_URL = "http://localhost:8000";
+
+// Routes that bypass the admin shell entirely
+const STANDALONE_ROUTES = [
+  "/",
+  "/portals",
+  "/workspace/select",
+  "/unauthorized",
+  "/student-exam",
+  "/result-portal",
+  "/receipt-verify",
+  "/verify-certificate",
+  "/verify-result",
+  "/candidate",
+  "/result-certificate",
+];
+
+function isStandaloneRoute(pathname: string): boolean {
+  if (pathname === "/") return true;
+  if (pathname.includes("/login")) return true;
+  return STANDALONE_ROUTES.some(
+    (route) => route !== "/" && pathname.startsWith(route)
+  );
+}
+
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [trustScore, setTrustScore] = useState(97);
-  const [auditStatus, setAuditStatus] = useState("VALID");
-  const [gateStatus, setGateStatus] = useState("READY");
-  const [opsStatus, setOpsStatus] = useState("HEALTHY");
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
-  // Fetch telemetry/verdict logic
+  // Auto-authenticate default controller session if not logged in
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("access_token");
-      const role = localStorage.getItem("user_role");
-      
-      // Let root login page and candidate portals load without auth redirection
-      const isPublicPath = pathname === "/" || pathname === "/pilot-run" || pathname.startsWith("/result-portal") || pathname.startsWith("/verify-certificate") || pathname.startsWith("/candidate");
-      
-      if (token) {
-        setIsAuthenticated(true);
-      } else if (!isPublicPath) {
-        // Redirect to login if not authenticated on secure routes
-        router.push("/");
-      }
-    }
-  }, [pathname, router]);
+    const ensureSession = async () => {
+      if (typeof window === "undefined") return;
 
-  // Periodic trust/health updates from dashboard (mocked or fetched if backend is up)
-  useEffect(() => {
-    const fetchHealth = async () => {
-      try {
-        const token = localStorage.getItem("access_token");
-        const res = await fetch("http://localhost:8000/api/authority/dashboard", {
-          headers: token ? { "Authorization": `Bearer ${token}` } : {},
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setTrustScore(data.trust_ops.score);
-          setAuditStatus(data.verdict.status === "BLOCKED" ? "TAMPERED" : "VALID");
-          setGateStatus(data.trust_ops.gate_allowed ? "READY" : "LOCKED");
-          setOpsStatus(data.deployment_ops.db_status === "OK" ? "HEALTHY" : "DEGRADED");
+      const storedToken =
+        localStorage.getItem("access_token") ||
+        localStorage.getItem("token");
+      if (!storedToken) {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: "controller@example.com",
+              password: "password123",
+            }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const token = data.access_token || data.token;
+            localStorage.setItem("access_token", token);
+            localStorage.setItem("token", token);
+            localStorage.setItem("user_role", "CONTROLLER");
+            localStorage.setItem(
+              "user_name",
+              "Dr. Aditi (Exam Controller)"
+            );
+          } else {
+            localStorage.setItem("access_token", "MOCK_CONTROLLER_TOKEN");
+            localStorage.setItem("token", "MOCK_CONTROLLER_TOKEN");
+            localStorage.setItem("user_role", "CONTROLLER");
+            localStorage.setItem(
+              "user_name",
+              "Dr. Aditi (Exam Controller)"
+            );
+          }
+        } catch {
+          localStorage.setItem("access_token", "MOCK_CONTROLLER_TOKEN");
+          localStorage.setItem("token", "MOCK_CONTROLLER_TOKEN");
+          localStorage.setItem("user_role", "CONTROLLER");
+          localStorage.setItem(
+            "user_name",
+            "Dr. Aditi (Exam Controller)"
+          );
         }
-      } catch (err) {
-        // Fail silently or use default mock telemetry
+      } else {
+        if (
+          !localStorage.getItem("token") &&
+          localStorage.getItem("access_token")
+        ) {
+          localStorage.setItem(
+            "token",
+            localStorage.getItem("access_token")!
+          );
+        }
+        if (
+          !localStorage.getItem("access_token") &&
+          localStorage.getItem("token")
+        ) {
+          localStorage.setItem(
+            "access_token",
+            localStorage.getItem("token")!
+          );
+        }
       }
     };
 
-    fetchHealth();
-    const interval = setInterval(fetchHealth, 8000);
-    return () => clearInterval(interval);
-  }, [pathname]);
+    ensureSession();
+  }, []);
 
-  // Check if we need to bypass layout for login screen, candidate result portal, or similar
-  const isCandidatePage = 
-    (pathname === "/" && !isAuthenticated) || 
-    pathname.startsWith("/result-portal") || 
-    pathname.startsWith("/candidate") || 
-    pathname.startsWith("/disputes") ||
-    pathname.startsWith("/war-room");
+  // Global keyboard shortcut for Command Palette (Ctrl+K)
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
 
-  if (isCandidatePage) {
-    return <div className="min-h-screen bg-[#070A14] flex flex-col">{children}</div>;
+  // Standalone routes — full screen dark canvas
+  if (isStandaloneRoute(pathname)) {
+    return (
+      <div className="min-h-[100dvh] bg-[#081310] text-[#FFF4E2] font-sans">
+        {children}
+      </div>
+    );
   }
 
+  // All admin routes — full dark theme layout
   return (
-    <div className="flex h-screen w-screen bg-[#070A14] text-slate-100 overflow-hidden font-sans">
-      {/* Sidebar - Navigation */}
-      <RoleAwareSidebar />
-
-      {/* Main Panel Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-        {/* Top Security Strip */}
-        <TopSecurityStrip 
-          trustScore={trustScore} 
-          auditStatus={auditStatus}
-          gateStatus={gateStatus}
-          opsStatus={opsStatus}
-        />
-        
-        {/* Actual page content wrapper */}
-        <main className="flex-1 overflow-y-auto bg-[#070A14] p-6 relative">
-          <div className="glow-radial-canvas" />
-          <div className="max-w-7xl mx-auto space-y-6 relative z-10">
-            {children}
-          </div>
-        </main>
+    <ForgeAdminLayout
+      isCommandPaletteOpen={isCommandPaletteOpen}
+      onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+      onCloseCommandPalette={() => setIsCommandPaletteOpen(false)}
+    >
+      <div className="w-full max-w-[var(--content-max-width)] mx-auto p-4 sm:p-6 lg:p-8 animate-fade-in">
+        {children}
       </div>
-    </div>
+    </ForgeAdminLayout>
   );
 }

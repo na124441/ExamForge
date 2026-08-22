@@ -34,7 +34,7 @@ class AssetResponse(BaseModel):
     retention_policy: Optional[str]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PIIAccessLogResponse(BaseModel):
     id: str

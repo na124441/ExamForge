@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
+from app.db.session import auto_migrate_sqlite_schema
 import app.models as models # Register models with Base
 
 # Import Routers
@@ -61,10 +62,24 @@ from app.pilot.routes import router as pilot_router
 from app.authority.routes import router as authority_router
 from app.docs_support.api_tags import TAGS_METADATA
 
+# Import Version 2.0 Enterprise Routers
+from app.warroom.router import router as warroom_router
+from app.ai_security.routes import router as ai_security_router
+from app.crypto_vault.routes import router as crypto_vault_router
+
+try:
+    from app.ops.real_attack_engine import router as real_attack_router
+except ImportError:
+    real_attack_router = None
+
+from app.vendors.routes import router as vendors_router
+from app.pentest.routes import router as pentest_router
+
 from app.security_hardening.headers import SecurityHeadersMiddleware
 
-# Initialize SQLite tables on startup
+# Initialize SQLite tables and auto-migrate missing columns on startup
 Base.metadata.create_all(bind=engine)
+auto_migrate_sqlite_schema(engine, Base)
 
 app = FastAPI(
     title="ExamForge API",
@@ -87,8 +102,19 @@ app.add_middleware(
 )
 
 
+from app.auth.v1_routes import router as auth_v1_router
+from app.identity.routes import router as identity_router
+from app.messaging.vendor_routes import router as vendor_messaging_router
+from app.exams.routes import router as exam_catalogs_router
+from app.payments.routes import router as payments_router
+
 # Register routers
 app.include_router(auth_router, prefix="/api")
+app.include_router(exam_catalogs_router)
+app.include_router(payments_router)
+app.include_router(auth_v1_router)
+app.include_router(identity_router)
+app.include_router(vendor_messaging_router)
 app.include_router(questions_router)
 app.include_router(candidates_router)
 app.include_router(ingestion_router)
@@ -140,6 +166,15 @@ app.include_router(compliance_router)
 # Version 1.0 Routers
 app.include_router(pilot_router)
 app.include_router(authority_router)
+app.include_router(vendors_router)
+
+# Version 2.0 Enterprise Routers
+app.include_router(warroom_router)
+app.include_router(ai_security_router)
+app.include_router(crypto_vault_router)
+if real_attack_router is not None:
+    app.include_router(real_attack_router)
+app.include_router(pentest_router)
 
 
 @app.get("/api/health")

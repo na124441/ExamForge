@@ -18,7 +18,7 @@ class HardeningCheckResponse(BaseModel):
     details: Optional[str]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 @router.get("/status", response_model=List[HardeningCheckResponse])
 def get_hardening_status(

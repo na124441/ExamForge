@@ -27,7 +27,7 @@ class LifecycleEventResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class KeyResponse(BaseModel):
     id: str
@@ -39,7 +39,7 @@ class KeyResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 @router.post("/{key_id}/rotate/request")
 def request_key_rotation(

@@ -32,8 +32,12 @@ export default function VerifyCertificatePage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col p-8 font-sans items-center justify-center">
       <div className="max-w-md w-full bg-card-bg p-8 rounded-2xl border border-border-color shadow-2xl flex flex-col gap-6">
-        <div className="text-center">
-          <span className="text-3xl">🌐</span>
+        <div className="text-center flex flex-col items-center">
+          <img
+            src="/logo-icon.png"
+            alt="ExamForge"
+            className="w-12 h-12 rounded-xl object-cover shadow-md border border-border-color mb-1"
+          />
           <h1 className="text-xl font-extrabold text-white mt-2 tracking-wide">Public Certificate Validator</h1>
           <p className="text-xs text-text-muted mt-1">Real-time authentication of ExamForge credentials against secure nodes.</p>
         </div>

@@ -31,7 +31,11 @@ export default function SecurityLayout({
       {/* Top Banner */}
       <header className="bg-card-bg border-b border-border-color p-4 flex justify-between items-center z-10">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">🛡️</span>
+          <img
+            src="/logo-icon.png"
+            alt="ExamForge Logo"
+            className="w-9 h-9 rounded-xl object-cover shadow-sm border border-border-color"
+          />
           <div>
             <h1 className="text-base font-extrabold text-white tracking-wide flex items-center gap-2">
               ExamForge <span className="text-accent-emerald text-xs px-2 py-0.5 bg-accent-emerald/10 border border-accent-emerald/20 rounded font-mono uppercase">Security & Compliance Ops</span>

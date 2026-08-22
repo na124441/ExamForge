@@ -33,7 +33,7 @@ class IncidentResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TimelineEventResponse(BaseModel):
     id: str
@@ -44,7 +44,7 @@ class TimelineEventResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 @router.post("/report", response_model=IncidentResponse)
 def report_incident(

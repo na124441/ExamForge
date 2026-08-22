@@ -33,7 +33,7 @@ class ApprovalRequestResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class DecisionResponse(BaseModel):
     id: str
@@ -43,7 +43,7 @@ class DecisionResponse(BaseModel):
     decided_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 @router.post("/request", response_model=ApprovalRequestResponse)
 def create_approval_request(

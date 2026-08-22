@@ -5,16 +5,18 @@ import { useRouter } from "next/navigation";
 import { 
   Lock, 
   Unlock,
-  CheckCircle2, 
-  AlertOctagon, 
-  HelpCircle,
-  FileCheck,
   RefreshCw,
-  Cpu,
-  Key
+  FileCheck,
+  AlertOctagon,
+  CheckCircle2
 } from "lucide-react";
-import { StatusBadge } from "../../components/ui/StatusBadge";
-import { BlockingReasons } from "../../components/ui/BlockingReasons";
+import { cn } from "@/lib/cn";
+import { ForgeMetric } from "@/components/forge/ForgeMetric";
+import { ForgeBadge } from "@/components/forge/ForgeBadge";
+import { ForgeButton } from "@/components/forge/ForgeButton";
+import { ForgeTable } from "@/components/forge/ForgeTable";
+import { ForgeContextualHint } from "@/components/forge/ForgeContextualHint";
+import { ForgeMonoText } from "@/components/forge/ForgeMonoText";
 
 const BACKEND_URL = "http://localhost:8000";
 const EXAM_ID = "EXM-001";
@@ -99,222 +101,188 @@ export default function PublicationGatePage() {
 
   if (loading && !status) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 font-mono text-xs gap-3">
-        <span className="animate-spin text-xl">⚙️</span>
-        <span>VERIFYING CRYPTOGRAPHIC GATES...</span>
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-[var(--text-muted)] text-sm gap-3 font-sans">
+        <RefreshCw className="w-5 h-5 animate-spin text-[var(--accent-primary)]" />
+        <span>Verifying Publication Safety Gates...</span>
       </div>
     );
   }
 
   const isAllowed = status?.allowed ?? false;
-  const score = status?.trust_score ?? 100;  return (
-    <div className="space-y-6">
-      {/* Sub-Header */}
-      <div className="flex justify-between items-center bg-[#101524]/60 backdrop-blur-xl p-4 rounded-xl border border-white/[0.06] shadow-lg">
-        <div>
-          <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
-            <span>Result Publication Gate</span>
-            <span className="text-[9px] px-2 py-0.5 bg-violet-650/10 border border-violet-500/20 text-violet-400 rounded uppercase font-mono font-bold tracking-widest shadow-[0_0_8px_rgba(139,92,246,0.05)]">
-              Release Gate
+  const score = status?.trust_score ?? 100;
+
+  return (
+    <div className="space-y-6 font-sans">
+      {/* Top Banner */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-5 bg-[var(--surface-elevated)] border border-[var(--border-default)] rounded-[var(--radius-3)] shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-[var(--radius-2)] border",
+            isAllowed 
+              ? "bg-[var(--status-operational-surface)] border-[var(--status-operational)]" 
+              : "bg-[var(--status-danger-surface)] border-[var(--status-danger)]"
+          )}>
+            <div className={cn(
+              "w-3 h-3 rounded-full animate-pulse",
+              isAllowed ? "bg-[var(--status-operational)]" : "bg-[var(--status-danger)]"
+            )} />
+            <span className={cn(
+              "font-bold text-base tracking-wide",
+              isAllowed ? "text-[var(--status-operational-text)]" : "text-[var(--status-danger-text)]"
+            )}>
+              {isAllowed ? "PUBLICATION PERMITTED" : "GATE LOCKED"}
             </span>
-          </h1>
-          <p className="text-[11px] text-slate-500 mt-0.5 font-mono">
-            Audit release gate checklist enforcing security thresholds before grading publication.
-          </p>
+          </div>
+          <div className="ml-2 flex flex-col">
+            <h1 className="text-xl font-bold text-[var(--text-primary)]">Publication Gate</h1>
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5">Cryptographic readiness checks for {EXAM_ID}</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => router.push("/authority")}
-            className="text-xs px-3 py-2 bg-slate-950/60 hover:bg-slate-900 border border-white/[0.08] hover:border-white/[0.15] text-white rounded-lg transition active-press cursor-pointer"
-          >
-            🏢 Authority Console
-          </button>
+        <div className="mt-4 md:mt-0">
+          <ForgeMetric
+            title="Integrity Trust Score"
+            value={`${score}%`}
+            status={score >= 90 ? "ok" : "danger"}
+            className="w-48"
+          />
         </div>
       </div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Left: Final Gate Verdict (3 cols) */}
-        <div className="lg:col-span-3 flex flex-col gap-6">
-          <div className="bg-[#101524]/60 backdrop-blur-xl p-6 rounded-2xl border border-white/[0.06] flex flex-col justify-between items-center text-center min-h-[340px] shadow-lg">
-            <div className="flex flex-col items-center">
-              <div className={`p-4 rounded-full border mb-4 transition-all duration-300 ${
-                isAllowed 
-                  ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.1)]" 
-                  : "bg-red-500/10 border-red-500/25 text-red-400 animate-pulse shadow-[0_0_12px_rgba(239,68,68,0.1)]"
-              }`}>
-                {isAllowed ? <Unlock className="w-8 h-8 stroke-[2.5]" /> : <Lock className="w-8 h-8 stroke-[2.5]" />}
-              </div>
-              <h3 className="text-sm font-black text-white uppercase tracking-wider font-mono">
-                {isAllowed ? "Gate Unlocked" : "Gate Locked"}
-              </h3>
-              <span className="block text-[10px] text-slate-500 font-mono mt-1 uppercase font-bold">
-                Status: {isAllowed ? "Release Allowed" : "Lockout Enforced"}
-              </span>
-              <p className="text-[11px] text-slate-400 mt-3 leading-relaxed max-w-[180px]">
-                {isAllowed
-                  ? "All cryptographic verification passes check and integrity score satisfies policy. Release authorized."
-                  : "Release is BLOCKED because the exam configuration fails security checks."}
-              </p>
-            </div>
-
-            <div className="w-full space-y-3 mt-4">
-              <div className="p-3.5 bg-slate-950/60 rounded-xl border border-white/[0.04] text-left font-mono shadow-inner">
-                <span className="text-[9px] text-slate-550 uppercase font-bold block">Integrity Index</span>
-                <div className="flex justify-between items-center mt-1">
-                  <span className="text-sm font-black text-white">{score} / 100</span>
-                  <span className={`w-2.5 h-2.5 rounded-full ${score >= 90 ? "bg-emerald-450 shadow-[0_0_8px_rgba(52,211,153,0.5)]" : "bg-red-400 animate-ping"}`} />
-                </div>
-              </div>
-
-              <button
-                onClick={handlePublishResults}
-                disabled={!isAllowed || publishing}
-                className={`w-full py-2.5 rounded-lg font-black text-xs transition-all duration-200 uppercase font-mono tracking-wider cursor-pointer active-press ${
-                  isAllowed
-                    ? "bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-md shadow-emerald-500/10"
-                    : "bg-slate-800 text-slate-550 cursor-not-allowed border border-white/[0.03]"
-                }`}
-              >
-                {publishing ? "Decrypting..." : isAllowed ? "Release Results" : "Blocked"}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Center: Checklist (6 cols) */}
-        <div className="lg:col-span-6 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] flex flex-col justify-between shadow-lg">
-          <div>
-            <h2 className="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-              <span className="w-2.5 h-2.5 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.6)] animate-pulse"></span>
-              <span>Cryptographic Check Checklist</span>
-            </h2>
-            
-            <div className="space-y-3 overflow-y-auto max-h-[380px] pr-1 scrollbar-thin">
-              {status?.checklist.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`p-3.5 rounded-xl border flex items-center justify-between gap-4 transition-all duration-200 hover:border-white/[0.1] ${
-                    item.passed
-                      ? "border-emerald-500/15 bg-emerald-500/[0.01]"
-                      : item.critical
-                      ? "border-red-500/15 bg-red-500/[0.01]"
-                      : "border-amber-500/15 bg-amber-500/[0.01]"
-                  }`}
-                >
-                  <div className="min-w-0 font-mono">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`w-1.5 h-1.5 rounded-full ${
-                        item.passed ? "bg-emerald-400" : item.critical ? "bg-red-400 animate-pulse" : "bg-amber-400"
-                      }`} />
-                      <h4 className="text-xs font-bold text-slate-200">{item.name}</h4>
-                      {item.critical && (
-                        <span className="px-1.5 py-0.2 bg-red-500/10 border border-red-500/20 text-red-400 text-[8px] font-mono font-bold rounded uppercase tracking-wider">
-                          P0 Rule
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-1 leading-normal pr-2 font-sans">
-                      {item.details}
-                    </p>
-                  </div>
-                  
-                  <span className={`text-[10px] font-bold font-mono uppercase tracking-wider shrink-0 ${
-                    item.passed ? "text-emerald-400" : item.critical ? "text-red-400 animate-pulse" : "text-amber-400"
-                  }`}>
-                    {item.passed ? "✓ Passed" : "❌ Blocked"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Blocking Reasons Explainer (3 cols) */}
-        <div className="lg:col-span-3 flex flex-col gap-6">
-          {/* Blocking Reasons card */}
-          {!isAllowed && (
-            <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-red-500/20 shadow-lg flex-1">
-              <h3 className="text-xs font-bold text-red-400 uppercase tracking-wider mb-3 font-mono flex items-center gap-1.5">
-                <AlertOctagon className="w-4 h-4 text-red-500 animate-bounce" />
-                <span>Blocked Explainer</span>
-              </h3>
-              
-              <div className="space-y-3 overflow-y-auto max-h-[340px] pr-1 scrollbar-thin">
-                {status?.critical_issues.map((issue, idx) => (
-                  <div key={idx} className="p-3 bg-slate-950/60 border border-white/[0.04] rounded-xl text-xs font-mono leading-normal shadow-inner">
-                    <div className="text-red-400 font-bold text-[9px] mb-1">{issue.code}</div>
-                    <div className="text-slate-300 font-medium text-[11px]">{issue.message}</div>
-                    {issue.details && (
-                      <div className="mt-2 text-[9px] text-slate-550 bg-slate-950/60 p-2 rounded border border-white/[0.04] break-all max-w-full">
-                        {issue.details}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {isAllowed && (
-            <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-emerald-500/25 shadow-lg flex-1 flex flex-col justify-between font-mono text-xs">
-              <div className="space-y-3">
-                <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider font-mono flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Safety Check Cleared</span>
-                </h3>
-                <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
-                  The system has checked the ledger integrity blocks, OMR scanners, and evaluators. No anomalies detected.
-                </p>
-              </div>
-              <div className="p-3 bg-slate-950/60 rounded-xl border border-white/[0.04] mt-4 shadow-inner">
-                <span className="text-[8px] text-slate-500 uppercase block font-bold">Release Decryption Signature</span>
-                <span className="text-cyan-400 break-all text-[9px] block mt-1 leading-normal">
-                  sha256:881ad3f9429188e001ba7e44...
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-
+      {/* Action Bar */}
+      <div className="flex flex-wrap items-center justify-end gap-3 bg-[var(--surface-panel)] p-4 border border-[var(--border-subtle)] rounded-[var(--radius-2)]">
+        <ForgeButton variant="secondary" onClick={fetchGateStatus} disabled={loading || publishing}>
+          <RefreshCw className={cn("w-4 h-4 mr-2", loading && "animate-spin")} />
+          Evaluate Gate Readiness
+        </ForgeButton>
+        <ForgeButton 
+          variant={isAllowed ? "primary" : "ghost"} 
+          onClick={handlePublishResults} 
+          disabled={!isAllowed || publishing}
+          className={!isAllowed ? "opacity-50 cursor-not-allowed border border-[var(--border-strong)]" : ""}
+        >
+          {isAllowed ? <Unlock className="w-4 h-4 mr-2" /> : <Lock className="w-4 h-4 mr-2" />}
+          {publishing ? "Authorizing..." : "Authorize Result Publication & Seal Ledger"}
+        </ForgeButton>
       </div>
 
-      {/* Release details/report output */}
+      {/* Blocking Reasons & Warnings */}
+      {!isAllowed && status?.critical_issues && status.critical_issues.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
+            <AlertOctagon className="w-4 h-4 text-[var(--status-danger)]" />
+            Blocking Issues
+          </h2>
+          {status.critical_issues.map((issue, idx) => (
+            <ForgeContextualHint
+              key={idx}
+              severity="warning"
+              title={issue.message}
+              description={issue.details || "This issue prevents the publication gate from unlocking."}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Checklist Table */}
+      <div className="bg-[var(--surface-elevated)] border border-[var(--border-default)] rounded-[var(--radius-3)] p-5">
+        <h2 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2 mb-4">
+          <CheckCircle2 className="w-4 h-4 text-[var(--accent-primary)]" />
+          Policy Checklist
+        </h2>
+        <ForgeTable
+          columns={[
+            {
+              key: "name",
+              header: "Policy Rule",
+              className: "font-medium text-[var(--text-primary)]",
+            },
+            {
+              key: "critical",
+              header: "Criticality",
+              render: (row: ChecklistItem) => (
+                <ForgeBadge 
+                  status={row.critical ? "CRITICAL" : "DEFAULT"} 
+                  variant={row.critical ? "danger" : "neutral"} 
+                  label={row.critical ? "Strict Rule" : "Standard"} 
+                />
+              ),
+            },
+            {
+              key: "passed",
+              header: "Status",
+              render: (row: ChecklistItem) => (
+                <ForgeBadge 
+                  status={row.passed ? "VERIFIED" : "BLOCKED"} 
+                  variant={row.passed ? "success" : "danger"} 
+                  label={row.passed ? "Passed" : "Blocked"} 
+                />
+              ),
+            },
+            {
+              key: "details",
+              header: "Explanation / Details",
+              className: "text-[var(--text-secondary)] max-w-sm",
+            }
+          ]}
+          data={status?.checklist || []}
+          keyField="name"
+        />
+      </div>
+
+      {/* Success Block */}
       {publishResult && (
-        <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-emerald-500/20 shadow-md animate-in fade-in duration-200 font-mono text-xs">
-          <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2 font-mono flex items-center gap-1.5">
-            <FileCheck className="w-4 h-4 text-emerald-400" />
-            <span>Publishing Success Report</span>
+        <div className="bg-[var(--surface-elevated)] p-6 rounded-[var(--radius-3)] border border-[var(--status-operational)]">
+          <h3 className="text-lg font-bold text-[var(--status-operational-text)] mb-2 flex items-center gap-2">
+            <FileCheck className="w-5 h-5" />
+            Cryptographic Publication Sealed
           </h3>
-          <p className="text-slate-300 leading-relaxed mb-3 font-sans">
+          <p className="text-sm text-[var(--text-secondary)] mb-5">
             {publishResult.message}
           </p>
-          <div className="bg-slate-950/60 rounded p-3 border border-white/[0.04] max-h-[160px] overflow-y-auto space-y-1 shadow-inner scrollbar-thin">
-            {publishResult.results.map((r: any, idx: number) => (
-              <div key={idx} className="flex justify-between py-1 border-b border-white/[0.04] last:border-0 text-[11px]">
-                <span className="text-slate-400">{r.candidate_anonymous_id}</span>
-                <span className="text-emerald-450 font-bold">{r.score} marks</span>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-[var(--surface-panel)] border border-[var(--border-subtle)] p-4 rounded-[var(--radius-2)]">
+              <span className="text-xs text-[var(--text-muted)] uppercase font-semibold block mb-2">Publication Digest</span>
+              <ForgeMonoText className="text-xs break-all">
+                sha256:881ad3f9429188e001ba7e44cf9901bd34a5d0928f80bb1a980ca... (Issued)
+              </ForgeMonoText>
+              <div className="mt-4">
+                <ForgeBadge status="VERIFIED" label="Certificates Generated" variant="success" />
               </div>
-            ))}
+            </div>
+
+            <div>
+              <h4 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider mb-2">Issued Results</h4>
+              <div className="max-h-48 overflow-y-auto">
+                <ForgeTable
+                  columns={[
+                    { key: "candidate_anonymous_id", header: "Candidate ID", mono: true },
+                    { key: "score", header: "Score", render: (r: any) => <span className="font-bold">{r.score} marks</span> }
+                  ]}
+                  data={publishResult.results || []}
+                  keyField="candidate_anonymous_id"
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
 
+      {/* Error Block */}
       {publishError && (
-        <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-red-500/20 shadow-md animate-in fade-in duration-200 font-mono text-xs">
-          <h3 className="text-xs font-bold text-red-450 uppercase tracking-wider mb-2 font-mono">
+        <div className="bg-[var(--status-danger-surface)] p-5 rounded-[var(--radius-3)] border border-[var(--status-danger)]">
+          <h3 className="text-sm font-bold text-[var(--status-danger-text)] uppercase tracking-wider mb-2">
             Publishing Failure Report
           </h3>
-          <p className="text-red-400 leading-normal mb-2">
+          <p className="text-sm font-medium text-[var(--status-danger-text)] mb-3">
             {publishError.message}
           </p>
-          {publishError.failures && (
-            <div className="bg-slate-950/60 rounded p-3 border border-white/[0.04] text-slate-400 leading-relaxed shadow-inner">
+          {publishError.failures && publishError.failures.length > 0 && (
+            <ul className="list-disc pl-5 text-sm text-[var(--status-danger-text)] space-y-1">
               {publishError.failures.map((f: any, idx: number) => (
-                <div key={idx}>- {f}</div>
+                <li key={idx}>{f}</li>
               ))}
-            </div>
+            </ul>
           )}
         </div>
       )}

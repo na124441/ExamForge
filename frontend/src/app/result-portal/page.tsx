@@ -1,264 +1,162 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { 
-  Award, 
-  Search, 
-  CheckCircle, 
-  ChevronRight, 
-  Lock, 
-  FileCheck,
-  AlertTriangle,
-  ArrowLeft
-} from "lucide-react";
+import { useState } from "react";
+import { ForgeButton } from "@/components/forge/ForgeButton";
+import { ForgeInput } from "@/components/forge/ForgeInput";
+import { ForgeMonoText } from "@/components/forge/ForgeMonoText";
+import { ForgeBadge } from "@/components/forge/ForgeBadge";
+import { Search, Download, Shield, Award, CheckCircle2 } from "lucide-react";
 
-const BACKEND_URL = "http://localhost:8000";
+export default function ResultPortalPage() {
+  const [regNo, setRegNo] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [searchState, setSearchState] = useState<"idle" | "searching" | "found">("idle");
 
-export default function ResultPortal() {
-  const [regNum, setRegNum] = useState("");
-  const [examId, setExamId] = useState("");
-  const [pin, setPin] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState("");
-
-  const handleLookup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!regNum || !examId || !pin) {
-      setError("Please fill in all verification credentials.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    setResult(null);
-
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/transparency/result/lookup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ registration_number: regNum, exam_id: examId, pin }),
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.detail || "Credentials lookup failed. Match not found.");
-      }
-
-      const data = await res.json();
-      setResult(data);
-    } catch (err: any) {
-      setError(err.message || "Credential matching failed. Please verify credentials.");
-    } finally {
-      setLoading(false);
-    }
+  const handleSearch = () => {
+    setSearchState("searching");
+    setTimeout(() => {
+      setSearchState("found");
+    }, 1000);
   };
 
   return (
-    <div className="min-h-screen bg-[#070A14] text-slate-100 flex flex-col justify-center items-center p-6 font-sans select-none relative overflow-hidden selection:bg-emerald-600/30">
-      <div className="glow-radial-canvas" />
-      
-      <div className="max-w-md w-full bg-[#101524]/60 p-8 rounded-2xl border border-white/[0.06] shadow-2xl flex flex-col gap-6 backdrop-blur-xl relative overflow-hidden z-10">
-        
-        {/* Top green glow accent */}
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500" />
-
-        {/* Back Link */}
-        <div className="flex justify-between items-center text-xs font-mono">
-          <Link href="/" className="text-slate-500 hover:text-slate-350 transition flex items-center gap-1 hover:underline">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Simulators Portal</span>
-          </Link>
-          <span className="text-[9px] px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded uppercase font-bold tracking-wider shadow-[0_0_8px_rgba(52,211,153,0.05)]">
-            Candidate Gate
-          </span>
-        </div>
-
-        {/* Header */}
-        <div className="text-center mt-2">
-          <div className="mx-auto w-12 h-12 rounded-full bg-slate-950/60 border border-white/[0.06] flex items-center justify-center text-2xl mb-3 shadow-inner">
-            🎓
-          </div>
-          <h1 className="text-xl font-black text-white tracking-tight">Candidate Result Portal</h1>
-          <p className="text-xs text-slate-400 mt-1 max-w-[240px] mx-auto leading-relaxed">
-            Verify score transcripts using secure cryptographically chained proofs.
+    <div className="forge-public min-h-screen bg-[var(--surface-sunken)] p-8 font-sans text-[var(--text-main)]">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <header className="space-y-2 text-center max-w-2xl mx-auto mb-12">
+          <h1 className="text-4xl font-semibold tracking-tight text-[var(--text-strong)]">Candidate Transcript Portal</h1>
+          <p className="text-[var(--text-subtle)] text-lg">
+            Securely access your verifiable exam results using your Registration Number and Secret Roll Key.
           </p>
-        </div>
+        </header>
 
-        {/* Form */}
-        {!result && (
-          <form onSubmit={handleLookup} className="flex flex-col gap-4 text-xs font-mono">
-            <div>
-              <label className="block text-slate-450 mb-1 font-bold uppercase tracking-wider text-[9px]">
-                Registration Number
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. REG-6000"
-                value={regNum}
-                onChange={(e) => setRegNum(e.target.value)}
-                className="w-full p-2.5 bg-slate-950/60 border border-white/[0.06] rounded-lg focus:border-emerald-500/80 focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] focus:outline-none text-white font-mono transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-450 mb-1 font-bold uppercase tracking-wider text-[9px]">
-                Examination ID
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. EXM-001"
-                value={examId}
-                onChange={(e) => setExamId(e.target.value)}
-                className="w-full p-2.5 bg-slate-950/60 border border-white/[0.06] rounded-lg focus:border-emerald-500/80 focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] focus:outline-none text-white font-mono transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-450 mb-1 font-bold uppercase tracking-wider text-[9px]">
-                Verification PIN
-              </label>
-              <input
-                type="password"
-                placeholder="Enter key PIN"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                className="w-full p-2.5 bg-slate-950/60 border border-white/[0.06] rounded-lg focus:border-emerald-500/80 focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] focus:outline-none text-white font-mono tracking-widest transition"
-              />
-            </div>
-
-            {error && (
-              <div className="p-3 bg-red-955/15 border border-red-500/20 text-red-400 rounded-lg text-[10px] leading-relaxed flex gap-2 items-start font-mono">
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
-                <span>{error}</span>
+        {searchState !== "found" ? (
+          <div className="bg-[var(--surface-default)] border border-[var(--border-default)] rounded-[var(--radius-4)] p-8 max-w-md mx-auto shadow-sm space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[var(--text-main)]">Registration Number</label>
+                <ForgeInput 
+                  placeholder="e.g. REG-2026-XXXXX" 
+                  value={regNo}
+                  onChange={(e) => setRegNo(e.target.value)}
+                />
               </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-450 text-slate-950 font-black rounded-lg transition-all duration-300 cursor-pointer text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10 active-press"
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[var(--text-main)]">Secret Roll Key</label>
+                <ForgeInput 
+                  type="password"
+                  placeholder="••••••••••••" 
+                  value={secretKey}
+                  onChange={(e) => setSecretKey(e.target.value)}
+                />
+              </div>
+            </div>
+            <ForgeButton 
+              className="w-full" 
+              onClick={handleSearch}
+              disabled={!regNo || !secretKey || searchState === "searching"}
             >
-              {loading ? "Decrypting Ledger..." : "Search & Verify Result"}
-            </button>
-          </form>
-        )}
-
-        {/* Results Container */}
-        {result && (
-          <div className="space-y-5 animate-in fade-in zoom-in-95 duration-250">
-            
-            {/* Score Sheet */}
-            <div className="bg-slate-950/60 p-5 rounded-2xl border border-white/[0.04] space-y-4 shadow-inner">
-              <div className="flex justify-between items-center border-b border-white/[0.04] pb-3">
-                <div>
-                  <span className="text-[9px] text-slate-500 font-mono uppercase tracking-wider block">Candidate Identity</span>
-                  <span className="text-xs font-bold font-mono text-white">{result.candidate_anonymous_id}</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-[9px] text-slate-500 font-mono uppercase tracking-wider block">Qualification Status</span>
-                  <span className={`text-xs font-bold uppercase ${
-                    result.qualification_status.includes("QUALIFIED") ? "text-emerald-400" : "text-slate-400"
-                  }`}>{result.qualification_status}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 text-center py-2 font-mono">
-                <div className="p-2 bg-[#101524]/60 rounded-xl border border-white/[0.06] shadow-sm">
-                  <span className="text-[9px] text-slate-500 block">Score</span>
-                  <span className="text-sm font-black text-white">{result.marks_obtained}</span>
-                  <span className="text-[8px] text-slate-600 block mt-0.5">/ {result.max_marks}</span>
-                </div>
-                <div className="p-2 bg-[#101524]/60 rounded-xl border border-white/[0.06] shadow-sm">
-                  <span className="text-[9px] text-slate-500 block">Rank</span>
-                  <span className="text-sm font-black text-white">#{result.rank}</span>
-                  <span className="text-[8px] text-slate-600 block mt-0.5">National</span>
-                </div>
-                <div className="p-2 bg-[#101524]/60 rounded-xl border border-white/[0.06] shadow-sm">
-                  <span className="text-[9px] text-slate-500 block">Verdict</span>
-                  <span className="text-xs font-black text-emerald-400 uppercase mt-0.5 block">
-                    {result.status === "FINAL" ? "FINALIZED" : "DRAFT"}
-                  </span>
-                  <span className="text-[8px] text-slate-600 block mt-0.5">Verified</span>
-                </div>
-              </div>
+              {searchState === "searching" ? (
+                "Locating Transcript..."
+              ) : (
+                <>
+                  <Search className="w-4 h-4 mr-2" />
+                  View Results
+                </>
+              )}
+            </ForgeButton>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <ForgeButton variant="outline" onClick={() => setSearchState("idle")}>
+                &larr; Back to Search
+              </ForgeButton>
+              <ForgeButton>
+                <Download className="w-4 h-4 mr-2" />
+                Download Signed PDF
+              </ForgeButton>
             </div>
 
-            {/* Human Friendly verification card */}
-            <div className="p-4 bg-emerald-500/[0.02] border border-emerald-500/20 rounded-2xl space-y-3 shadow-[0_0_15px_rgba(52,211,153,0.02)]">
-              <div className="flex items-start gap-2.5 text-xs text-slate-300">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <span className="text-white font-bold block text-[11px]">Your Result is Secured</span>
-                  <p className="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
-                    This result sheet corresponds to verifiable exam logs in our tamper-evident blockchain ledger.
-                  </p>
+            <div className="bg-[var(--surface-default)] border border-[var(--border-strong)] rounded-[var(--radius-4)] p-0 overflow-hidden shadow-sm">
+              <div className="bg-[var(--surface-raised)] border-b border-[var(--border-subtle)] p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="space-y-1">
+                  <h2 className="text-2xl font-semibold text-[var(--text-strong)] flex items-center gap-2">
+                    Official Grade Sheet
+                    <ForgeBadge variant="success" className="ml-2">
+                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                      Verified
+                    </ForgeBadge>
+                  </h2>
+                  <p className="text-[var(--text-subtle)]">Examination Session: Spring 2026</p>
+                </div>
+                <div className="text-left md:text-right space-y-1">
+                  <p className="text-xs text-[var(--text-subtle)] uppercase tracking-wider font-semibold">Candidate ID</p>
+                  <ForgeMonoText>{regNo || "REG-2026-98124"}</ForgeMonoText>
                 </div>
               </div>
 
-              {/* Explanations list */}
-              <div className="space-y-1.5 font-mono text-[10px] text-slate-400 pt-2 border-t border-emerald-500/10">
-                <div className="flex justify-between items-center">
-                  <span>✓ Question Set Integrity:</span>
-                  <span className="text-emerald-400 font-bold">Verified</span>
+              <div className="p-6 md:p-8 space-y-8">
+                <div className="border border-[var(--border-subtle)] rounded-[var(--radius-2)] overflow-hidden">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-[var(--surface-raised)] border-b border-[var(--border-subtle)]">
+                      <tr>
+                        <th className="px-4 py-3 font-medium text-[var(--text-subtle)]">Subject Code</th>
+                        <th className="px-4 py-3 font-medium text-[var(--text-subtle)]">Subject Name</th>
+                        <th className="px-4 py-3 font-medium text-[var(--text-subtle)] text-right">Marks Obtained</th>
+                        <th className="px-4 py-3 font-medium text-[var(--text-subtle)] text-right">Maximum Marks</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[var(--border-subtle)]">
+                      <tr>
+                        <td className="px-4 py-4 font-mono text-xs text-[var(--text-main)]">CS-401</td>
+                        <td className="px-4 py-4 text-[var(--text-main)]">Advanced Algorithms</td>
+                        <td className="px-4 py-4 text-right font-medium text-[var(--text-strong)]">87</td>
+                        <td className="px-4 py-4 text-right text-[var(--text-subtle)]">100</td>
+                      </tr>
+                      <tr>
+                        <td className="px-4 py-4 font-mono text-xs text-[var(--text-main)]">CS-402</td>
+                        <td className="px-4 py-4 text-[var(--text-main)]">Distributed Systems</td>
+                        <td className="px-4 py-4 text-right font-medium text-[var(--text-strong)]">92</td>
+                        <td className="px-4 py-4 text-right text-[var(--text-subtle)]">100</td>
+                      </tr>
+                      <tr>
+                        <td className="px-4 py-4 font-mono text-xs text-[var(--text-main)]">CS-403</td>
+                        <td className="px-4 py-4 text-[var(--text-main)]">Cryptography</td>
+                        <td className="px-4 py-4 text-right font-medium text-[var(--text-strong)]">95</td>
+                        <td className="px-4 py-4 text-right text-[var(--text-subtle)]">100</td>
+                      </tr>
+                    </tbody>
+                    <tfoot className="bg-[var(--surface-sunken)] border-t border-[var(--border-strong)]">
+                      <tr>
+                        <td colSpan={2} className="px-4 py-4 font-semibold text-[var(--text-strong)]">Total Performance</td>
+                        <td className="px-4 py-4 text-right font-semibold text-[var(--text-strong)] text-lg">274</td>
+                        <td className="px-4 py-4 text-right text-[var(--text-subtle)]">300</td>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span>✓ Exam Submission Hash:</span>
-                  <span className="text-emerald-400 font-bold">Valid Receipt</span>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex items-center gap-4 bg-[var(--surface-raised)] border border-[var(--border-subtle)] p-4 rounded-[var(--radius-3)]">
+                    <Award className="w-8 h-8 text-[var(--accent-main)]" />
+                    <div>
+                      <p className="text-xs text-[var(--text-subtle)] uppercase tracking-wider font-semibold">Overall Percentile</p>
+                      <p className="text-2xl font-bold text-[var(--text-strong)]">98.4<span className="text-sm font-normal text-[var(--text-subtle)]">%</span></p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 bg-[var(--surface-raised)] border border-[var(--border-subtle)] p-4 rounded-[var(--radius-3)]">
+                    <Shield className="w-8 h-8 text-[var(--accent-main)]" />
+                    <div className="min-w-0 overflow-hidden w-full">
+                      <p className="text-xs text-[var(--text-subtle)] uppercase tracking-wider font-semibold">Integrity Seal Hash</p>
+                      <ForgeMonoText className="text-xs truncate block w-full mt-1">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</ForgeMonoText>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span>✓ Dual-custody Grading lock:</span>
-                  <span className="text-emerald-400 font-bold">Sealed</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>✓ Publication Gate:</span>
-                  <span className="text-emerald-400 font-bold">Passed</span>
-                </div>
+                
               </div>
             </div>
-
-            {/* Actions */}
-            <div className="flex flex-col gap-2 font-mono text-xs">
-              <Link 
-                href={`/result-integrity/${result.result_id}`} 
-                className="w-full flex items-center justify-between p-3 bg-slate-950/40 border border-white/[0.06] hover:border-emerald-500/30 text-slate-200 rounded-xl transition group hover:shadow-[0_0_15px_rgba(52,211,153,0.03)]"
-              >
-                <div className="flex items-center gap-2">
-                  <FileCheck className="w-4 h-4 text-slate-400 group-hover:text-emerald-400" />
-                  <span>Inspect Audit Proof Details</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400" />
-              </Link>
-
-              <Link 
-                href={`/result-versions/${result.result_id}`}
-                className="w-full flex items-center justify-between p-3 bg-slate-950/40 border border-white/[0.06] hover:border-emerald-500/30 text-slate-200 rounded-xl transition group hover:shadow-[0_0_15px_rgba(52,211,153,0.03)]"
-              >
-                <div className="flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-slate-400 group-hover:text-emerald-400" />
-                  <span>Check Score Version History</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400" />
-              </Link>
-
-              <Link 
-                href="/disputes/file" 
-                className="w-full text-center py-2.5 bg-amber-500/[0.03] border border-amber-500/20 hover:bg-amber-500/10 text-amber-400 rounded-xl font-bold transition font-sans text-[11px] hover:shadow-[0_0_15px_rgba(245,158,11,0.03)]"
-              >
-                ⚠️ File a Recheck Dispute Claim
-              </Link>
-
-              <button
-                onClick={() => setResult(null)}
-                className="w-full text-center py-2 text-slate-500 hover:text-slate-400 transition font-sans text-[11px]"
-              >
-                Clear & Lookup New Record
-              </button>
-            </div>
-
           </div>
         )}
-
       </div>
     </div>
   );

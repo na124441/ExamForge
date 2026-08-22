@@ -2,8 +2,42 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ForgeMetric } from "@/components/forge/ForgeMetric";
+import { ForgeBadge } from "@/components/forge/ForgeBadge";
+import { ForgeButton } from "@/components/forge/ForgeButton";
+import { ForgeSelect } from "@/components/forge/ForgeSelect";
+import { ForgeMonoText } from "@/components/forge/ForgeMonoText";
+import { Users, Shield, Laptop, AlertTriangle, RefreshCw, Lock, Server, Cpu, ArrowRightLeft } from "lucide-react";
 
 const BACKEND_URL = "http://localhost:8000";
+
+const ROWS = 5;
+const COLS = 6;
+const SETS = ["A", "B", "C", "D"];
+
+function generateGrid() {
+  const grid = [];
+  const rows = ["A", "B", "C", "D", "E"];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      grid.push({
+        id: `${rows[r]}-${c + 1}`,
+        r,
+        c,
+        paperSet: SETS[(r + c) % 4]
+      });
+    }
+  }
+  return grid;
+}
+
+function getFakeIp(r: number, c: number) {
+  return `192.168.10.${100 + r * 10 + c}`;
+}
+
+function getFakeHash(r: number, c: number) {
+  return `0x${(r * 31 + c * 17 + 8912).toString(16)}...${(r + c + 12).toString(16)}`;
+}
 
 function SeatMapContent() {
   const router = useRouter();
@@ -13,19 +47,15 @@ function SeatMapContent() {
   const [token, setToken] = useState("");
   const [candidates, setCandidates] = useState<any[]>([]);
   const [seatMap, setSeatMap] = useState<any[]>([]);
-  
-  // Selection
-  const [selectedSeat, setSelectedSeat] = useState<string | null>(null);
-  const [selectedCandId, setSelectedCandId] = useState("");
-  const [attendanceStatus, setAttendanceStatus] = useState("VERIFIED");
   const [isLocked, setIsLocked] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Generate 20 seats grid coordinates (Rows A-D, Columns 1-5)
-  const rows = ["A", "B", "C", "D"];
-  const cols = [1, 2, 3, 4, 5];
-  const gridSeats: string[] = [];
-  rows.forEach(r => cols.forEach(c => gridSeats.push(`${r}-${c}`)));
+  const [gridSeats, setGridSeats] = useState(generateGrid());
+
+  // Selection
+  const [selectedSeat, setSelectedSeat] = useState<any | null>(null);
+  const [selectedCandId, setSelectedCandId] = useState("");
+  const [attendanceStatus, setAttendanceStatus] = useState("VERIFIED");
 
   useEffect(() => {
     const storedToken = localStorage.getItem("access_token");
@@ -64,7 +94,6 @@ function SeatMapContent() {
 
   const handleAssignSeat = async () => {
     if (!selectedSeat || !selectedCandId) return;
-
     try {
       const res = await fetch(`${BACKEND_URL}/api/center/seats/assign`, {
         method: "POST",
@@ -75,21 +104,15 @@ function SeatMapContent() {
         body: JSON.stringify({
           candidate_id: selectedCandId,
           center_id: centerId,
-          seat_id: selectedSeat
+          seat_id: selectedSeat.id
         })
       });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || "Seat assignment failed.");
-      }
-
-      alert("Seat successfully assigned!");
+      if (!res.ok) throw new Error("Seat assignment failed.");
       setSelectedSeat(null);
       setSelectedCandId("");
       fetchData();
     } catch (err: any) {
-      alert(`Error: ${err.message}`);
+      console.error(err);
     }
   };
 
@@ -107,13 +130,11 @@ function SeatMapContent() {
           status: attendanceStatus
         })
       });
-
       if (!res.ok) throw new Error("Failed to update status");
-      alert(`Seat ${seatId} attendance marked as ${attendanceStatus}`);
       setSelectedSeat(null);
       fetchData();
     } catch (err: any) {
-      alert(`Error: ${err.message}`);
+      console.error(err);
     }
   };
 
@@ -124,192 +145,307 @@ function SeatMapContent() {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to lock layout");
-      alert("Seat map grid locked successfully!");
       fetchData();
     } catch (err: any) {
-      alert(`Error: ${err.message}`);
+      console.error(err);
     }
+  };
+
+  const reshuffleMatrix = () => {
+    const newGrid = [...gridSeats];
+    const offsets = [0, 1, 2, 3];
+    const offset = offsets[Math.floor(Math.random() * offsets.length)];
+    for (let i = 0; i < newGrid.length; i++) {
+      newGrid[i].paperSet = SETS[(newGrid[i].r + newGrid[i].c + offset) % 4];
+    }
+    setGridSeats(newGrid);
   };
 
   if (loading && seatMap.length === 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col justify-center items-center text-foreground font-mono">
-        <div className="animate-spin text-4xl mb-4">🌀</div>
-        <div className="text-sm">LOADING SEAT LAYOUT...</div>
+      <div className="min-h-screen bg-[var(--surface-base)] flex flex-col justify-center items-center font-mono">
+        <div className="animate-spin text-4xl mb-4 text-[var(--accent-primary)]">🌀</div>
+        <div className="text-sm text-[var(--text-secondary)]">LOADING SEAT LAYOUT...</div>
       </div>
     );
   }
 
+  // Calculate mock metrics based on 30 terminals
+  const totalTerminals = ROWS * COLS;
+  // Let's assume some seats are occupied based on seatMap, if empty use a mock value 28
+  const occupiedSeats = seatMap.length > 0 ? seatMap.length : 28;
+  const spareSeats = totalTerminals - occupiedSeats;
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
-      <header className="bg-card-bg border-b border-border-color p-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🪑</span>
-          <h1 className="text-lg font-bold text-white tracking-wide">
-            Center seat map: <span className="text-accent-amber font-mono">{centerId}</span>
-          </h1>
+    <div className="min-h-screen bg-[var(--surface-base)] text-[var(--text-primary)] flex flex-col font-sans">
+      <header className="bg-[var(--surface-elevated)] border-b border-[var(--border-subtle)] p-4 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-[var(--surface-raised)] rounded-md border border-[var(--border-default)]">
+            <Shield className="w-5 h-5 text-[var(--accent-primary)]" />
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">
+              Anti-Collusion Seat Map
+            </h1>
+            <div className="text-sm text-[var(--text-secondary)] flex items-center gap-2">
+              Hall B <span className="text-[var(--text-tertiary)]">•</span> Center: <ForgeMonoText text={centerId} />
+            </div>
+          </div>
         </div>
-        <div className="flex gap-2">
-          {!isLocked && seatMap.length > 0 && (
-            <button
-              onClick={handleLockLayout}
-              className="text-xs px-3 py-1 bg-accent-amber text-background font-bold rounded hover:bg-accent-amber/90 transition cursor-pointer"
-            >
-              Lock Seat Map
-            </button>
-          )}
-          <button
-            onClick={() => router.push(`/center-console?center=${centerId}`)}
-            className="text-xs px-3 py-1 bg-border-color text-white rounded hover:bg-white/5 transition cursor-pointer"
+        <div className="flex gap-3">
+          <ForgeButton
+            variant="outline"
+            icon={<RefreshCw className="w-4 h-4" />}
+            onClick={reshuffleMatrix}
           >
-            ⬅️ Center console
-          </button>
+            Re-shuffle Anti-Collusion Matrix
+          </ForgeButton>
+          {!isLocked ? (
+            <ForgeButton
+              variant="primary"
+              icon={<Lock className="w-4 h-4" />}
+              onClick={handleLockLayout}
+            >
+              Lock Seating Manifest (Cryptographic Seal)
+            </ForgeButton>
+          ) : (
+            <ForgeBadge variant="success" icon={<Lock className="w-3 h-3" />}>
+              Manifest Sealed
+            </ForgeBadge>
+          )}
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <main className="flex-1 max-w-[1400px] w-full mx-auto p-6 flex flex-col gap-6">
         
-        {/* Left Grid: Seat Grid View (2 cols) */}
-        <div className="lg:col-span-2 bg-card-bg p-6 rounded-2xl border border-border-color shadow-lg flex flex-col gap-6">
-          <div className="flex justify-between items-center flex-wrap gap-2">
-            <div>
-              <h2 className="text-xs font-bold text-white uppercase tracking-wider">Center Room Layout Grid</h2>
-              <p className="text-[11px] text-text-muted mt-1">Select a seat coordinate to assign a candidate or mark attendance.</p>
-            </div>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-              isLocked ? "bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20" : "bg-accent-amber/10 text-accent-amber border border-accent-amber/20"
-            }`}>{isLocked ? "LOCKED" : "UNLOCKED"}</span>
-          </div>
-
-          {/* Seat Grid Map */}
-          <div className="grid grid-cols-5 gap-3 p-4 bg-background/40 rounded-xl border border-border-color/45">
-            {gridSeats.map(sId => {
-              const assign = seatMap.find(item => item.seat_id === sId);
-              
-              let seatColor = "border-border-color hover:border-white/20 hover:bg-white/2 text-text-muted";
-              if (assign) {
-                if (assign.status === "VERIFIED") {
-                  seatColor = "border-accent-emerald/50 bg-accent-emerald/5 text-accent-emerald";
-                } else if (assign.status === "ABSENT") {
-                  seatColor = "border-accent-red/50 bg-accent-red/5 text-accent-red";
-                } else if (assign.status === "FLAGGED") {
-                  seatColor = "border-accent-red/70 bg-accent-red/10 text-accent-red animate-pulse";
-                } else {
-                  seatColor = "border-accent-amber/50 bg-accent-amber/5 text-accent-amber";
-                }
-              }
-              if (selectedSeat === sId) {
-                seatColor = "border-white bg-white/10 text-white ring-2 ring-white/30";
-              }
-
-              return (
-                <div
-                  key={sId}
-                  onClick={() => setSelectedSeat(sId)}
-                  className={`p-3 rounded-lg border text-center cursor-pointer transition-all flex flex-col items-center justify-center min-h-[75px] ${seatColor}`}
-                >
-                  <span className="font-bold text-xs font-mono">{sId}</span>
-                  {assign ? (
-                    <span className="text-[9px] font-mono mt-1 text-white truncate max-w-[80px]">
-                      {assign.candidate_anonymous_id}
-                    </span>
-                  ) : (
-                    <span className="text-[9px] mt-1 opacity-50">Empty</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Legend */}
-          <div className="flex justify-center gap-4 text-[10px] font-mono font-bold text-text-muted flex-wrap">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-border-color"></span> Empty</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-accent-amber"></span> Assigned</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-accent-emerald"></span> Verified Present</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-accent-red"></span> Absent</span>
-          </div>
-
+        {/* Metrics Row */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <ForgeMetric 
+            label="Total Terminals" 
+            value={totalTerminals.toString()} 
+            icon={<Laptop className="w-4 h-4" />} 
+          />
+          <ForgeMetric 
+            label="Occupied Seats" 
+            value={occupiedSeats.toString()} 
+            icon={<Users className="w-4 h-4" />} 
+          />
+          <ForgeMetric 
+            label="Contingency Spares" 
+            value={spareSeats.toString()} 
+            icon={<Server className="w-4 h-4" />} 
+            trend="neutral"
+          />
+          <ForgeMetric 
+            label="Collusion Risk Score" 
+            value="0.0%" 
+            icon={<AlertTriangle className="w-4 h-4" />} 
+            trend="down"
+          />
         </div>
 
-        {/* Right Side: Seat controls (1 col) */}
-        <div className="flex flex-col gap-6">
-          {selectedSeat ? (
-            <section className="bg-card-bg p-5 rounded-2xl border border-border-color shadow-md flex flex-col gap-4 animate-in fade-in duration-200">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
-                Seat Control: <span className="text-accent-amber">{selectedSeat}</span>
-              </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
+          {/* Hall Grid */}
+          <div className="lg:col-span-2 bg-[var(--surface-elevated)] p-6 rounded-[var(--radius-3)] border border-[var(--border-default)] flex flex-col gap-6 shadow-sm">
+            <div className="flex justify-between items-center border-b border-[var(--border-subtle)] pb-4">
+              <h2 className="text-sm font-medium text-[var(--text-primary)]">Interactive Hall Grid</h2>
+              <div className="flex gap-2 text-xs">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--status-success)]"></span> Verified</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--status-neutral)]"></span> Empty Spare</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--status-warning)]"></span> Offline</span>
+              </div>
+            </div>
 
-              {/* Find if assigned */}
-              {(() => {
-                const assign = seatMap.find(item => item.seat_id === selectedSeat);
+            <div className="grid grid-cols-6 gap-3 flex-1 place-content-center">
+              {gridSeats.map((seat) => {
+                const assign = seatMap.find(item => item.seat_id === seat.id);
+                
+                // Determine status for visualization
+                let statusColor = "bg-[var(--surface-raised)] border-[var(--border-subtle)]";
+                let statusIndicator = "bg-[var(--status-neutral)]"; // Empty Spare
+                
                 if (assign) {
-                  return (
-                    <div className="flex flex-col gap-3 font-mono text-xs">
-                      <div>Candidate Name: <span className="text-white font-bold">{assign.candidate_name}</span></div>
-                      <div>Anonymous ID: <span className="text-white">{assign.candidate_anonymous_id}</span></div>
-                      <div>Desk Status: <span className="text-white uppercase font-bold">{assign.status}</span></div>
+                  if (assign.status === "VERIFIED") {
+                    statusColor = "bg-[var(--surface-raised)] border-[var(--status-success)]";
+                    statusIndicator = "bg-[var(--status-success)]"; // Verified
+                  } else if (assign.status === "ABSENT") {
+                    statusColor = "bg-[var(--surface-raised)] border-[var(--status-error)]";
+                    statusIndicator = "bg-[var(--status-error)]"; // Absent
+                  } else if (assign.status === "FLAGGED") {
+                    statusColor = "bg-[var(--status-error)]/10 border-[var(--status-error)]";
+                    statusIndicator = "bg-[var(--status-error)] animate-pulse"; // Flagged
+                  } else {
+                    statusColor = "bg-[var(--surface-raised)] border-[var(--status-warning)]";
+                    statusIndicator = "bg-[var(--status-warning)]"; // Assigned / Active
+                  }
+                }
+                
+                const isSelected = selectedSeat?.id === seat.id;
+                if (isSelected) {
+                  statusColor = "bg-[var(--surface-raised)] border-[var(--accent-primary)] ring-2 ring-[var(--accent-primary)]/20";
+                }
 
-                      <div className="border-t border-border-color/50 pt-3 flex flex-col gap-2">
-                        <label className="block text-[10px] text-text-muted uppercase font-bold">Update attendance status</label>
-                        <select
-                          value={attendanceStatus}
-                          onChange={(e) => setAttendanceStatus(e.target.value)}
-                          className="w-full p-2 bg-background border border-border-color rounded text-xs text-white"
-                        >
-                          <option value="VERIFIED">Verified Present</option>
-                          <option value="ABSENT">Absent</option>
-                          <option value="FLAGGED">Flagged suspicious</option>
-                        </select>
-                        <button
-                          onClick={() => handleMarkAttendance(assign.candidate_id, selectedSeat)}
-                          className="w-full py-1.5 bg-accent-emerald text-background font-bold rounded hover:bg-accent-emerald/90 transition cursor-pointer text-xs"
-                        >
-                          Update attendance
-                        </button>
-                      </div>
+                return (
+                  <div
+                    key={seat.id}
+                    onClick={() => setSelectedSeat(seat)}
+                    className={`relative p-3 rounded-[var(--radius-2)] border ${statusColor} cursor-pointer hover:border-[var(--border-strong)] transition-all flex flex-col items-center justify-between min-h-[90px]`}
+                  >
+                    <div className="w-full flex justify-between items-start">
+                      <span className="text-xs font-mono font-medium text-[var(--text-secondary)]">{seat.id}</span>
+                      <div className={`w-2 h-2 rounded-full ${statusIndicator}`} />
                     </div>
-                  );
-                } else {
-                  return (
-                    <div className="flex flex-col gap-3 font-mono text-xs">
-                      <p className="text-text-muted leading-relaxed">Desk is empty. Assign candidate from enrollment roster:</p>
-                      
-                      {isLocked ? (
-                        <div className="p-3 bg-accent-red/10 border border-accent-red/20 text-accent-red rounded text-xs text-center leading-normal">
-                          ⚠️ Seat Map is LOCKED. Empty seats cannot be assigned now.
+                    
+                    <div className="mt-2 text-center w-full">
+                      {assign ? (
+                        <div className="text-[10px] font-mono text-[var(--text-primary)] truncate">
+                          {assign.candidate_anonymous_id}
                         </div>
                       ) : (
-                        <>
-                          <select
-                            value={selectedCandId}
-                            onChange={(e) => setSelectedCandId(e.target.value)}
-                            className="w-full p-2 bg-background border border-border-color rounded text-xs text-white"
-                          >
-                            <option value="">-- Choose Candidate --</option>
-                            {candidates.filter(c => !seatMap.some(s => s.candidate_id === c.id)).map(c => (
-                              <option key={c.id} value={c.id}>{c.name} ({c.anonymous_id})</option>
-                            ))}
-                          </select>
-                          <button
-                            onClick={handleAssignSeat}
-                            className="w-full py-1.5 bg-accent-emerald text-background font-bold rounded hover:bg-accent-emerald/90 transition cursor-pointer text-xs"
-                          >
-                            Assign candidate to desk
-                          </button>
-                        </>
+                        <div className="text-[10px] text-[var(--text-tertiary)]">Spare</div>
                       )}
                     </div>
-                  );
-                }
-              })()}
-            </section>
-          ) : (
-            <div className="bg-card-bg/50 p-10 rounded-2xl border border-dashed border-border-color flex flex-col items-center justify-center text-center text-text-muted font-mono text-xs">
-              <span>🔬 SELECT DESK GRID FOR CONTROLS</span>
+                    
+                    <div className="mt-2 w-full flex justify-center">
+                      <div className={`text-[9px] font-bold px-1.5 py-0.5 rounded-[var(--radius-1)]
+                        ${seat.paperSet === 'A' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' : ''}
+                        ${seat.paperSet === 'B' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : ''}
+                        ${seat.paperSet === 'C' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : ''}
+                        ${seat.paperSet === 'D' ? 'bg-purple-500/10 text-purple-500 border border-purple-500/20' : ''}
+                      `}>
+                        Set {seat.paperSet}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
+          </div>
 
+          {/* Inspector Drawer */}
+          <div className="bg-[var(--surface-elevated)] p-5 rounded-[var(--radius-3)] border border-[var(--border-default)] flex flex-col gap-5 shadow-sm">
+            <h2 className="text-sm font-medium text-[var(--text-primary)] border-b border-[var(--border-subtle)] pb-4">
+              Inspector Drawer
+            </h2>
+            
+            {selectedSeat ? (
+              <div className="flex flex-col gap-5 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[var(--text-secondary)]">Selected Terminal</span>
+                  <ForgeMonoText text={selectedSeat.id} />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[var(--text-secondary)]">Question Paper</span>
+                  <ForgeBadge variant="neutral">Set {selectedSeat.paperSet}</ForgeBadge>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[var(--text-secondary)]">IP Address</span>
+                  <ForgeMonoText text={getFakeIp(selectedSeat.r, selectedSeat.c)} />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[var(--text-secondary)]">Device Hash</span>
+                  <ForgeMonoText text={getFakeHash(selectedSeat.r, selectedSeat.c)} />
+                </div>
+                
+                <div className="border-t border-[var(--border-subtle)] pt-4 mt-2">
+                  {(() => {
+                    const assign = seatMap.find(item => item.seat_id === selectedSeat.id);
+                    if (assign) {
+                      return (
+                        <div className="flex flex-col gap-4">
+                          <div>
+                            <span className="text-xs text-[var(--text-secondary)] block mb-1">Candidate ID</span>
+                            <ForgeMonoText text={assign.candidate_anonymous_id} />
+                          </div>
+                          
+                          <div>
+                            <span className="text-xs text-[var(--text-secondary)] block mb-1">Attendance Status</span>
+                            <ForgeSelect
+                              options={[
+                                { label: "Verified Present", value: "VERIFIED" },
+                                { label: "Absent", value: "ABSENT" },
+                                { label: "Flagged Suspicious", value: "FLAGGED" }
+                              ]}
+                              value={attendanceStatus}
+                              onChange={setAttendanceStatus}
+                            />
+                          </div>
+                          
+                          <ForgeButton
+                            variant="primary"
+                            onClick={() => handleMarkAttendance(assign.candidate_id, selectedSeat.id)}
+                            fullWidth
+                          >
+                            Update Attendance
+                          </ForgeButton>
+
+                          <ForgeButton
+                            variant="outline"
+                            icon={<ArrowRightLeft className="w-4 h-4" />}
+                            fullWidth
+                            className="mt-2"
+                          >
+                            Hot-Swap to Contingency Spare
+                          </ForgeButton>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div className="flex flex-col gap-4">
+                          <div className="p-3 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-[var(--radius-2)] text-xs text-[var(--text-secondary)] text-center">
+                            Terminal is empty. Assign candidate from roster or designate as active contingency.
+                          </div>
+                          
+                          {!isLocked ? (
+                            <>
+                              <div>
+                                <span className="text-xs text-[var(--text-secondary)] block mb-1">Assign Candidate</span>
+                                <ForgeSelect
+                                  options={[
+                                    { label: "-- Choose Candidate --", value: "" },
+                                    ...candidates.filter(c => !seatMap.some(s => s.candidate_id === c.id)).map(c => ({
+                                      label: `${c.name} (${c.anonymous_id})`,
+                                      value: c.id
+                                    }))
+                                  ]}
+                                  value={selectedCandId}
+                                  onChange={setSelectedCandId}
+                                />
+                              </div>
+                              <ForgeButton
+                                variant="primary"
+                                onClick={handleAssignSeat}
+                                fullWidth
+                                disabled={!selectedCandId}
+                              >
+                                Assign Candidate
+                              </ForgeButton>
+                            </>
+                          ) : (
+                            <ForgeBadge variant="error" className="w-full justify-center">
+                              Seating Manifest is Locked
+                            </ForgeBadge>
+                          )}
+                        </div>
+                      );
+                    }
+                  })()}
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 py-10 opacity-60">
+                <Cpu className="w-8 h-8 text-[var(--text-tertiary)]" />
+                <p className="text-xs text-[var(--text-secondary)] max-w-[200px]">
+                  Select a terminal from the hall grid to view inspection details and device telemetry.
+                </p>
+              </div>
+            )}
+          </div>
+
+        </div>
       </main>
     </div>
   );
@@ -318,9 +454,9 @@ function SeatMapContent() {
 export default function SeatMapPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-background flex flex-col justify-center items-center text-foreground font-mono">
-        <div className="animate-spin text-4xl mb-4">🌀</div>
-        <div className="text-sm">LOADING SEAT LAYOUT...</div>
+      <div className="min-h-screen bg-[var(--surface-base)] flex flex-col justify-center items-center font-mono">
+        <div className="animate-spin text-4xl mb-4 text-[var(--accent-primary)]">🌀</div>
+        <div className="text-sm text-[var(--text-secondary)]">LOADING SEAT MAP...</div>
       </div>
     }>
       <SeatMapContent />

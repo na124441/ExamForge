@@ -1,40 +1,44 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { 
   Radio, 
   RefreshCw, 
-  ShieldCheck, 
   ShieldAlert, 
-  AlertTriangle,
-  Play,
-  CheckCircle2,
-  ChevronRight,
-  Database,
-  Users,
   Lock,
   Unlock,
+  Users,
   Cpu,
   Layers,
   Scale,
-  Briefcase,
   History,
   Activity,
   FileCheck,
   Server,
   Network,
-  Inbox,
-  UserCheck,
   Key,
-  Flame,
-  Compass
+  CheckCircle2,
+  Compass,
+  ArrowRight,
+  Fingerprint
 } from "lucide-react";
+import { ForgeSection } from "@/components/forge/ForgeSection";
+import { ForgeCard, ForgeCardHeader, ForgeCardTitle, ForgeCardContent } from "@/components/forge/ForgeCard";
+import { ForgeMetricGrid } from "@/components/forge/ForgeMetricGrid";
+import { ForgeMetric } from "@/components/forge/ForgeMetric";
+import { ForgeStatusPill } from "@/components/forge/ForgeStatusPill";
+import { ForgeBadge } from "@/components/forge/ForgeBadge";
+import { ForgeTable, ForgeTableColumn } from "@/components/forge/ForgeTable";
+import { ForgeButton } from "@/components/forge/ForgeButton";
+import { ForgeMonoText } from "@/components/forge/ForgeMonoText";
+import { ForgeSeatingEngine } from "@/components/forge/ForgeSeatingEngine";
+import { ForgeQuestionPaperStudio } from "@/components/forge/ForgeQuestionPaperStudio";
+import { ForgeExamConductWorkbench } from "@/components/forge/ForgeExamConductWorkbench";
+import { ForgeEvaluationControlStudio } from "@/components/forge/ForgeEvaluationControlStudio";
+import { ForgeBiometricAnalysisStudio } from "@/components/forge/ForgeBiometricAnalysisStudio";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { TrustScoreGauge } from "@/components/ui/TrustScoreGauge";
 import { LifecycleStepper } from "@/components/ui/LifecycleStepper";
-import { BlockingReasons } from "@/components/ui/BlockingReasons";
 import { NextBestAction } from "@/components/ui/NextBestAction";
 import { ProofDrawer, ProofData } from "@/components/ui/ProofDrawer";
 
@@ -71,9 +75,11 @@ const DEFAULT_STAGES = [
   { name: "COMPLIANCE VERDICT", status: "PENDING", sequence: 15 }
 ];
 
-export default function ExamControlRoom({ params }: { params: any }) {
+export default function ExamControlRoom() {
   const router = useRouter();
-  const [examId, setExamId] = useState("EXM-001");
+  const routeParams = useParams();
+  const rawExamId = (routeParams?.exam_id as string) || "EXM-001";
+  const [examId, setExamId] = useState(rawExamId);
   const [activeTab, setActiveTab] = useState("overview");
 
   // Telemetry states
@@ -86,27 +92,18 @@ export default function ExamControlRoom({ params }: { params: any }) {
   const [refreshing, setRefreshing] = useState(false);
   const [actioning, setActioning] = useState(false);
 
-  // Resolution states
   const [resolutionNotes, setResolutionNotes] = useState<Record<string, string>>({});
   
-  // Drawer states
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedProof, setSelectedProof] = useState<ProofData | null>(null);
   
-  // Custom interactive telemetry states
   const [selectedCenter, setSelectedCenter] = useState("CTR-LKO-01");
-  const [hoveredSeat, setHoveredSeat] = useState<any>(null);
 
-  // Unwrap params safely
   useEffect(() => {
-    if (params) {
-      Promise.resolve(params).then((resolved: any) => {
-        if (resolved && resolved.exam_id) {
-          setExamId(resolved.exam_id);
-        }
-      });
+    if (routeParams?.exam_id) {
+      setExamId(routeParams.exam_id as string);
     }
-  }, [params]);
+  }, [routeParams]);
 
   useEffect(() => {
     fetchData();
@@ -152,7 +149,6 @@ export default function ExamControlRoom({ params }: { params: any }) {
     fetchData();
   };
 
-  // State transitions
   const handleTransition = async (nextState: string) => {
     setActioning(true);
     try {
@@ -177,57 +173,11 @@ export default function ExamControlRoom({ params }: { params: any }) {
     }
   };
 
-  const handleResolveIncident = async (incidentId: string) => {
-    const notes = resolutionNotes[incidentId] || "Incident reviewed and resolved by controller.";
-    try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(`${BACKEND_URL}/api/incidents/${incidentId}/resolve`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          resolution_notes: notes,
-          evidence_text: `Evidence compiled and certified by Controller.`
-        })
-      });
-      if (!res.ok) throw new Error("Failed to resolve incident");
-      
-      setResolutionNotes(prev => {
-        const copy = { ...prev };
-        delete copy[incidentId];
-        return copy;
-      });
-      fetchData();
-    } catch (err: any) {
-      alert(`Error: ${err.message}`);
-    }
-  };
-
-  const handleBlockClick = (block: any) => {
-    const proof: ProofData = {
-      resourceId: block.resource_id,
-      resourceType: block.resource_type,
-      payloadHash: block.payload_hash,
-      previousHash: block.previous_hash,
-      currentHash: block.current_hash,
-      signature: "MEYCIQCc9v19sO12X9kGq81jA208B81a3d9f429188e001ba7e44ee52b1ba7d4c9f1a01AiEA2b... (ECDSA signature)",
-      actorName: block.actor_name,
-      actorRole: "Simulated Signing Authority",
-      timestamp: block.timestamp,
-      auditEvent: block.action,
-      explanation: block.explanation
-    };
-    setSelectedProof(proof);
-    setIsDrawerOpen(true);
-  };
-
   if (loading && !summary) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 font-mono text-xs gap-3">
-        <span className="animate-spin text-xl">⚙️</span>
-        <span>ACQUIRING SERVICE COMMAND ROOM DATA...</span>
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-[var(--text-muted)] text-xs gap-3 font-sans">
+        <RefreshCw className="w-5 h-5 animate-spin text-[var(--accent-primary)]" />
+        <span>Acquiring Control Room Telemetry...</span>
       </div>
     );
   }
@@ -235,7 +185,6 @@ export default function ExamControlRoom({ params }: { params: any }) {
   const examState = summary?.exam_state ?? "DRAFT";
   const score = summary?.trust_score ?? 100;
   
-  // Choose next action block dynamically based on state
   const getNextActionConfig = () => {
     switch (examState) {
       case "DRAFT":
@@ -323,45 +272,50 @@ export default function ExamControlRoom({ params }: { params: any }) {
 
   const nextAction = getNextActionConfig();
 
+  const centerColumns: ForgeTableColumn<any>[] = [
+    {
+      key: "center_id",
+      header: "Center ID",
+      mono: true,
+      render: (row) => <ForgeMonoText className="font-semibold text-[var(--text-primary)]">{row.center_id}</ForgeMonoText>
+    },
+    {
+      key: "package_status",
+      header: "Key Release",
+      render: (row) => (
+        <ForgeStatusPill status={row.package_status === "RELEASED" ? "completed" : "scheduled"} />
+      )
+    },
+    {
+      key: "verified_candidates",
+      header: "Verified Present",
+      render: (row) => <span className="text-[var(--text-secondary)] font-medium">{row.verified_candidates} present</span>
+    },
+    {
+      key: "status",
+      header: "Node Status",
+      render: (row) => <StatusBadge status={row.status} />
+    }
+  ];
+
   return (
-    <div className="space-y-6">
-      {/* Top Banner: Single Exam Control Room */}
-      <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-violet-500 to-indigo-500" />
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono uppercase font-bold">
-            <span>Control Room</span>
-            <span>•</span>
-            <span className="text-violet-400">Authority Grade Package</span>
+    <ForgeSection
+      title={summary?.exam_name || "National Scholarship Test 2026"}
+      subtitle={`Exam ID: ${examId} | Mode: Hybrid (OMR + Descriptive Written)`}
+      action={
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-control)] bg-[var(--surface-elevated)] border border-[var(--border-default)] shadow-[var(--shadow-card)]">
+            <span className="text-xs text-[var(--text-muted)] font-semibold uppercase">Integrity Score</span>
+            <span className="text-sm font-bold text-[var(--text-primary)] font-mono">{score} / 100</span>
+            <div className={`w-2.5 h-2.5 rounded-full ${score >= 95 ? "bg-emerald-500" : "bg-red-500"}`} />
           </div>
-          <h1 className="text-xl font-black text-white tracking-tight mt-1">
-            {summary?.exam_name || "National Scholarship Test 2026"}
-          </h1>
-          <p className="text-[11px] text-slate-500 mt-1 leading-normal font-mono">
-            Exam ID: <span className="text-slate-300 font-semibold">{examId}</span> | Mode: <span className="text-slate-300">Hybrid (OMR + Descriptive Written)</span>
-          </p>
+          <ForgeButton variant="secondary" size="compact" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`w-3.5 h-3.5 mr-1 ${refreshing ? "animate-spin text-[var(--accent-primary)]" : ""}`} />
+            Sync Control
+          </ForgeButton>
         </div>
-        
-        <div className="flex gap-3 shrink-0 relative z-10">
-          <div className="bg-slate-950/60 border border-white/[0.04] p-2.5 px-4 rounded-xl flex items-center gap-3 font-mono text-xs text-left">
-            <div>
-              <span className="text-[8px] text-slate-500 font-bold uppercase tracking-wider block">Integrity Score</span>
-              <span className="text-sm font-black text-white">{score} / 100</span>
-            </div>
-            <div className={`w-2.5 h-2.5 rounded-full ${score >= 95 ? "bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-red-400 animate-ping"}`} />
-          </div>
-
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="p-2 border border-white/[0.08] hover:bg-white/[0.04] rounded-xl text-slate-400 hover:text-white transition flex items-center font-mono text-xs gap-1.5 self-center cursor-pointer active-press"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
-            <span>Sync Control</span>
-          </button>
-        </div>
-      </div>
-
+      }
+    >
       {/* Next Best Action Widget */}
       <NextBestAction
         title={nextAction.title}
@@ -372,11 +326,12 @@ export default function ExamControlRoom({ params }: { params: any }) {
       />
 
       {/* Tab Navigation */}
-      <div className="flex border-b border-white/[0.06] overflow-x-auto pb-px scrollbar-thin">
+      <div className="flex border-b border-[var(--border-subtle)] overflow-x-auto my-4 pb-px">
         {[
           { id: "overview", label: "Overview", icon: Compass },
           { id: "setup", label: "Readiness Checklist", icon: FileCheck },
           { id: "centers", label: "Centers & Seating", icon: Users },
+          { id: "biometrics", label: "Biometric Registry", icon: Fingerprint },
           { id: "paper", label: "Question & Paper", icon: Key },
           { id: "conduct", label: "Exam Conduct", icon: Radio },
           { id: "evaluation", label: "Evaluation Control", icon: Scale },
@@ -389,13 +344,13 @@ export default function ExamControlRoom({ params }: { params: any }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 py-2.5 px-4 text-xs font-mono font-bold border-b-2 tracking-wide uppercase transition shrink-0 cursor-pointer ${
+              className={`flex items-center gap-2 py-2.5 px-4 text-xs font-semibold border-b-2 tracking-wide transition shrink-0 cursor-pointer ${
                 isActive 
-                  ? "border-violet-500 text-white bg-violet-500/[0.02]" 
-                  : "border-transparent text-slate-500 hover:text-slate-205 hover:bg-white/[0.02]"
+                  ? "border-[var(--accent-primary)] text-[var(--accent-primary)] bg-[var(--accent-primary-surface)]" 
+                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? "text-violet-400" : "text-slate-500"}`} />
+              <Icon className={`w-3.5 h-3.5 ${isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"}`} />
               <span>{tab.label}</span>
             </button>
           );
@@ -408,621 +363,189 @@ export default function ExamControlRoom({ params }: { params: any }) {
         {/* Tab 1: Overview */}
         {activeTab === "overview" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-200">
-            {/* Overview Stats Cards (8 cols) */}
             <div className="lg:col-span-8 space-y-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-slate-950/40 p-4 rounded-xl border border-white/[0.04] flex flex-col justify-between min-h-[90px] transition-all duration-300 glow-hover hover:border-violet-500/20">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Centers Registry</span>
-                  <span className="text-2xl font-black text-white mt-1 font-mono">{summary?.stats.total_centers ?? 0}</span>
-                  <span className="text-[9px] text-slate-500 font-mono font-bold uppercase">Node centers active</span>
-                </div>
-                <div className="bg-slate-950/40 p-4 rounded-xl border border-white/[0.04] flex flex-col justify-between min-h-[90px] transition-all duration-300 glow-hover hover:border-violet-500/20">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Verified Check-ins</span>
-                  <span className="text-2xl font-black text-white mt-1 font-mono">
-                    {summary?.stats.verified_candidates ?? 0} <span className="text-xs text-slate-500">/ {summary?.stats.total_candidates ?? 0}</span>
-                  </span>
-                  <span className="text-[9px] text-slate-500 font-mono font-bold uppercase">Biometric checks sync</span>
-                </div>
-                <div className="bg-slate-950/40 p-4 rounded-xl border border-white/[0.04] flex flex-col justify-between min-h-[90px] transition-all duration-300 glow-hover hover:border-violet-500/20">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Scans Ingested</span>
-                  <span className="text-2xl font-black text-white mt-1 font-mono">
-                    {summary?.stats.submission_completed ?? 0} <span className="text-xs text-slate-500">OMR</span>
-                  </span>
-                  <span className="text-[9px] text-slate-500 font-mono font-bold uppercase">Chained receipt sheets</span>
-                </div>
-                <div className="bg-slate-950/40 p-4 rounded-xl border border-white/[0.04] flex flex-col justify-between min-h-[90px] transition-all duration-300 glow-hover hover:border-violet-500/20">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Active Incidents</span>
-                  <span className={`text-2xl font-black mt-1 font-mono ${incidents.filter(i => i.status === "OPEN").length > 0 ? "text-red-400 animate-pulse" : "text-emerald-400"}`}>
-                    {incidents.filter(i => i.status === "OPEN").length} open
-                  </span>
-                  <span className="text-[9px] text-slate-500 font-mono font-bold uppercase">Warnings flagged</span>
-                </div>
-              </div>
+              
+              <ForgeMetricGrid columns={4}>
+                <ForgeMetric 
+                  label="Centers Registry"
+                  value={summary?.stats.total_centers ?? 0}
+                  description="Node centers active"
+                />
+                <ForgeMetric 
+                  label="Verified Check-ins"
+                  value={`${summary?.stats.verified_candidates ?? 0} / ${summary?.stats.total_candidates ?? 0}`}
+                  description="Biometric checks sync"
+                />
+                <ForgeMetric 
+                  label="Scans Ingested"
+                  value={`${summary?.stats.submission_completed ?? 0} OMR`}
+                  description="Chained receipt sheets"
+                />
+                <ForgeMetric 
+                  label="Active Incidents"
+                  value={`${incidents.filter(i => i.status === "OPEN").length} open`}
+                  status={incidents.filter(i => i.status === "OPEN").length > 0 ? "danger" : "ok"}
+                  description="Warnings flagged"
+                />
+              </ForgeMetricGrid>
 
-              {/* Subsystems integrity grid */}
-              <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg">
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-4 font-mono flex items-center gap-1.5">
-                  <Server className="w-4 h-4 text-violet-405" />
-                  <span>Deployment Subsystems Health</span>
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-center text-xs">
-                  <div className="bg-slate-950/60 p-3 rounded-xl border border-white/[0.04]">
-                    <span className="text-[9px] text-slate-500 font-bold uppercase block">Core Database</span>
-                    <span className="text-emerald-400 font-bold mt-1.5 block">READY</span>
+              <ForgeCard>
+                <ForgeCardHeader>
+                  <ForgeCardTitle className="flex items-center gap-2">
+                    <Server className="w-4 h-4 text-[var(--accent-primary)]" />
+                    Deployment Subsystems Health
+                  </ForgeCardTitle>
+                </ForgeCardHeader>
+                <ForgeCardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center text-xs">
+                    <div className="bg-[var(--surface-interactive)] p-3 rounded-[var(--radius-control)] border border-[var(--border-subtle)]">
+                      <span className="text-[10px] text-[var(--text-muted)] font-semibold uppercase block">Core Database</span>
+                      <span className="text-[var(--status-operational-text)] font-bold mt-1 block">READY</span>
+                    </div>
+                    <div className="bg-[var(--surface-interactive)] p-3 rounded-[var(--radius-control)] border border-[var(--border-subtle)]">
+                      <span className="text-[10px] text-[var(--text-muted)] font-semibold uppercase block">Redis Caching</span>
+                      <span className="text-[var(--status-operational-text)] font-bold mt-1 block">ACTIVE</span>
+                    </div>
+                    <div className="bg-[var(--surface-interactive)] p-3 rounded-[var(--radius-control)] border border-[var(--border-subtle)]">
+                      <span className="text-[10px] text-[var(--text-muted)] font-semibold uppercase block">Object Storage</span>
+                      <span className="text-[var(--status-operational-text)] font-bold mt-1 block">READY</span>
+                    </div>
+                    <div className="bg-[var(--surface-interactive)] p-3 rounded-[var(--radius-control)] border border-[var(--border-subtle)]">
+                      <span className="text-[10px] text-[var(--text-muted)] font-semibold uppercase block">Audit Ledger</span>
+                      <span className="text-[var(--status-operational-text)] font-bold mt-1 block">INTACT</span>
+                    </div>
                   </div>
-                  <div className="bg-slate-950/60 p-3 rounded-xl border border-white/[0.04]">
-                    <span className="text-[9px] text-slate-500 font-bold uppercase block">Redis Caching</span>
-                    <span className="text-emerald-400 font-bold mt-1.5 block">ACTIVE</span>
-                  </div>
-                  <div className="bg-slate-950/60 p-3 rounded-xl border border-white/[0.04]">
-                    <span className="text-[9px] text-slate-500 font-bold uppercase block">Object Storage</span>
-                    <span className="text-emerald-400 font-bold mt-1.5 block">READY</span>
-                  </div>
-                  <div className="bg-slate-950/60 p-3 rounded-xl border border-white/[0.04]">
-                    <span className="text-[9px] text-slate-500 font-bold uppercase block">Audit Ledger</span>
-                    <span className="text-emerald-400 font-bold mt-1.5 block">INTACT</span>
-                  </div>
-                </div>
-              </div>
+                </ForgeCardContent>
+              </ForgeCard>
+
             </div>
 
-            {/* Right: Stepper Summary (4 cols) */}
-            <div className="lg:col-span-4 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg flex flex-col justify-between">
-              <div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-3 font-mono">
-                  Guided Stage steppers
-                </h3>
-                <LifecycleStepper stages={DEFAULT_STAGES.slice(0, 5)} activeSequence={STATE_SEQUENCE[examState]} />
-              </div>
-              <div className="text-[10px] text-slate-550 font-mono border-t border-white/[0.06] pt-3 mt-4 flex justify-between items-center">
-                <span>Active State: {examState}</span>
-                <button onClick={() => setActiveTab("setup")} className="text-violet-400 hover:text-violet-300 font-bold hover:underline cursor-pointer transition">Readiness checklist →</button>
-              </div>
+            <div className="lg:col-span-4 flex flex-col justify-between">
+              <ForgeCard className="h-full flex flex-col justify-between">
+                <ForgeCardHeader>
+                  <ForgeCardTitle>Guided Stage Steppers</ForgeCardTitle>
+                </ForgeCardHeader>
+                <ForgeCardContent className="space-y-4 flex-1">
+                  <LifecycleStepper stages={DEFAULT_STAGES.slice(0, 5)} activeSequence={STATE_SEQUENCE[examState]} />
+                </ForgeCardContent>
+                <div className="p-[var(--space-card)] border-t border-[var(--border-subtle)] text-xs text-[var(--text-muted)] flex justify-between items-center font-medium">
+                  <span>Active State: <span className="font-semibold text-[var(--text-primary)]">{examState}</span></span>
+                  <button onClick={() => setActiveTab("setup")} className="text-[var(--accent-primary)] font-semibold hover:underline cursor-pointer flex items-center">
+                    Readiness checklist <ArrowRight className="w-3 h-3 ml-1" />
+                  </button>
+                </div>
+              </ForgeCard>
             </div>
           </div>
         )}
 
-        {/* Tab 2: Setup Readiness Checklist */}
+        {/* Tab 2: Setup Readiness */}
         {activeTab === "setup" && (
-          <div className="bg-[#101524]/60 backdrop-blur-xl p-6 rounded-2xl border border-white/[0.06] shadow-lg space-y-6 animate-in fade-in duration-200">
-            <div>
-              <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Exam Launch Readiness Checklist</span>
-              </h2>
-              <p className="text-xs text-slate-500 mt-1">
+          <ForgeCard className="animate-in fade-in duration-200">
+            <ForgeCardHeader>
+              <ForgeCardTitle className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[var(--status-operational-text)]" />
+                Exam Launch Readiness Checklist
+              </ForgeCardTitle>
+            </ForgeCardHeader>
+            <ForgeCardContent className="space-y-4">
+              <p className="text-xs text-[var(--text-muted)]">
                 Verify that all prerequisites are lock-sealed before transitioning the exam to live.
               </p>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-              <div className="space-y-3">
-                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-emerald-500/20 flex justify-between items-center shadow-[0_0_12px_rgba(16,185,129,0.02)]">
-                  <div className="flex gap-2.5 items-center">
-                    <span className="text-emerald-400 font-bold">✓</span>
-                    <div>
-                      <span className="text-white font-bold block">Exam details added</span>
-                      <span className="text-[9px] text-slate-500">Name and hybrid parameters locked</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div className="space-y-3">
+                  <div className="p-3.5 bg-[var(--status-operational-surface)] rounded-[var(--radius-control)] border border-[var(--status-operational-border)] flex justify-between items-center">
+                    <div className="flex gap-2.5 items-center">
+                      <span className="text-[var(--status-operational-text)] font-bold">✓</span>
+                      <div>
+                        <span className="text-[var(--text-primary)] font-bold block">Exam details added</span>
+                        <span className="text-[10px] text-[var(--text-muted)]">Name and hybrid parameters locked</span>
+                      </div>
                     </div>
+                    <ForgeStatusPill status="completed" />
                   </div>
-                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Ready</span>
+                  <div className="p-3.5 bg-[var(--status-operational-surface)] rounded-[var(--radius-control)] border border-[var(--status-operational-border)] flex justify-between items-center">
+                    <div className="flex gap-2.5 items-center">
+                      <span className="text-[var(--status-operational-text)] font-bold">✓</span>
+                      <div>
+                        <span className="text-[var(--text-primary)] font-bold block">Integrity package selected</span>
+                        <span className="text-[10px] text-[var(--text-muted)]">Authority Grade package active</span>
+                      </div>
+                    </div>
+                    <ForgeStatusPill status="completed" />
+                  </div>
                 </div>
-                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-emerald-500/20 flex justify-between items-center shadow-[0_0_12px_rgba(16,185,129,0.02)]">
-                  <div className="flex gap-2.5 items-center">
-                    <span className="text-emerald-400 font-bold">✓</span>
-                    <div>
-                      <span className="text-white font-bold block">Integrity package selected</span>
-                      <span className="text-[9px] text-slate-500">Authority Grade package active</span>
+
+                <div className="space-y-3">
+                  <div className="p-3.5 bg-[var(--status-operational-surface)] rounded-[var(--radius-control)] border border-[var(--status-operational-border)] flex justify-between items-center">
+                    <div className="flex gap-2.5 items-center">
+                      <span className="text-[var(--status-operational-text)] font-bold">✓</span>
+                      <div>
+                        <span className="text-[var(--text-primary)] font-bold block">Candidates imported</span>
+                        <span className="text-[10px] text-[var(--text-muted)]">40,000 admit cards hashed</span>
+                      </div>
                     </div>
+                    <ForgeStatusPill status="completed" />
                   </div>
-                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Ready</span>
-                </div>
-                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-emerald-500/20 flex justify-between items-center shadow-[0_0_12px_rgba(16,185,129,0.02)]">
-                  <div className="flex gap-2.5 items-center">
-                    <span className="text-emerald-400 font-bold">✓</span>
-                    <div>
-                      <span className="text-white font-bold block">Question bank ready</span>
-                      <span className="text-[9px] text-slate-500">Question sets catalog sealed</span>
+                  <div className="p-3.5 bg-[var(--status-operational-surface)] rounded-[var(--radius-control)] border border-[var(--status-operational-border)] flex justify-between items-center">
+                    <div className="flex gap-2.5 items-center">
+                      <span className="text-[var(--status-operational-text)] font-bold">✓</span>
+                      <div>
+                        <span className="text-[var(--text-primary)] font-bold block">Centers assigned</span>
+                        <span className="text-[10px] text-[var(--text-muted)]">80 center nodes mapped</span>
+                      </div>
                     </div>
+                    <ForgeStatusPill status="completed" />
                   </div>
-                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Ready</span>
                 </div>
               </div>
-
-              <div className="space-y-3">
-                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-emerald-500/20 flex justify-between items-center shadow-[0_0_12px_rgba(16,185,129,0.02)]">
-                  <div className="flex gap-2.5 items-center">
-                    <span className="text-emerald-400 font-bold">✓</span>
-                    <div>
-                      <span className="text-white font-bold block">Candidates imported</span>
-                      <span className="text-[9px] text-slate-500">40,000 admit cards hashed</span>
-                    </div>
-                  </div>
-                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Ready</span>
-                </div>
-                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-emerald-500/20 flex justify-between items-center shadow-[0_0_12px_rgba(16,185,129,0.02)]">
-                  <div className="flex gap-2.5 items-center">
-                    <span className="text-emerald-400 font-bold">✓</span>
-                    <div>
-                      <span className="text-white font-bold block">Centers assigned</span>
-                      <span className="text-[9px] text-slate-500">80 center nodes mapped</span>
-                    </div>
-                  </div>
-                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Ready</span>
-                </div>
-                <div className="p-3.5 bg-slate-950/40 rounded-xl border border-white/[0.04] flex justify-between items-center">
-                  <div className="flex gap-2.5 items-center">
-                    <span className="text-slate-600 font-bold">•</span>
-                    <div>
-                      <span className="text-slate-400 font-semibold block">Center packages sealed</span>
-                      <span className="text-[9px] text-slate-500">Pending package keys generations</span>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => handleTransition("PACKAGE_SEALED")}
-                    className="px-3 py-1.5 bg-violet-600 hover:bg-violet-550 hover:shadow-[0_0_12px_rgba(124,58,237,0.3)] text-white rounded-lg text-[9px] uppercase font-bold tracking-wider font-mono cursor-pointer transition active-press"
-                  >
-                    Seal Envelopes
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+            </ForgeCardContent>
+          </ForgeCard>
         )}
 
         {/* Tab 3: Centers & Seating */}
         {activeTab === "centers" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-200">
-            {/* Left: Centers Table (7 cols) */}
-            <div className="lg:col-span-7 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-4">
-              <div>
-                <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
-                  <Users className="w-4 h-4 text-violet-400 animate-pulse" />
-                  <span>Center Nodes & Seating Registries</span>
-                </h2>
-                <p className="text-xs text-slate-400 mt-1 font-sans">
-                  Select a center node to inspect its live physical seating map.
-                </p>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs font-mono">
-                  <thead>
-                    <tr className="border-b border-white/[0.06] text-slate-500">
-                      <th className="py-2.5 px-3">Center ID</th>
-                      <th className="py-2.5 px-3">Key Release</th>
-                      <th className="py-2.5 px-3">Verified Present</th>
-                      <th className="py-2.5 px-3">Incidents</th>
-                      <th className="py-2.5 px-3 text-right">Node status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/[0.02] text-slate-350">
-                    {summary?.centers.map((c: any) => {
-                      const isSelected = selectedCenter === c.center_id;
-                      return (
-                        <tr 
-                          key={c.center_id} 
-                          onClick={() => {
-                            setSelectedCenter(c.center_id);
-                            setHoveredSeat(null);
-                          }}
-                          className={`hover:bg-white/[0.02] cursor-pointer transition ${
-                            isSelected ? "bg-violet-500/[0.06] border-l-2 border-violet-500 font-bold text-violet-300" : ""
-                          }`}
-                        >
-                          <td className="py-3.5 px-3 text-white">{c.center_id}</td>
-                          <td className="py-3.5 px-3">
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
-                              c.package_status === "RELEASED" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
-                              "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                            }`}>{c.package_status}</span>
-                          </td>
-                          <td className="py-3.5 px-3 text-slate-300">{c.verified_candidates} present</td>
-                          <td className="py-3.5 px-3 text-rose-400">{c.unresolved_incidents} active</td>
-                          <td className="py-3.5 px-3 text-right">
-                            <StatusBadge status={c.status} />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Right: Seating Map Grid (5 cols) */}
-            <div className="lg:col-span-5 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg flex flex-col justify-between min-h-[420px]">
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">Live telemetry feed</span>
-                  <span className="text-[10px] text-violet-400 font-mono font-bold uppercase">{selectedCenter} Map</span>
-                </div>
-                
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono mb-4">
-                  Physical Seating Grid Layout
-                </h3>
-
-                {/* Grid */}
-                <div className="grid grid-cols-8 gap-2 bg-slate-950/60 p-4 border border-white/[0.04] rounded-2xl shadow-inner">
-                  {Array.from({ length: 48 }).map((_, i) => {
-                    // Deterministic state generator for mock layout
-                    const val = (i * 7 + selectedCenter.charCodeAt(selectedCenter.length - 1)) % 10;
-                    let status: "verified" | "inprogress" | "anomaly" | "absent" = "verified";
-                    if (val < 1) status = "anomaly";
-                    else if (val < 3) status = "absent";
-                    else if (val < 4.5) status = "inprogress";
-
-                    const seatInfo = {
-                      id: i + 1,
-                      status,
-                      candidate: {
-                        name: `Candidate #${2400 + i}`,
-                        roll: `EXM-26-${selectedCenter}-${100 + i}`,
-                        biometrics: status === "verified" ? "MATCHED (100%)" : status === "anomaly" ? "FAILED (DESYNC)" : status === "inprogress" ? "PENDING MATCH" : "N/A (ABSENT)",
-                        ip: `10.12.${selectedCenter.charCodeAt(selectedCenter.length - 1)}.${10 + i}`
-                      }
-                    };
-
-                    let dotColor = "bg-slate-900 border-white/[0.04]";
-                    if (status === "verified") dotColor = "bg-emerald-500 shadow-glow-emerald border-emerald-400/30";
-                    else if (status === "inprogress") dotColor = "bg-violet-500 shadow-glow-violet border-violet-400/30";
-                    else if (status === "anomaly") dotColor = "bg-red-500 shadow-glow-rose animate-pulse border-red-400/30";
-
-                    return (
-                      <div 
-                        key={i}
-                        onMouseEnter={() => setHoveredSeat(seatInfo)}
-                        className={`w-full aspect-square rounded-lg border flex items-center justify-center transition-all cursor-crosshair hover:scale-115 ${dotColor}`}
-                        title={`Seat ${i + 1} - ${status}`}
-                      >
-                        <span className="text-[7px] text-slate-950 font-black font-mono">{i + 1}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Legend */}
-                <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[9px] text-slate-500 px-1 border-b border-white/[0.04] pb-3">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-glow-emerald" />
-                    <span>Verified</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
-                    <span>Verifying</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse" />
-                    <span>Anomaly</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-slate-900" />
-                    <span>Absent</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Inspector Card */}
-              <div className="mt-4 bg-slate-950/60 border border-white/[0.04] p-4.5 rounded-xl min-h-[105px] flex flex-col justify-center font-mono">
-                {hoveredSeat ? (
-                  <div className="text-[10px] space-y-1 animate-in fade-in duration-150">
-                    <div className="flex justify-between border-b border-white/[0.02] pb-1">
-                      <span className="text-slate-500">Seat Node:</span>
-                      <span className="text-white font-bold">#{hoveredSeat.id}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-white/[0.02] pb-1">
-                      <span className="text-slate-500">Candidate:</span>
-                      <span className="text-slate-250 font-semibold">{hoveredSeat.candidate.name}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-white/[0.02] pb-1">
-                      <span className="text-slate-500">Roll Reg:</span>
-                      <span className="text-slate-250">{hoveredSeat.candidate.roll}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-white/[0.02] pb-1">
-                      <span className="text-slate-500">Biometrics:</span>
-                      <span className={`font-bold ${hoveredSeat.status === "verified" ? "text-emerald-450" : hoveredSeat.status === "anomaly" ? "text-red-400" : "text-violet-400"}`}>
-                        {hoveredSeat.candidate.biometrics}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Machine IP:</span>
-                      <span className="text-slate-400 font-bold">{hoveredSeat.candidate.ip}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center text-slate-600 text-[10px] leading-relaxed">
-                    ⚙️ HOVER A SEAT NODE ON THE MAP GRID TO INSPECT REAL-TIME CANDIDATE TELEMETRY
-                  </div>
-                )}
-              </div>
-            </div>
+          <div className="animate-in fade-in duration-200">
+            <ForgeSeatingEngine />
           </div>
         )}
 
-        {/* Tab 4: Question & Paper */}
+        {/* Tab: Biometric Registry Studio */}
+        {activeTab === "biometrics" && (
+          <div className="animate-in fade-in duration-200">
+            <ForgeBiometricAnalysisStudio />
+          </div>
+        )}
+
+        {/* Tab 4: Question & Paper Studio */}
         {activeTab === "paper" && (
-          <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-6 animate-in fade-in duration-200">
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
-                  <Key className="w-4 h-4 text-violet-400 animate-pulse" />
-                  <span>Secure Paper Sets & Blueprints</span>
-                </h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  Locks the topic weighting distributions and generates cryptographically signed paper sets.
-                </p>
-              </div>
-              <button 
-                onClick={() => handleTransition("PAPER_GENERATED")}
-                className="px-3 py-1.5 bg-violet-600 hover:bg-violet-550 hover:shadow-[0_0_12px_rgba(124,58,237,0.3)] text-white rounded-lg text-xs font-bold font-mono uppercase cursor-pointer active-press transition"
-              >
-                Generate Paper sets
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-mono">
-              <div className="p-4.5 bg-slate-950/40 rounded-xl border border-white/[0.04] space-y-3">
-                <span className="text-[9px] text-slate-500 uppercase font-bold block">Subject Distribution Blueprint</span>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Mathematics</span>
-                    <span className="text-white font-bold">30 questions (60 marks)</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Physics</span>
-                    <span className="text-white font-bold">25 questions (50 marks)</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Chemistry</span>
-                    <span className="text-white font-bold">25 questions (50 marks)</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4.5 bg-slate-950/40 rounded-xl border border-white/[0.04] space-y-3">
-                <span className="text-[9px] text-slate-500 uppercase font-bold block">Generated Paper Sets</span>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span>Set A (Alpha)</span>
-                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] border border-emerald-500/20 font-bold uppercase shadow-[0_0_8px_rgba(16,185,129,0.05)]">Sealed</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Set B (Beta)</span>
-                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] border border-emerald-500/20 font-bold uppercase shadow-[0_0_8px_rgba(16,185,129,0.05)]">Sealed</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Set C (Gamma)</span>
-                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] border border-emerald-500/20 font-bold uppercase shadow-[0_0_8px_rgba(16,185,129,0.05)]">Sealed</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="animate-in fade-in duration-200">
+            <ForgeQuestionPaperStudio />
           </div>
         )}
 
-        {/* Tab 5: Exam Conduct */}
+        {/* Tab 5: Exam Conduct Workbench */}
         {activeTab === "conduct" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-200">
-            {/* Live incident responder (8 cols) */}
-            <div className="lg:col-span-8 space-y-6">
-              <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-4">
-                <h3 className="text-xs font-bold text-rose-455 uppercase tracking-wider font-mono flex items-center gap-1.5">
-                  <AlertTriangle className="w-4 h-4 text-rose-500 animate-bounce" />
-                  <span>Active Security Incidents</span>
-                </h3>
-
-                <div className="space-y-3">
-                  {incidents.filter(i => i.status === "OPEN").length === 0 ? (
-                    <div className="text-center py-8 text-slate-500 font-mono text-xs border border-dashed border-white/[0.06] rounded-xl bg-slate-950/20">
-                      🟢 ALL NODE CHANNELS SECURE. NO ACTIVE ALERTS REPORTED.
-                    </div>
-                  ) : (
-                    incidents.filter(i => i.status === "OPEN").map(inc => (
-                      <div key={inc.incident_id} className="p-4.5 rounded-xl bg-slate-950/80 border border-rose-500/20 shadow-[0_0_15px_rgba(239,68,68,0.02)] flex justify-between items-center gap-4 text-xs font-mono">
-                        <div>
-                          <div className="flex items-center gap-2 font-bold">
-                            <span className="bg-red-500/10 text-red-450 border border-red-500/25 px-1.5 py-0.2 rounded text-[8px]">{inc.severity}</span>
-                            <span className="text-white">{inc.incident_type}</span>
-                          </div>
-                          <p className="text-slate-400 mt-1.5 font-sans leading-normal">{inc.description}</p>
-                        </div>
-                        <button 
-                          onClick={() => handleResolveIncident(inc.incident_id)}
-                          className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-450 hover:shadow-[0_0_12px_rgba(16,185,129,0.3)] text-slate-950 font-bold rounded-lg uppercase text-[10px] cursor-pointer transition active-press"
-                        >
-                          Resolve
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Logs console (4 cols) */}
-            <div className="lg:col-span-4 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg flex flex-col justify-between h-[240px]">
-              <div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5 mb-2">
-                  <Cpu className="w-4 h-4 text-slate-500" />
-                  <span>Operations Console</span>
-                </h3>
-                <p className="text-[11px] text-slate-500 leading-relaxed font-sans mb-3">
-                  Live diagnostics and key releases logged during the exam window.
-                </p>
-              </div>
-              <div className="bg-slate-950/90 border border-white/[0.04] p-3 rounded-xl font-mono text-[9px] text-[#00ff66]/80 flex-1 overflow-y-auto space-y-1 shadow-inner scrollbar-thin">
-                <div>[INIT] Decryption keys sealed in HSM storage.</div>
-                <div>[AUTH] Dual custody keys check completed.</div>
-                <div>[OK] Centers node handshake validated.</div>
-              </div>
-            </div>
+          <div className="animate-in fade-in duration-200">
+            <ForgeExamConductWorkbench />
           </div>
         )}
 
-        {/* Tab 6: Evaluation Control */}
+        {/* Tab 6: Evaluation Control Studio */}
         {activeTab === "evaluation" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-200">
-            {/* Left columns (8 cols) */}
-            <div className="lg:col-span-8 space-y-6">
-              {/* Grading modules */}
-              <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg">
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-4 font-mono">Evaluation Modules</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
-                  <Link href="/evaluator/queue" className="p-4 bg-slate-950/40 rounded-xl border border-white/[0.04] hover:border-violet-550/20 hover:shadow-[0_0_15px_rgba(124,58,237,0.05)] transition flex justify-between items-center group">
-                    <div>
-                      <span className="text-slate-200 font-bold block">Anonymous Grading queue</span>
-                      <span className="text-[9px] text-slate-500 block mt-1">Assign booklet copies to evaluators</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400" />
-                  </Link>
-
-                  <Link href="/evaluation-conflicts" className="p-4 bg-slate-950/40 rounded-xl border border-white/[0.04] hover:border-violet-550/20 hover:shadow-[0_0_15px_rgba(124,58,237,0.05)] transition flex justify-between items-center group">
-                    <div>
-                      <span className="text-slate-200 font-bold block">Reconcile Score Variance</span>
-                      <span className="text-[9px] text-slate-500 block mt-1">Override double evaluation conflicts</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: stats (4 cols) */}
-            <div className="lg:col-span-4 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-4">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Grading Status</h3>
-              <div className="space-y-2.5 font-mono text-xs text-slate-400">
-                <div className="flex justify-between">
-                  <span>Locked Booklets:</span>
-                  <span className="text-white font-bold">{gateStatus?.checklist.find((c: any) => c.name.includes("Evaluation"))?.passed ? "100%" : "38,900 / 40,000"}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>OMR Bubbles Corrected:</span>
-                  <span className="text-white font-bold">{gateStatus?.checklist.find((c: any) => c.name.includes("OMR"))?.passed ? "100%" : "98% finalized"}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Variance Conflicts:</span>
-                  <span className="text-amber-400 font-bold">22 open review files</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 7: Results Gate */}
-        {activeTab === "results" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-200">
-            {/* Safety check list (8 cols) */}
-            <div className="lg:col-span-8 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-4">
-              <div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Result Safety Release Check</h3>
-                <p className="text-[11px] text-slate-500 mt-1 font-sans">
-                  The gate will block publishing final scores if any P0 security rule fails or the trust score is below 98.
-                </p>
-              </div>
-
-              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
-                {gateStatus?.checklist.map((item: any, idx: number) => (
-                  <div 
-                    key={idx} 
-                    className={`p-3.5 bg-slate-950/40 rounded-xl border flex items-center justify-between gap-4 font-mono text-xs hover:border-white/[0.08] transition ${
-                      item.passed ? "border-emerald-500/15 bg-emerald-500/[0.01]" : "border-red-500/15 bg-red-500/[0.01]"
-                    }`}
-                  >
-                    <div>
-                      <span className="text-white font-bold text-[11px] block">{item.name}</span>
-                      <span className="text-[9px] text-slate-500 block mt-0.5 leading-tight">{item.details}</span>
-                    </div>
-                    <span className={`text-[10px] font-bold ${item.passed ? "text-emerald-400" : "text-red-400 animate-pulse"}`}>
-                      {item.passed ? "✓ Passed" : "❌ Blocked"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Verdict card (4 cols) */}
-            <div className="lg:col-span-4 bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg flex flex-col justify-between min-h-[280px]">
-              <div>
-                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider font-mono">Safety Verdict</span>
-                <h4 className={`text-xl font-black tracking-tight mt-1 uppercase ${
-                  gateStatus?.allowed ? "text-emerald-400" : "text-red-400 animate-pulse"
-                }`}>
-                  {gateStatus?.allowed ? "🔓 Gate Approved" : "🔒 Locked / Blocked"}
-                </h4>
-                <p className="text-[11px] text-slate-505 font-sans mt-3 leading-relaxed">
-                  {gateStatus?.allowed 
-                    ? "Verify and sign the final results block to release grades to the Candidate Portal." 
-                    : "The gate has locked the release keyspace. Check the failed checklist items to proceed."}
-                </p>
-              </div>
-
-              <button
-                onClick={() => handleTransition("RESULT_PUBLISHED")}
-                disabled={!gateStatus?.allowed || actioning}
-                className={`w-full py-3.5 rounded-xl font-mono font-black text-xs uppercase transition-all duration-300 tracking-wider ${
-                  gateStatus?.allowed 
-                    ? "bg-emerald-500 text-slate-950 hover:bg-emerald-400 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer active-press" 
-                    : "bg-slate-800 text-slate-550 border border-white/[0.03] cursor-not-allowed"
-                }`}
-              >
-                {actioning ? "Publishing..." : "Publish verified results"}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 8: Evidence Timeline */}
-        {activeTab === "audit" && (
-          <div className="bg-[#101524]/60 backdrop-blur-xl p-5 rounded-2xl border border-white/[0.06] shadow-lg space-y-6 animate-in fade-in duration-200">
-            <div>
-              <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
-                <History className="w-4 h-4 text-violet-400 animate-pulse" />
-                <span>Verifiable Evidence Ledger Blocks</span>
-              </h2>
-              <p className="text-xs text-slate-550 mt-1">
-                Inspect chained hashes block by block. Click any record to expand cryptographic signatures.
-              </p>
-            </div>
-
-            <div className="relative pl-6 border-l border-white/[0.06] space-y-4 ml-2.5 font-mono text-xs">
-              {timeline.slice(0, 4).map((block) => (
-                <div
-                  key={block.index}
-                  onClick={() => handleBlockClick(block)}
-                  className="bg-slate-950/60 p-4.5 rounded-xl border border-white/[0.04] cursor-pointer hover:border-violet-500/25 transition relative flex flex-col gap-2 hover:shadow-[0_0_15px_rgba(124,58,237,0.05)] glow-hover"
-                >
-                  {/* Dot */}
-                  <span className="absolute left-[-29px] top-[22px] w-3 h-3 rounded-full bg-violet-550 border-2 border-slate-950 shadow-[0_0_6px_rgba(139,92,246,0.6)]" />
-                  
-                  <div className="flex justify-between items-center flex-wrap gap-2 text-[11px]">
-                    <div className="flex items-center gap-2">
-                      <span className="text-white font-extrabold uppercase text-[9px] px-1.5 py-0.2 bg-slate-900 rounded border border-white/[0.06]">
-                        Block #{block.index}
-                      </span>
-                      <span className="text-white font-bold text-xs uppercase tracking-wide">
-                        {block.action.replace(/_/g, " ")}
-                      </span>
-                    </div>
-                    <span className="text-slate-500 font-bold">{new Date(block.timestamp).toLocaleTimeString()}</span>
-                  </div>
-
-                  <p className="text-[11px] text-slate-400 font-sans leading-relaxed mt-1">
-                    {block.explanation}
-                  </p>
-                </div>
-              ))}
-            </div>
+          <div className="animate-in fade-in duration-200">
+            <ForgeEvaluationControlStudio />
           </div>
         )}
 
       </div>
 
-      {/* Reusable Cryptographic proof drawer */}
       <ProofDrawer 
         isOpen={isDrawerOpen} 
         onClose={() => setIsDrawerOpen(false)} 
         proof={selectedProof} 
       />
-    </div>
+    </ForgeSection>
   );
 }

@@ -1,0 +1,274 @@
+// ==============================================================================
+// ExamForge — Production Prisma Database Schema
+// Datasource: SQLite / PostgreSQL
+// ==============================================================================
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ------------------------------------------------------------------------------
+// 1. User Account & Authentication
+// ------------------------------------------------------------------------------
+
+model User {
+  id               String              @id @default(uuid())
+  name             String
+  email            String              @unique
+  phone            String?             @unique
+  passwordHash     String
+  role             String              @default("CANDIDATE")
+  status           String              @default("ACTIVE")
+  institutionId   String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  candidateProfile CandidateProfile?
+  vendorMemberships VendorMembership[]
+  evaluations      EvaluationMark[]
+
+  @@index([email])
+}
+
+// ------------------------------------------------------------------------------
+// 2. Vendor Examination-as-a-Service (EaaS) Models
+// ------------------------------------------------------------------------------
+
+model VendorOrganization {
+  id                   String             @id @default(uuid())
+  name                 String
+  legalName            String
+  registrationNumber   String             @unique
+  tenantSlug           String             @unique
+  email                String
+  googleOauthKey       String?
+  dltSmsKey            String?
+  paymentUpiId         String?
+  paymentBankName      String?
+  paymentAccountNumber String?
+  paymentIfscCode      String?
+  status               String             @default("APPROVED")
+  createdAt            DateTime           @default(now())
+
+  memberships          VendorMembership[]
+  exams                Exam[]
+  applications         ExamApplication[]
+
+  @@index([tenantSlug])
+}
+
+model VendorMembership {
+  id           String             @id @default(uuid())
+  userId       String
+  vendorId     String
+  role         String             @default("VENDOR_ADMIN")
+  createdAt    DateTime           @default(now())
+
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendor       VendorOrganization @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+}
+
+// ------------------------------------------------------------------------------
+// 3. Candidate Lifecycle & Identity Verification Models
+// ------------------------------------------------------------------------------
+
+model CandidateProfile {
+  id                  String                    @id @default(uuid())
+  userId              String                    @unique
+  candidateStudentId  String                    @unique
+  fullName            String
+  email               String                    @unique
+  phone               String                    @unique
+  dob                 String?
+  gender              String?
+  category            String?
+  guardianName        String?
+  addressLine1        String?
+  city                String?
+  district            String?
+  state               String?
+  postalCode          String?
+  latitude            Float?
+  longitude           Float?
+  aadhaarStatus       String                    @default("UNVERIFIED")
+  aadhaarNumberMasked String?
+  photoMatchPercent   Float                     @default(0.0)
+  createdAt           DateTime                  @default(now())
+
+  user                User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications        ExamApplication[]
+  admitCards          AdmitCardRecord[]
+  results             Result[]
+
+  @@index([candidateStudentId])
+}
+
+// ------------------------------------------------------------------------------
+// 4. Examination & Question Bank Engine
+// ------------------------------------------------------------------------------
+
+model Exam {
+  id                  String             @id @default(uuid())
+  code                String             @unique
+  title               String
+  description         String?
+  vendorId            String
+  totalMarks          Float
+  passingMarks        Float
+  durationMinutes     Int
+  negativeMarking     Float              @default(0.0)
+  applicationStart    DateTime
+  applicationEnd      DateTime
+  examDate            DateTime
+  status              String             @default("DRAFT")
+  createdAt           DateTime           @default(now())
+
+  vendor              VendorOrganization @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  questions           Question[]
+  applications        ExamApplication[]
+  results             Result[]
+}
+
+model Question {
+  id               String             @id @default(uuid())
+  examId           String
+  subject          String
+  topic            String
+  difficulty       String
+  type             String
+  marks            Float
+  encryptedContent String
+  encryptedAnswer  String
+  status           String             @default("APPROVED")
+  createdAt        DateTime           @default(now())
+
+  exam             Exam               @relation(fields: [examId], references: [id], onDelete: Cascade)
+  evaluations      EvaluationMark[]
+}
+
+// ------------------------------------------------------------------------------
+// 5. Exam Centres & Geospatial Allocation Engine
+// ------------------------------------------------------------------------------
+
+model ExamCentre {
+  id                String            @id @default(uuid())
+  name              String
+  code              String            @unique
+  address           String
+  city              String
+  district          String
+  state             String
+  postalCode        String
+  latitude          Float
+  longitude         Float
+  computerCapacity  Int
+  cctvVerified      Boolean           @default(true)
+  powerBackup       Boolean           @default(true)
+  status            String            @default("APPROVED")
+  createdAt         DateTime          @default(now())
+
+  applications      ExamApplication[]
+  admitCards        AdmitCardRecord[]
+}
+
+// ------------------------------------------------------------------------------
+// 6. Exam Applications, Payments & Admit Cards
+// ------------------------------------------------------------------------------
+
+model ExamApplication {
+  id                String            @id @default(uuid())
+  applicationNumber String            @unique
+  examId            String
+  candidateId       String
+  vendorId          String?
+  feeAmount         Float
+  paymentStatus     String            @default("PENDING")
+  paymentReference String?
+  allocatedCenterId String?
+  allocatedSlot     String?
+  admitCardHash     String?
+  status            String            @default("SUBMITTED")
+  createdAt         DateTime          @default(now())
+
+  exam              Exam              @relation(fields: [examId], references: [id], onDelete: Cascade)
+  candidate         CandidateProfile  @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  vendor            VendorOrganization? @relation(fields: [vendorId], references: [id])
+  allocatedCenter   ExamCentre?       @relation(fields: [allocatedCenterId], references: [id])
+  paymentOrders     PaymentOrder[]
+  admitCard         AdmitCardRecord?
+}
+
+model PaymentOrder {
+  id             String          @id @default(uuid())
+  applicationId  String
+  amount         Float
+  currency       String          @default("INR")
+  provider       String          @default("RAZORPAY")
+  transactionRef String          @unique
+  status         String          @default("PENDING")
+  createdAt      DateTime        @default(now())
+
+  application    ExamApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+}
+
+model AdmitCardRecord {
+  id            String          @id @default(uuid())
+  applicationId String          @unique
+  candidateId   String
+  examId        String
+  centerId      String
+  reportingTime String
+  admitCardHash String
+  signature     String
+  status        String          @default("VALID")
+  generatedAt   DateTime        @default(now())
+
+  application   ExamApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  candidate     CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  center        ExamCentre       @relation(fields: [centerId], references: [id], onDelete: Cascade)
+}
+
+// ------------------------------------------------------------------------------
+// 7. Evaluation & Double-Blind Checking Engine
+// ------------------------------------------------------------------------------
+
+model EvaluationMark {
+  id             String    @id @default(uuid())
+  examId         String
+  anonymousId    String
+  evaluatorId    String
+  questionId     String
+  criteriaScores String
+  totalMarks     Float
+  notes          String?
+  evaluationHash String
+  status         String    @default("SUBMITTED")
+  createdAt      DateTime  @default(now())
+
+  evaluator      User      @relation(fields: [evaluatorId], references: [id], onDelete: Cascade)
+  question       Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+// ------------------------------------------------------------------------------
+// 8. Result Publication Gate & Verifiable Certificates
+// ------------------------------------------------------------------------------
+
+model Result {
+  id            String            @id @default(uuid())
+  examId        String
+  candidateId   String
+  marksObtained Float
+  maxMarks      Float
+  status        String            @default("VERIFIED")
+  resultHash    String
+  publishedAt   DateTime?
+  createdAt     DateTime          @default(now())
+
+  exam          Exam              @relation(fields: [examId], references: [id], onDelete: Cascade)
+  candidate     CandidateProfile  @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}

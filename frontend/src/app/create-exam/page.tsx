@@ -2,99 +2,42 @@
 
 import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { 
-  Compass, 
-  ChevronRight, 
-  ChevronLeft, 
-  CheckCircle, 
-  HelpCircle,
-  Lock,
-  ShieldAlert,
-  Users,
-  Database,
-  Radio,
-  FileCheck,
-  Cpu,
-  Layers,
-  Sparkles,
-  Server
-} from "lucide-react";
+import { cn } from "@/lib/cn";
+import { ForgeStepIndicator, Step } from "@/components/forge/ForgeStepIndicator";
+import { ForgeButton } from "@/components/forge/ForgeButton";
+import { ForgeInput } from "@/components/forge/ForgeInput";
+import { ForgeSelect } from "@/components/forge/ForgeSelect";
+import { ForgeSwitch } from "@/components/forge/ForgeSwitch";
+import { CheckCircle, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 
 const EXAM_TYPES = [
-  {
-    id: "cbt",
-    name: "CBT Exam",
-    desc: "JEE-style computer-based MCQ",
-    details: "Best for online centres. Supports time-locked delivery, candidate logins, and live activity streams.",
-    icon: "💻"
-  },
-  {
-    id: "omr",
-    name: "OMR Exam",
-    desc: "NEET-style paper OMR",
-    details: "Best for large offline MCQ exams. ExamForge generates QR-coded bubble sheets, flags scanning conflicts, and locks responses.",
-    icon: "🔵"
-  },
-  {
-    id: "written",
-    name: "Written Exam",
-    desc: "Board/UPSC-style descriptive",
-    details: "Best for handwritten answers. Scan and upload booklets to an anonymous evaluation queue with double rubric grading.",
-    icon: "✍️"
-  },
-  {
-    id: "hybrid",
-    name: "Hybrid Exam",
-    desc: "OMR + Written descriptive workflow",
-    details: "Supports combined paper testing: OMR sheets auto-parsed plus handwritten booklets anonymously graded by evaluator teams.",
-    icon: "🚀"
-  }
+  { id: "cbt", name: "CBT Exam" },
+  { id: "omr", name: "OMR Exam" },
+  { id: "written", name: "Written Exam" },
+  { id: "hybrid", name: "Hybrid Exam" }
 ];
 
 const INTEGRITY_PACKAGES = [
-  {
-    id: "basic",
-    name: "Basic Trust",
-    desc: "College/internal exams",
-    details: "Configures basic auditing. Generates paper hashes, candidate receipt codes, and basic ledger blocks.",
-    rules: { threshold: 90, doubleEval: "Optional", verify: "Simple Check-in", release: "Single key", gate: "Standard" },
-    color: "border-slate-800 text-slate-400"
-  },
-  {
-    id: "secure",
-    name: "Secure Exam",
-    desc: "School boards, recruitment",
-    details: "Configures active security. Adds encrypted papers, biometric card checking, and center release keys.",
-    rules: { threshold: 95, doubleEval: "Optional", verify: "Biometric Card Match", release: "Center time-lock key", gate: "Strict" },
-    color: "border-blue-500/35 text-blue-400"
-  },
-  {
-    id: "stakes",
-    name: "High-Stakes",
-    desc: "State-level scholarship exams",
-    details: "Configures comprehensive auditing. Adds seat mapping anomalies, OMR reviews, and mandatory double evaluations.",
-    rules: { threshold: 97, doubleEval: "Mandatory (Discrepancy flag)", verify: "Biometric Seating Match", release: "Dual custody release", gate: "Audit check" },
-    color: "border-amber-500/35 text-amber-400"
-  },
-  {
-    id: "authority",
-    name: "Authority Grade",
-    desc: "Central/government exams",
-    details: "Configures military/banking-grade security. Multi-party signing key release, strict safety gate blocks, and compliance reports.",
-    rules: { threshold: 98, doubleEval: "Mandatory (Senior review)", verify: "Biometric + Token Match", release: "Multi-party key sharing", gate: "Strict P0 blocks" },
-    color: "border-violet-500/35 text-violet-400 font-bold"
-  }
+  { id: "basic", name: "Basic Trust" },
+  { id: "secure", name: "Secure Exam" },
+  { id: "stakes", name: "High-Stakes" },
+  { id: "authority", name: "Authority Grade" }
+];
+
+const CENTRE_LIST = [
+  { id: "c1", name: "Mumbai Central - Hub A" },
+  { id: "c2", name: "Delhi NCR - Hub B" },
+  { id: "c3", name: "Bangalore Tech Park - Hub C" },
+  { id: "c4", name: "Chennai Main - Hub D" },
 ];
 
 function CreateExamPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  const [step, setStep] = useState(1);
+  // Existing state from original implementation
   const [examType, setExamType] = useState("hybrid");
   const [integrityPackage, setIntegrityPackage] = useState("authority");
-  
-  // Step 3 settings
   const [examName, setExamName] = useState("National Scholarship Test 2026");
   const [candidates, setCandidates] = useState(40000);
   const [centers, setCenters] = useState(80);
@@ -102,7 +45,42 @@ function CreateExamPageInner() {
   const [loading, setLoading] = useState(false);
   const [loadingStage, setLoadingStage] = useState(0);
 
-  // Sync with search parameters on load
+  // Workflow state
+  const [step, setStep] = useState(1);
+
+  // New form fields for the 8 steps
+  const [examCode, setExamCode] = useState("EXM-2026-001");
+  const [description, setDescription] = useState("");
+  const [examDate, setExamDate] = useState("");
+  const [duration, setDuration] = useState("120");
+
+  const [numSections, setNumSections] = useState("3");
+  const [questionTypes, setQuestionTypes] = useState("MCQ");
+  const [marksPerQuestion, setMarksPerQuestion] = useState("4");
+
+  const [questionCount, setQuestionCount] = useState("100");
+  const [randomization, setRandomization] = useState(true);
+
+  const [negativeMarking, setNegativeMarking] = useState(true);
+  const [timePerSection, setTimePerSection] = useState(false);
+  const [calculatorAllowed, setCalculatorAllowed] = useState(false);
+
+  const [securitySettings, setSecuritySettings] = useState({
+    deviceBinding: true,
+    browserIntegrity: true,
+    fullscreenEnforcement: true,
+    clipboardRestriction: true,
+    multiDeviceLogin: false, // blocked
+    sessionReauth: true,
+    identityVerification: true, // required
+    livenessVerification: true, // required
+    tabSwitchingDetection: true,
+    networkAnomalyDetection: true,
+    deviceIntegrity: true,
+  });
+
+  const [selectedCentres, setSelectedCentres] = useState<string[]>([]);
+
   useEffect(() => {
     const tpl = searchParams.get("template");
     const pkg = searchParams.get("package");
@@ -110,10 +88,8 @@ function CreateExamPageInner() {
     if (pkg && INTEGRITY_PACKAGES.some(p => p.id === pkg)) setIntegrityPackage(pkg);
   }, [searchParams]);
 
-  const activePackage = INTEGRITY_PACKAGES.find(p => p.id === integrityPackage) || INTEGRITY_PACKAGES[3];
-
   const handleNext = () => {
-    if (step < 3) setStep(step + 1);
+    if (step < 8) setStep(step + 1);
   };
 
   const handleBack = () => {
@@ -135,47 +111,55 @@ function CreateExamPageInner() {
     }, 2600);
   };
 
+  const handleSecurityChange = (key: keyof typeof securitySettings, checked: boolean) => {
+    setSecuritySettings(prev => ({ ...prev, [key]: checked }));
+  };
+
+  const toggleCentre = (id: string) => {
+    setSelectedCentres(prev => 
+      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+    );
+  };
+
+  const stepList: Step[] = [
+    { label: "01 Identity", status: step > 1 ? "completed" : step === 1 ? "current" : "pending" },
+    { label: "02 Structure", status: step > 2 ? "completed" : step === 2 ? "current" : "pending" },
+    { label: "03 Question Bank", status: step > 3 ? "completed" : step === 3 ? "current" : "pending" },
+    { label: "04 Rules", status: step > 4 ? "completed" : step === 4 ? "current" : "pending" },
+    { label: "05 Security", status: step > 5 ? "completed" : step === 5 ? "current" : "pending" },
+    { label: "06 Centres", status: step > 6 ? "completed" : step === 6 ? "current" : "pending" },
+    { label: "07 Review", status: step > 7 ? "completed" : step === 7 ? "current" : "pending" },
+    { label: "08 Publish", status: step > 8 ? "completed" : step === 8 ? "current" : "pending" },
+  ];
+
   if (loading) {
     const logMessages = [
       "",
       "Establishing dual-custody HSM key vaults...",
       "Seeding center database configurations...",
-      "Sealing 80 exam center envelopes with node-keys...",
-      "Signing 40,000 candidate biometric identity tokens...",
+      "Sealing exam center envelopes with node-keys...",
+      "Signing candidate biometric identity tokens...",
       "Locking final security policies & publication gates..."
     ];
     return (
-      <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-lg flex flex-col items-center justify-center p-6 text-xs font-mono select-none">
-        <div className="max-w-md w-full bg-glass border border-slate-800 p-6 rounded-2xl shadow-glow-blue/10 space-y-6 relative overflow-hidden terminal-scanline">
-          <div className="flex justify-between items-center border-b border-slate-800/60 pb-3">
-            <span className="text-cyan-400 font-bold tracking-widest text-[10px] animate-pulse">VAULT_SEPARATION_ENGINE</span>
-            <span className="text-[9px] text-slate-500">SYSTEM_DEPLOY</span>
+      <div className="fixed inset-0 z-50 bg-[var(--surface-background)] flex flex-col items-center justify-center p-6 font-sans">
+        <div className="max-w-md w-full bg-[var(--surface-elevated)] border border-[var(--border-default)] p-6 rounded-[var(--radius-3)] shadow-2xl space-y-5">
+          <div className="flex justify-between items-center border-b border-[var(--border-subtle)] pb-3">
+            <span className="text-[var(--accent-primary)] font-bold text-xs uppercase">Vault Engine</span>
+            <span className="text-xs text-[var(--text-muted)] font-mono">System Deploy</span>
           </div>
-
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <span className="animate-spin text-cyan-400 text-lg">⚙️</span>
-              <span className="text-white font-bold font-outfit text-sm">Deploying Zero-Trust Exam Pipelines</span>
+              <Sparkles className="w-5 h-5 text-[var(--accent-primary)] animate-spin" />
+              <span className="text-[var(--text-primary)] font-bold text-sm">Deploying Exam Pipelines</span>
             </div>
-            
-            <div className="bg-slate-950 border border-slate-900 rounded-xl p-4 space-y-2.5 text-[10px] text-slate-400 leading-normal min-h-[160px]">
-              {loadingStage >= 1 && <div className="text-slate-400 font-bold">[1/5] {logMessages[1]}</div>}
-              {loadingStage >= 2 && <div className="text-cyan-400">[2/5] {logMessages[2]}</div>}
-              {loadingStage >= 3 && <div className="text-cyan-400">[3/5] {logMessages[3]}</div>}
-              {loadingStage >= 4 && <div className="text-cyan-400">[4/5] {logMessages[4]}</div>}
-              {loadingStage >= 5 && <div className="text-emerald-400 font-bold animate-pulse">[5/5] {logMessages[5]}</div>}
+            <div className="bg-[var(--surface-background)] border border-[var(--border-subtle)] rounded-[var(--radius-2)] p-4 space-y-2 text-xs text-[var(--text-secondary)] font-mono min-h-[160px]">
+              {loadingStage >= 1 && <div>[1/5] {logMessages[1]}</div>}
+              {loadingStage >= 2 && <div className="text-[var(--accent-primary)]">[2/5] {logMessages[2]}</div>}
+              {loadingStage >= 3 && <div className="text-[var(--accent-primary)]">[3/5] {logMessages[3]}</div>}
+              {loadingStage >= 4 && <div className="text-[var(--accent-primary)]">[4/5] {logMessages[4]}</div>}
+              {loadingStage >= 5 && <div className="text-[var(--status-success)] font-semibold">[5/5] {logMessages[5]}</div>}
             </div>
-            
-            <div className="w-full bg-slate-950 border border-slate-900 rounded-full h-2 overflow-hidden p-0.5">
-              <div 
-                className="bg-cyan-500 h-full rounded-full transition-all duration-300 shadow-glow-cyan" 
-                style={{ width: `${(loadingStage / 5) * 100}%` }}
-              />
-            </div>
-          </div>
-          
-          <div className="text-[9px] text-slate-500 text-center font-bold uppercase tracking-wider pt-2">
-            Do not close this window. Operations are cryptographically binding.
           </div>
         </div>
       </div>
@@ -183,365 +167,338 @@ function CreateExamPageInner() {
   }
 
   return (
-    <div className="space-y-6 min-h-screen bg-cyber-grid bg-[#070A14] pb-12 animate-in fade-in duration-300">
-      {/* Sub-Header */}
-      <div className="flex justify-between items-center bg-slate-900 border border-white/[0.06] p-5 rounded-2xl backdrop-blur-xl shadow-glow-blue/5">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-white/[0.04] border border-white/[0.08] text-violet-400 rounded-xl">
-            <Compass className="w-5 h-5 animate-pulse" />
-          </div>
-          <div>
-            <h1 className="text-lg font-black text-slate-100 tracking-tight flex items-center gap-2 font-mono uppercase">
-              <span>Exam Setup Wizard</span>
-              <span className="text-[9px] px-2.5 py-0.5 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded uppercase font-mono font-bold tracking-widest animate-pulse">
-                Step {step} / 3
-              </span>
-            </h1>
-            <p className="text-[11px] text-slate-400 mt-0.5 font-sans">
-              Configure integrity levels, set mode templates, and launch secure service pipelines.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => router.push("/authority")}
-            className="text-xs px-4 py-2 border border-white/[0.1] text-slate-350 hover:bg-white/[0.05] hover:border-white/[0.15] hover:text-white rounded-xl transition font-mono cursor-pointer active-press flex items-center gap-1.5"
-          >
-            🏢 Cancel Setup
-          </button>
+    <div className="min-h-screen bg-[var(--surface-background)] text-[var(--text-primary)] font-sans flex flex-col">
+      <div className="border-b border-[var(--border-subtle)] bg-[var(--surface-elevated)] px-8 py-4">
+        <h1 className="text-xl font-bold mb-4">Create New Examination</h1>
+        <div className="overflow-x-auto pb-2">
+          <ForgeStepIndicator steps={stepList} className="min-w-max" />
         </div>
       </div>
 
-      {/* Stepper Navigation Tracker */}
-      <div className="flex gap-4 items-center border-b border-white/[0.06] pb-4 font-mono text-[10px] font-bold uppercase tracking-wider px-1">
-        <div className={`flex items-center gap-2.5 ${step >= 1 ? "text-violet-300 font-extrabold" : "text-slate-500"}`}>
-          <span className={`w-5.5 h-5.5 rounded-full flex items-center justify-center border transition-all ${step > 1 ? "bg-violet-700 border-violet-650 text-white" : step === 1 ? "ring-2 ring-violet-500 bg-violet-500/20 border-violet-500 text-violet-300" : "bg-white/[0.04] border-white/[0.06] text-slate-500"}`}>1</span>
-          <span>Exam Type</span>
-        </div>
-        <div className="h-px flex-1 max-w-[40px] bg-white/[0.1]" />
-        <div className={`flex items-center gap-2.5 ${step >= 2 ? "text-violet-300 font-extrabold" : "text-slate-500"}`}>
-          <span className={`w-5.5 h-5.5 rounded-full flex items-center justify-center border transition-all ${step > 2 ? "bg-violet-700 border-violet-650 text-white" : step === 2 ? "ring-2 ring-violet-500 bg-violet-500/20 border-violet-500 text-violet-300" : "bg-white/[0.04] border-white/[0.06] text-slate-500"}`}>2</span>
-          <span>Integrity Level</span>
-        </div>
-        <div className="h-px flex-1 max-w-[40px] bg-white/[0.1]" />
-        <div className={`flex items-center gap-2.5 ${step >= 3 ? "text-violet-300 font-extrabold" : "text-slate-500"}`}>
-          <span className={`w-5.5 h-5.5 rounded-full flex items-center justify-center border transition-all ${step === 3 ? "ring-2 ring-violet-500 bg-violet-500/20 border-violet-500 text-violet-300" : "bg-white/[0.04] border-white/[0.06] text-slate-500"}`}>3</span>
-          <span>Exam Scale & Review</span>
-        </div>
-      </div>
-
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        {/* Left: Wizard Screen (8 cols) */}
-        <div className="lg:col-span-8 bg-slate-900 border border-white/[0.06] p-6 rounded-2xl shadow-lg min-h-[380px] flex flex-col justify-between backdrop-blur-xl">
+      <main className="flex-1 max-w-4xl w-full mx-auto p-8">
+        <div className="bg-[var(--surface-elevated)] border border-[var(--border-default)] rounded-[var(--radius-3)] p-6 md:p-8 flex flex-col min-h-[500px]">
           
-          <div>
-            {/* Step 1: Exam Type Selection */}
+          <div className="flex-1 mb-8">
             {step === 1 && (
-              <div className="space-y-4 animate-in fade-in duration-200">
-                <div>
-                  <h3 className="text-sm font-bold text-slate-100 uppercase font-mono tracking-wider">
-                    Step 1 — What exam are you conducting?
-                  </h3>
-                  <p className="text-[11px] text-slate-450 mt-0.5">
-                    Select a format template category. ExamForge pre-configures OMR/written upload scopes.
-                  </p>
+              <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
+                <h2 className="text-lg font-semibold text-[var(--text-primary)]">01. Identity Details</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ForgeInput 
+                    label="Exam Title" 
+                    value={examName} 
+                    onChange={(e) => setExamName(e.target.value)} 
+                    placeholder="e.g. National Scholarship Test 2026"
+                  />
+                  <ForgeInput 
+                    label="Exam Code" 
+                    value={examCode} 
+                    onChange={(e) => setExamCode(e.target.value)} 
+                    mono
+                  />
+                  <div className="md:col-span-2">
+                    <ForgeInput 
+                      label="Description" 
+                      value={description} 
+                      onChange={(e) => setDescription(e.target.value)} 
+                    />
+                  </div>
+                  <ForgeInput 
+                    label="Exam Date" 
+                    type="date"
+                    value={examDate} 
+                    onChange={(e) => setExamDate(e.target.value)} 
+                  />
+                  <ForgeInput 
+                    label="Duration (minutes)" 
+                    type="number"
+                    value={duration} 
+                    onChange={(e) => setDuration(e.target.value)} 
+                  />
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
+                <h2 className="text-lg font-semibold text-[var(--text-primary)]">02. Structure Configuration</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ForgeInput 
+                    label="Number of Sections" 
+                    type="number"
+                    value={numSections} 
+                    onChange={(e) => setNumSections(e.target.value)} 
+                  />
+                  <ForgeSelect 
+                    label="Question Types"
+                    options={[
+                      { value: "MCQ", label: "Multiple Choice (MCQ)" },
+                      { value: "Numerical", label: "Numerical Response" },
+                      { value: "Written", label: "Descriptive/Written" },
+                      { value: "Mixed", label: "Mixed Format" },
+                    ]}
+                    value={questionTypes}
+                    onValueChange={setQuestionTypes}
+                  />
+                  <ForgeInput 
+                    label="Marks Per Question" 
+                    type="number"
+                    value={marksPerQuestion} 
+                    onChange={(e) => setMarksPerQuestion(e.target.value)} 
+                  />
+                  <ForgeSelect 
+                    label="Exam Delivery Template"
+                    options={EXAM_TYPES.map(t => ({ value: t.id, label: t.name }))}
+                    value={examType}
+                    onValueChange={setExamType}
+                  />
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
+                <h2 className="text-lg font-semibold text-[var(--text-primary)]">03. Question Bank</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ForgeInput 
+                    label="Total Question Count" 
+                    type="number"
+                    value={questionCount} 
+                    onChange={(e) => setQuestionCount(e.target.value)} 
+                  />
+                  <ForgeInput 
+                    label="Paper Sets" 
+                    type="number"
+                    value={sets.toString()} 
+                    onChange={(e) => setSets(Number(e.target.value))} 
+                  />
+                  <div className="md:col-span-2 mt-4 p-4 border border-[var(--border-default)] rounded-[var(--radius-2)]">
+                    <ForgeSwitch 
+                      label="Enable Question Randomization" 
+                      description="Randomize question sequence across different candidate sessions"
+                      checked={randomization}
+                      onCheckedChange={setRandomization}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
+                <h2 className="text-lg font-semibold text-[var(--text-primary)]">04. Examination Rules</h2>
+                <div className="space-y-4">
+                  <div className="p-4 border border-[var(--border-default)] rounded-[var(--radius-2)]">
+                    <ForgeSwitch 
+                      label="Negative Marking" 
+                      description="Deduct partial marks for incorrect answers"
+                      checked={negativeMarking}
+                      onCheckedChange={setNegativeMarking}
+                    />
+                  </div>
+                  <div className="p-4 border border-[var(--border-default)] rounded-[var(--radius-2)]">
+                    <ForgeSwitch 
+                      label="Enforce Time Per Section" 
+                      description="Candidates must spend a strict amount of time on each section before proceeding"
+                      checked={timePerSection}
+                      onCheckedChange={setTimePerSection}
+                    />
+                  </div>
+                  <div className="p-4 border border-[var(--border-default)] rounded-[var(--radius-2)]">
+                    <ForgeSwitch 
+                      label="On-Screen Calculator Allowed" 
+                      description="Provide an on-screen scientific calculator during the exam"
+                      checked={calculatorAllowed}
+                      onCheckedChange={setCalculatorAllowed}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 5 && (
+              <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold text-[var(--text-primary)]">05. Security Policies</h2>
+                  <ForgeSelect 
+                    className="w-48"
+                    options={INTEGRITY_PACKAGES.map(p => ({ value: p.id, label: p.name }))}
+                    value={integrityPackage}
+                    onValueChange={setIntegrityPackage}
+                  />
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-sm font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-3">Session Security</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <ForgeSwitch label="Device Binding" checked={securitySettings.deviceBinding} onCheckedChange={(v) => handleSecurityChange('deviceBinding', v)} />
+                      <ForgeSwitch label="Browser Integrity" checked={securitySettings.browserIntegrity} onCheckedChange={(v) => handleSecurityChange('browserIntegrity', v)} />
+                      <ForgeSwitch label="Fullscreen Enforcement" checked={securitySettings.fullscreenEnforcement} onCheckedChange={(v) => handleSecurityChange('fullscreenEnforcement', v)} />
+                      <ForgeSwitch label="Clipboard Restriction" checked={securitySettings.clipboardRestriction} onCheckedChange={(v) => handleSecurityChange('clipboardRestriction', v)} />
+                      <ForgeSwitch label="Multi-device Login" description="BLOCKED" checked={securitySettings.multiDeviceLogin} disabled />
+                      <ForgeSwitch label="Session Re-authentication" checked={securitySettings.sessionReauth} onCheckedChange={(v) => handleSecurityChange('sessionReauth', v)} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-3">Identity</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <ForgeSwitch label="Identity Verification" description="REQUIRED" checked={securitySettings.identityVerification} disabled />
+                      <ForgeSwitch label="Liveness Verification" description="REQUIRED" checked={securitySettings.livenessVerification} disabled />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-3">Monitoring</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <ForgeSwitch label="Tab Switching Detection" checked={securitySettings.tabSwitchingDetection} onCheckedChange={(v) => handleSecurityChange('tabSwitchingDetection', v)} />
+                      <ForgeSwitch label="Network Anomaly Detection" checked={securitySettings.networkAnomalyDetection} onCheckedChange={(v) => handleSecurityChange('networkAnomalyDetection', v)} />
+                      <ForgeSwitch label="Device Integrity" checked={securitySettings.deviceIntegrity} onCheckedChange={(v) => handleSecurityChange('deviceIntegrity', v)} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 6 && (
+              <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
+                <h2 className="text-lg font-semibold text-[var(--text-primary)]">06. Designated Centres</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <ForgeInput 
+                    label="Expected Candidates" 
+                    type="number"
+                    value={candidates.toString()} 
+                    onChange={(e) => setCandidates(Number(e.target.value))} 
+                  />
+                  <ForgeInput 
+                    label="Total Centres Capacity" 
+                    type="number"
+                    value={centers.toString()} 
+                    onChange={(e) => setCenters(Number(e.target.value))} 
+                  />
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {EXAM_TYPES.map(type => (
-                    <div
-                      key={type.id}
-                      onClick={() => setExamType(type.id)}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 flex gap-4 items-start bg-white/[0.02] ${
-                        examType === type.id 
-                          ? "border-violet-500 bg-violet-500/[0.06] shadow-[0_0_0_1px_rgba(124,58,237,0.2)] text-violet-300"
-                          : "border-white/[0.06] hover:border-violet-500/40 hover:bg-violet-500/[0.04]"
-                      }`}
+                <h3 className="text-sm font-medium text-[var(--text-secondary)] mb-3">Select Specific Exam Hubs</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {CENTRE_LIST.map(centre => (
+                    <div 
+                      key={centre.id}
+                      onClick={() => toggleCentre(centre.id)}
+                      className={cn(
+                        "p-4 rounded-[var(--radius-2)] border cursor-pointer transition-colors flex items-center gap-3",
+                        selectedCentres.includes(centre.id) 
+                          ? "border-[var(--accent-primary)] bg-[var(--surface-interactive)]" 
+                          : "border-[var(--border-default)] hover:border-[var(--border-strong)]"
+                      )}
                     >
-                      <span className="text-2xl mt-0.5 filter drop-shadow-[0_2px_8px_rgba(255,255,255,0.05)]">{type.icon}</span>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex justify-between items-center">
-                          <h4 className="font-bold text-slate-100 text-xs font-mono">{type.name}</h4>
-                          <span className={`text-[9px] tracking-widest rounded px-1.5 py-0.5 ${
-                            type.id === "cbt" ? "bg-sky-500/10 text-sky-400" :
-                            type.id === "omr" ? "bg-emerald-500/10 text-emerald-450" :
-                            type.id === "written" ? "bg-violet-500/10 text-violet-400" :
-                            "bg-amber-500/10 text-amber-400"
-                          }`}>
-                            {type.id.toUpperCase()}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-slate-500 font-mono block mt-0.5 font-bold uppercase">{type.desc}</span>
-                        <p className="text-[11px] text-slate-400 mt-2 leading-relaxed font-sans">
-                          {type.details}
-                        </p>
-                      </div>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedCentres.includes(centre.id)}
+                        onChange={() => {}} // handled by parent onClick
+                        className="w-4 h-4 accent-[var(--accent-primary)] cursor-pointer"
+                      />
+                      <span className="text-sm font-medium">{centre.name}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Step 2: Integrity Level Selection */}
-            {step === 2 && (
-              <div className="space-y-4 animate-in fade-in duration-200">
-                <div>
-                  <h3 className="text-sm font-bold text-slate-100 uppercase font-mono tracking-wider">
-                    Step 2 — Choose Integrity Level Package
-                  </h3>
-                  <p className="text-[11px] text-slate-450 mt-0.5">
-                    Select a pre-configured trust policy package depending on exam security stakes.
-                  </p>
-                </div>
+            {step === 7 && (
+              <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
+                <h2 className="text-lg font-semibold text-[var(--text-primary)]">07. Review Configuration</h2>
+                
+                <div className="bg-[var(--surface-background)] border border-[var(--border-subtle)] rounded-[var(--radius-2)] p-6 space-y-6">
+                  <div>
+                    <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2 flex justify-between">
+                      Identity & Structure
+                      <button onClick={() => setStep(1)} className="text-[var(--accent-primary)] hover:underline capitalize normal-case text-xs">Edit</button>
+                    </h3>
+                    <div className="grid grid-cols-2 gap-y-2 text-sm">
+                      <span className="text-[var(--text-secondary)]">Name:</span> <span>{examName}</span>
+                      <span className="text-[var(--text-secondary)]">Code:</span> <span className="font-mono">{examCode}</span>
+                      <span className="text-[var(--text-secondary)]">Date & Duration:</span> <span>{examDate || "Not set"} ({duration} mins)</span>
+                      <span className="text-[var(--text-secondary)]">Type:</span> <span className="uppercase">{examType}</span>
+                    </div>
+                  </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {INTEGRITY_PACKAGES.map(pkg => {
-                    const isSelected = integrityPackage === pkg.id;
-                    const isFeatured = pkg.id === "authority";
-                    return (
-                      <div
-                        key={pkg.id}
-                        onClick={() => setIntegrityPackage(pkg.id)}
-                        className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 flex flex-col justify-between min-h-[145px] bg-white/[0.02] ${
-                          isSelected 
-                            ? "border-violet-500 bg-violet-500/[0.06] shadow-[0_0_0_1px_rgba(124,58,237,0.2)] text-violet-300"
-                            : "border-white/[0.06] hover:border-violet-500/40 hover:bg-violet-500/[0.04]"
-                        }`}
-                      >
-                        <div>
-                          <div className="flex justify-between items-center">
-                            <h4 className="font-bold text-slate-100 text-xs font-mono">{pkg.name}</h4>
-                            {isFeatured ? (
-                              <span className="text-[9px] tracking-widest rounded px-1.5 py-0.5 bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                                TIER 4 • FEATURED
-                              </span>
-                            ) : (
-                              <span className={`text-[9px] tracking-widest rounded px-1.5 py-0.5 bg-white/[0.04] text-slate-400`}>
-                                TIER {pkg.id === "basic" ? "1" : pkg.id === "secure" ? "2" : "3"}
-                              </span>
-                            )}
-                          </div>
-                          
-                          {/* Dot Lock Icons graduated fill based on tier */}
-                          <div className="flex items-center gap-1 mt-1 text-[9px] text-slate-500 font-mono">
-                            <Lock className="w-3 h-3 text-current" />
-                            <span>
-                              {pkg.id === "basic" ? "● ○ ○ ○" :
-                               pkg.id === "secure" ? "● ● ○ ○" :
-                               pkg.id === "stakes" ? "● ● ● ○" :
-                               "● ● ● ●"}
-                            </span>
-                          </div>
+                  <div className="h-px bg-[var(--border-subtle)]" />
+                  
+                  <div>
+                    <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2 flex justify-between">
+                      Rules & Security
+                      <button onClick={() => setStep(4)} className="text-[var(--accent-primary)] hover:underline capitalize normal-case text-xs">Edit</button>
+                    </h3>
+                    <div className="grid grid-cols-2 gap-y-2 text-sm">
+                      <span className="text-[var(--text-secondary)]">Integrity Package:</span> <span className="capitalize">{integrityPackage}</span>
+                      <span className="text-[var(--text-secondary)]">Negative Marking:</span> <span>{negativeMarking ? "Yes" : "No"}</span>
+                      <span className="text-[var(--text-secondary)]">Strict Timing:</span> <span>{timePerSection ? "Yes" : "No"}</span>
+                    </div>
+                  </div>
 
-                          <p className="text-[11px] text-slate-450 mt-2.5 leading-relaxed font-sans">
-                            {pkg.details}
-                          </p>
-                        </div>
-                        <div className="border-t border-white/[0.04] mt-3 pt-2 text-[10px] text-slate-500 font-mono flex justify-between font-semibold">
-                          <span>Threshold: {pkg.rules.threshold}%</span>
-                          <span>Keys: {pkg.rules.release.split(" ")[0]}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
+                  <div className="h-px bg-[var(--border-subtle)]" />
+                  
+                  <div>
+                    <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2 flex justify-between">
+                      Scale
+                      <button onClick={() => setStep(6)} className="text-[var(--accent-primary)] hover:underline capitalize normal-case text-xs">Edit</button>
+                    </h3>
+                    <div className="grid grid-cols-2 gap-y-2 text-sm">
+                      <span className="text-[var(--text-secondary)]">Candidates:</span> <span>{candidates.toLocaleString()}</span>
+                      <span className="text-[var(--text-secondary)]">Centres Capacity:</span> <span>{centers}</span>
+                      <span className="text-[var(--text-secondary)]">Selected Hubs:</span> <span>{selectedCentres.length}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Step 3: Exam Scale Configurations */}
-            {step === 3 && (
-              <div className="space-y-5 animate-in fade-in duration-200">
-                <div>
-                  <h3 className="text-sm font-bold text-slate-100 uppercase font-mono tracking-wider">
-                    Step 3 — Exam Scale & Review Settings
-                  </h3>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    Input candidate registrations, centers online, and evaluate question blueprint sets.
-                  </p>
+            {step === 8 && (
+              <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)] h-full flex flex-col items-center justify-center py-12 text-center">
+                <div className="w-16 h-16 rounded-full bg-[var(--status-success)]/10 text-[var(--status-success)] flex items-center justify-center mb-4">
+                  <CheckCircle className="w-8 h-8" />
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs font-mono">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-[10px] uppercase tracking-[0.1em] text-slate-500 mb-1">Exam Name</label>
-                      <input
-                        type="text"
-                        value={examName}
-                        onChange={(e) => setExamName(e.target.value)}
-                        className="w-full bg-[#0F1524]/80 border border-white/[0.08] rounded-lg px-3 py-2 text-[13px] text-slate-200 focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] uppercase tracking-[0.1em] text-slate-500 mb-1">Paper Sets (Sets)</label>
-                      <input
-                        type="number"
-                        value={sets}
-                        onChange={(e) => setSets(Number(e.target.value))}
-                        className="w-full bg-[#0F1524]/80 border border-white/[0.08] rounded-lg px-3 py-2 text-[13px] text-slate-200 focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-[10px] uppercase tracking-[0.1em] text-slate-500 mb-1">Total Candidates</label>
-                      <input
-                        type="number"
-                        value={candidates}
-                        onChange={(e) => setCandidates(Number(e.target.value))}
-                        className="w-full bg-[#0F1524]/80 border border-white/[0.08] rounded-lg px-3 py-2 text-[13px] text-slate-200 focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] uppercase tracking-[0.1em] text-slate-500 mb-1">Total Center Nodes</label>
-                      <input
-                        type="number"
-                        value={centers}
-                        onChange={(e) => setCenters(Number(e.target.value))}
-                        className="w-full bg-[#0F1524]/80 border border-white/[0.08] rounded-lg px-3 py-2 text-[13px] text-slate-200 focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* estimated complexity preview block */}
-                <div className="p-4 bg-[#0F1524]/80 rounded-xl border border-white/[0.06] space-y-3.5 font-mono text-[11px] text-slate-400">
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-bold">Estimated Workflow Complexity</span>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="border-r border-white/[0.04] pr-2">
-                      <span className="text-slate-100 font-mono text-[16px] font-bold block">{centers}</span>
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider block mt-1">SEALED PKGS</span>
-                    </div>
-                    <div className="border-r border-white/[0.04] pr-2">
-                      <span className="text-slate-100 font-mono text-[16px] font-bold block">{candidates.toLocaleString()}</span>
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider block mt-1">ADMIT CARDS</span>
-                    </div>
-                    <div className="border-r border-white/[0.04] pr-2">
-                      <span className="text-slate-100 font-mono text-[16px] font-bold block">{candidates.toLocaleString()}</span>
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider block mt-1">OMR SHEETS</span>
-                    </div>
-                    <div>
-                      <span className="text-emerald-450 font-mono text-[16px] font-bold block">~{Math.round(candidates / 250)}</span>
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider block mt-1">EVALUATORS</span>
-                    </div>
-                  </div>
-                </div>
-
+                <h2 className="text-2xl font-semibold text-[var(--text-primary)]">Ready to Publish</h2>
+                <p className="text-[var(--text-secondary)] max-w-md mx-auto mb-8">
+                  The examination {examCode} is configured and ready for deployment. This will initialize the secure environment and lock the configuration.
+                </p>
+                <ForgeButton 
+                  size="md" 
+                  variant="primary" 
+                  onClick={handleLaunch} 
+                  disabled={loading}
+                  className="w-full max-w-xs gap-2"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Deploy Examination Pipeline
+                </ForgeButton>
               </div>
             )}
           </div>
 
-          {/* Stepper buttons */}
-          <div className="flex justify-between items-center border-t border-white/[0.06] pt-4 mt-6">
-            <button
+          <div className="flex justify-between items-center pt-6 border-t border-[var(--border-subtle)] mt-auto">
+            <ForgeButton
+              variant="secondary"
               onClick={handleBack}
               disabled={step === 1 || loading}
-              className={`px-4 py-2 border rounded-xl text-xs font-bold transition flex items-center gap-1.5 uppercase font-mono ${
-                step === 1 ? "text-slate-650 border-white/[0.04] cursor-not-allowed" : "border-white/[0.1] text-slate-300 hover:bg-white/[0.05] hover:border-white/[0.15] cursor-pointer active-press"
-              }`}
+              className="w-32 justify-center gap-2"
             >
-              <ChevronLeft className="w-4 h-4" />
-              <span>Back</span>
-            </button>
-
-            {step < 3 ? (
-              <button
+              <ChevronLeft className="w-4 h-4" /> Back
+            </ForgeButton>
+            
+            {step < 8 && (
+              <ForgeButton
+                variant="primary"
                 onClick={handleNext}
-                className="px-4 py-2 bg-violet-600 hover:bg-violet-500 hover:shadow-[0_0_20px_rgba(124,58,237,0.35)] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 uppercase font-mono tracking-wider cursor-pointer active-press"
-              >
-                <span>Continue</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            ) : (
-              <button
-                onClick={handleLaunch}
                 disabled={loading}
-                className="px-6 py-2.5 bg-violet-600 hover:bg-violet-500 hover:shadow-[0_0_20px_rgba(124,58,237,0.35)] text-white rounded-xl text-xs font-bold transition flex items-center gap-2.5 uppercase font-mono tracking-wider cursor-pointer active-press"
+                className="w-32 justify-center gap-2"
               >
-                <span>Deploy Integrity Service</span>
-                <CheckCircle className="w-4 h-4" />
-              </button>
+                Continue <ChevronRight className="w-4 h-4" />
+              </ForgeButton>
             )}
           </div>
-
         </div>
-
-        {/* Right: What ExamForge is Doing panel (4 cols) */}
-        <div className="lg:col-span-4 space-y-6">
-          
-          {/* Integrity configuration display card */}
-          <div className="bg-[#0F1424]/60 backdrop-blur-xl border border-white/[0.06] p-5 rounded-2xl space-y-4 shadow-lg">
-            <h3 className="text-xs font-bold text-slate-105 uppercase tracking-wider font-mono flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-violet-400" />
-              <span>Active Trust Settings</span>
-            </h3>
-            
-            <div className="space-y-2.5 font-mono text-xs text-slate-400">
-              <div className="flex justify-between pb-1 border-b border-white/[0.04]">
-                <span>Trust Threshold:</span>
-                <span className="text-slate-200 font-bold">{activePackage.rules.threshold}%</span>
-              </div>
-              <div className="flex justify-between pb-1 border-b border-white/[0.04]">
-                <span>Double Grading:</span>
-                <span className="text-slate-200 font-bold truncate max-w-[120px]" title={activePackage.rules.doubleEval}>{activePackage.rules.doubleEval}</span>
-              </div>
-              <div className="flex justify-between pb-1 border-b border-white/[0.04]">
-                <span>Verification Check:</span>
-                <span className="text-slate-200 font-bold">{activePackage.rules.verify.split(" ")[0]} Match</span>
-              </div>
-              <div className="flex justify-between pb-1 border-b border-white/[0.04]">
-                <span>Package Keys:</span>
-                <span className="text-slate-200 font-bold truncate max-w-[120px]" title={activePackage.rules.release}>{activePackage.rules.release}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Safety Release:</span>
-                <span className="text-slate-200 font-bold">{activePackage.rules.gate}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Value explainer panel */}
-          <div className="bg-[#0F1424]/60 border border-white/[0.06] p-5 rounded-2xl space-y-4 shadow-lg">
-            <h3 className="text-xs font-bold text-slate-100 uppercase tracking-wider font-mono">
-              ExamForge Integrity Guard
-            </h3>
-            <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
-              By locking these parameters, ExamForge will automatically defend your exam lifecycle by:
-            </p>
-            
-            <ul className="space-y-3 text-[11px] text-slate-350 font-mono">
-              <li className="flex gap-2.5 items-start leading-relaxed">
-                <span className="text-amber-400 shrink-0">🔒</span>
-                <span>Encrypting question papers before release windows open</span>
-              </li>
-              <li className="flex gap-2.5 items-start leading-relaxed">
-                <span className="text-violet-400 shrink-0">🔑</span>
-                <span>Sealing packages specific to center server node keys</span>
-              </li>
-              <li className="flex gap-2.5 items-start leading-relaxed">
-                <span className="text-sky-400 shrink-0">🧾</span>
-                <span>Issuing cryptographically signed candidate receipts</span>
-              </li>
-              <li className="flex gap-2.5 items-start leading-relaxed">
-                <span className="text-emerald-400 shrink-0">🪑</span>
-                <span>Locking seat-maps to prevent seating layout changes</span>
-              </li>
-              <li className="flex gap-2.5 items-start leading-relaxed">
-                <span className="text-violet-400 shrink-0">📷</span>
-                <span>Hashing scanned OMR and booklet copy uploads</span>
-              </li>
-              <li className="flex gap-2.5 items-start leading-relaxed">
-                <span className="text-rose-400 shrink-0">🚦</span>
-                <span>Blocking result releases if safety gate check policies fail</span>
-              </li>
-            </ul>
-          </div>
-
-        </div>
-
-      </div>
+      </main>
     </div>
   );
 }
@@ -549,9 +506,9 @@ function CreateExamPageInner() {
 export default function CreateExamPage() {
   return (
     <Suspense fallback={
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 font-mono text-xs gap-3">
-        <span className="animate-spin text-xl">⚙️</span>
-        <span>LOADING CONFIGURATION WIZARD...</span>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--surface-background)] text-[var(--text-muted)] text-sm gap-3 font-sans">
+        <Sparkles className="w-5 h-5 animate-spin text-[var(--accent-primary)]" />
+        <span>Loading Configuration Wizard...</span>
       </div>
     }>
       <CreateExamPageInner />

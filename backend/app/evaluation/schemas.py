@@ -43,7 +43,6 @@ class AnonymousCopyResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
         from_attributes = True
 
 class EvaluationMarkResponse(BaseModel):
@@ -60,7 +59,6 @@ class EvaluationMarkResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
         from_attributes = True
 
 class ConflictResponse(BaseModel):
@@ -77,5 +75,4 @@ class ConflictResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
         from_attributes = True

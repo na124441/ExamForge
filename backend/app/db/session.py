@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker
 from app.config import settings
 
@@ -36,3 +36,37 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def auto_migrate_sqlite_schema(engine, Base):
+    """
+    Automatically alters SQLite tables to add missing columns defined in SQLAlchemy models.
+    Prevents OperationalError: no such column errors during model updates.
+    """
+    try:
+        inspector = inspect(engine)
+        existing_tables = inspector.get_table_names()
+
+        with engine.connect() as conn:
+            for table_name, table in Base.metadata.tables.items():
+                if table_name in existing_tables:
+                    existing_cols = {c["name"] for c in inspector.get_columns(table_name)}
+                    for column in table.columns:
+                        if column.name not in existing_cols:
+                            col_type = column.type.compile(engine.dialect)
+                            default_clause = ""
+                            if column.default is not None and hasattr(column.default, "arg"):
+                                default_val = column.default.arg
+                                if isinstance(default_val, str):
+                                    default_clause = f" DEFAULT '{default_val}'"
+                                elif isinstance(default_val, (int, float, bool)):
+                                    default_clause = f" DEFAULT {default_val}"
+
+                            alter_stmt = f'ALTER TABLE "{table_name}" ADD COLUMN "{column.name}" {col_type}{default_clause}'
+                            try:
+                                conn.execute(text(alter_stmt))
+                                conn.commit()
+                                print(f"[MIGRATION SUCCESS] Added missing column '{column.name}' to table '{table_name}'.")
+                            except Exception as e:
+                                print(f"[MIGRATION WARNING] Could not add column '{column.name}' to '{table_name}': {e}")
+    except Exception as err:
+        print(f"[MIGRATION ERROR] Auto migration encountered issue: {err}")

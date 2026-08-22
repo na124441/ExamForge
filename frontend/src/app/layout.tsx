@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "../components/shell/AppShell";
 
-const inter = Inter({
+const geistSans = Geist({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "ExamForge | Zero-Trust Exam Integrity",
-  description: "A cryptographic, tamper-evident examination security infrastructure.",
+  title: "ExamForge",
+  description: "Secure examination infrastructure for trusted, large-scale assessments.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/logo-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -26,13 +30,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      data-theme="dark"
+      data-density="comfortable"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased bg-[#081310] text-[#FFF4E2]`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
+      <body
+        className="min-h-full flex flex-col bg-[#081310] text-[#FFF4E2]"
+        suppressHydrationWarning
+      >
         <AppShell>{children}</AppShell>
       </body>
     </html>
   );
 }
-
-

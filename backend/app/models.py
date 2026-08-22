@@ -12,9 +12,17 @@ class User(Base):
     id = Column(String, primary_key=True, default=generate_uuid)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
+    phone = Column(String, unique=True, index=True, nullable=True)
     password_hash = Column(String, nullable=False)
+    role = Column(String, default="CANDIDATE")
     institution_id = Column(String, nullable=True)
     status = Column(String, default="ACTIVE")
+    authz_version = Column(Integer, default=1, nullable=False)
+    assigned_roles = Column(Text, default="[]", nullable=True) # JSON array of allowed roles
+    mfa_enabled = Column(Boolean, default=False, nullable=False)
+    mfa_secret = Column(String, nullable=True)
+    failed_login_attempts = Column(Integer, default=0, nullable=False)
+    locked_until = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class Question(Base):
@@ -1167,4 +1175,294 @@ Index("idx_audit_logs_resource", AuditLog.resource_type, AuditLog.resource_id)
 Index("idx_results_exam_candidate", Result.exam_id, Result.candidate_id)
 Index("idx_disputes_result_id", Dispute.result_id)
 Index("idx_packages_center_id", EncryptedPackage.center_id)
+
+
+# ==========================================
+# Vendor EaaS & Candidate Application Models
+# ==========================================
+
+class VendorOrganization(Base):
+    __tablename__ = "vendor_organizations"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    name = Column(String, nullable=False)
+    legal_name = Column(String, nullable=False)
+    registration_number = Column(String, unique=True, nullable=False)
+    tenant_slug = Column(String, unique=True, nullable=False)
+    email = Column(String, nullable=False)
+    google_oauth_key = Column(Text, nullable=True)
+    dlt_sms_key = Column(String, nullable=True)
+    payment_upi_id = Column(String, nullable=True)
+    payment_bank_name = Column(String, nullable=True)
+    payment_account_number = Column(String, nullable=True)
+    payment_ifsc_code = Column(String, nullable=True)
+    status = Column(String, default="APPROVED")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class VendorMembership(Base):
+    __tablename__ = "vendor_memberships"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    vendor_id = Column(String, ForeignKey("vendor_organizations.id"), nullable=False)
+    role = Column(String, default="VENDOR_ADMIN")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class CandidateProfile(Base):
+    __tablename__ = "candidate_profiles"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    user_id = Column(String, ForeignKey("users.id"), unique=True, nullable=False)
+    candidate_student_id = Column(String, unique=True, nullable=False)
+    registration_state = Column(String, default="ACCOUNT_CREATED") # ACCOUNT_CREATED, EMAIL_VERIFIED, PHONE_VERIFIED, PROFILE_COMPLETED, ADDRESS_COMPLETED, EDUCATION_COMPLETED, IDENTITY_VERIFIED, APPLICATION_REVIEWED, PAYMENT_COMPLETED, CENTRE_ALLOCATED, ADMIT_CARD_READY
+    full_name = Column(String, nullable=False)
+    middle_name = Column(String, nullable=True)
+    last_name = Column(String, nullable=True)
+    email = Column(String, unique=True, nullable=False)
+    phone = Column(String, unique=True, nullable=False)
+    alternate_phone = Column(String, nullable=True)
+    email_verified = Column(Boolean, default=False)
+    phone_verified = Column(Boolean, default=False)
+    dob = Column(String, nullable=True)
+    gender = Column(String, nullable=True)
+    nationality = Column(String, default="Indian")
+    category = Column(String, nullable=True) # General, OBC-NCL, SC, ST, EWS
+    pwd_status = Column(String, default="NO") # YES, NO
+    domicile_state = Column(String, nullable=True)
+    guardian_name = Column(String, nullable=True)
+    address_line1 = Column(Text, nullable=True)
+    address_line2 = Column(Text, nullable=True)
+    city = Column(String, nullable=True)
+    district = Column(String, nullable=True)
+    state = Column(String, nullable=True)
+    postal_code = Column(String, nullable=True)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
+    # Educational Background
+    qualification_level = Column(String, nullable=True) # Class 10, Class 12, Diploma, Undergraduate, Postgraduate
+    board_university = Column(String, nullable=True)
+    passing_year = Column(String, nullable=True)
+    roll_number = Column(String, nullable=True)
+    percentage_cgpa = Column(String, nullable=True)
+    # Identity & Biometrics
+    aadhaar_status = Column(String, default="UNVERIFIED")
+    aadhaar_number_masked = Column(String, nullable=True)
+    photo_match_percent = Column(Float, default=0.0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class OTPRecord(Base):
+    __tablename__ = "otp_records"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    destination = Column(String, nullable=False)
+    otp_hash = Column(String, nullable=False)
+    purpose = Column(String, nullable=False)
+    attempt_count = Column(Integer, default=0)
+    status = Column(String, default="PENDING")
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+class ExamCatalog(Base):
+    __tablename__ = "exam_catalogs"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    vendor_id = Column(String, ForeignKey("vendor_organizations.id"), nullable=False)
+    code = Column(String, unique=True, index=True, nullable=False)
+    title = Column(String, nullable=False)
+    purpose = Column(Text, nullable=False)
+    category = Column(String, nullable=False) # ENGINEERING, MEDICAL, CIVIL_SERVICES, IT_AI, MANAGEMENT, APPLIED_SCIENCES
+    academic_cycle = Column(String, default="2026-2027")
+    application_start_date = Column(DateTime(timezone=True), nullable=True)
+    application_end_date = Column(DateTime(timezone=True), nullable=True)
+    exam_date = Column(String, nullable=False)
+    exam_mode = Column(String, default="COMPUTER_BASED_TEST") # COMPUTER_BASED_TEST, OMR_PEN_PAPER, HYBRID
+    duration_minutes = Column(Integer, default=180)
+    total_marks = Column(Float, default=300.0)
+    total_questions = Column(Integer, default=90)
+    negative_marking = Column(String, default="+4 for correct, -1 for incorrect")
+    fee_general = Column(Float, default=1000.0)
+    fee_reserved = Column(Float, default=500.0)
+    
+    # Detailed Eligibility Criteria
+    eligibility_min_qualification = Column(String, nullable=False) # Class 10, Class 12, Diploma, Undergraduate, Postgraduate
+    eligibility_min_percentage = Column(Float, default=60.0)
+    eligibility_age_limit = Column(String, nullable=True)
+    eligibility_subjects_required = Column(String, nullable=True)
+    
+    # Detailed Pattern & Shifts
+    syllabus_summary = Column(Text, nullable=True)
+    shifts_json = Column(Text, nullable=True) # JSON list of shift timings
+    status = Column(String, default="REGISTRATION_OPEN") # REGISTRATION_OPEN, UPCOMING, CLOSED
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class ExamApplication(Base):
+    __tablename__ = "exam_applications"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    application_number = Column(String, unique=True, nullable=False)
+    exam_id = Column(String, nullable=False)
+    candidate_id = Column(String, ForeignKey("candidate_profiles.id"), nullable=False)
+    vendor_id = Column(String, ForeignKey("vendor_organizations.id"), nullable=True)
+    fee_amount = Column(Float, default=0.0)
+    payment_status = Column(String, default="PENDING")
+    payment_reference = Column(String, nullable=True)
+    allocated_center_id = Column(String, ForeignKey("exam_centers.id"), nullable=True)
+    allocated_slot = Column(String, nullable=True)
+    admit_card_hash = Column(String, nullable=True)
+    status = Column(String, default="SUBMITTED")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class PaymentOrder(Base):
+    __tablename__ = "payment_orders"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    application_id = Column(String, ForeignKey("exam_applications.id"), nullable=True)
+    candidate_id = Column(String, ForeignKey("candidate_profiles.id"), nullable=True)
+    exam_id = Column(String, nullable=True)
+    vendor_id = Column(String, ForeignKey("vendor_organizations.id"), nullable=True)
+    amount = Column(Float, nullable=False)
+    currency = Column(String, default="INR")
+    provider = Column(String, default="NPCI_UPI") # NPCI_UPI, RAZORPAY, CASHFREE, PHONEPE, SBI_EPAY
+    transaction_ref = Column(String, unique=True, nullable=False)
+    gateway_order_id = Column(String, nullable=True)
+    gateway_payment_id = Column(String, nullable=True)
+    bank_ref_no = Column(String, nullable=True) # UTR / RRN (Bank Reference Number)
+    payment_method = Column(String, default="UPI") # UPI, CARD, NETBANKING
+    upi_vpa = Column(String, nullable=True)
+    signature = Column(String, nullable=True)
+    status = Column(String, default="PENDING") # PENDING, PAID, FAILED, REFUNDED
+    paid_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class AdmitCardRecord(Base):
+    __tablename__ = "admit_cards"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    application_id = Column(String, ForeignKey("exam_applications.id"), unique=True, nullable=False)
+    candidate_id = Column(String, ForeignKey("candidate_profiles.id"), nullable=False)
+    exam_id = Column(String, nullable=False)
+    center_id = Column(String, ForeignKey("exam_centers.id"), nullable=False)
+    reporting_time = Column(String, nullable=False)
+    admit_card_hash = Column(String, nullable=False)
+    signature = Column(String, nullable=False)
+    status = Column(String, default="VALID")
+    generated_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+# ==============================================================================
+# Centralized Identity, OTP & Auth Infrastructure Models
+# ==============================================================================
+
+class OTPChallenge(Base):
+    __tablename__ = "otp_challenges"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=True)
+    channel = Column(String, nullable=False) # EMAIL, SMS
+    destination = Column(String, nullable=False) # E.164 phone or email
+    purpose = Column(String, nullable=False) # REGISTRATION, LOGIN, PASSWORD_RESET, HIGH_RISK_ACTION, CHANGE_EMAIL, CHANGE_PHONE
+    otp_hash = Column(String, nullable=False) # HMAC-SHA256 hashed
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    attempt_count = Column(Integer, default=0)
+    max_attempts = Column(Integer, default=5)
+    last_sent_at = Column(DateTime(timezone=True), server_default=func.now())
+    consumed_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class UserSession(Base):
+    __tablename__ = "user_sessions"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    session_token_hash = Column(String, unique=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    last_activity_at = Column(DateTime(timezone=True), server_default=func.now())
+    revoked_at = Column(DateTime(timezone=True), nullable=True)
+    ip_address = Column(String, nullable=True)
+    user_agent = Column(String, nullable=True)
+    device_metadata = Column(Text, nullable=True) # JSON metadata
+
+class AuthEvent(Base):
+    __tablename__ = "auth_events"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    user_id = Column(String, nullable=True)
+    event_type = Column(String, nullable=False) # ACCOUNT_CREATED, EMAIL_OTP_SENT, EMAIL_VERIFIED, PHONE_OTP_SENT, PHONE_VERIFIED, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, SESSION_REVOKED, HIGH_RISK_AUTH
+    ip_address = Column(String, nullable=True)
+    user_agent = Column(String, nullable=True)
+    device_id = Column(String, nullable=True)
+    metadata_json = Column(Text, nullable=True)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+class CommunicationProviderConfig(Base):
+    __tablename__ = "communication_provider_configs"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    vendor_id = Column(String, ForeignKey("vendor_organizations.id"), nullable=True)
+    provider_type = Column(String, nullable=False)
+    provider_name = Column(String, nullable=False)
+    api_key_encrypted = Column(Text, nullable=True)
+    sender_id = Column(String, nullable=True)
+    dlt_entity_id = Column(String, nullable=True)
+    dlt_template_id = Column(String, nullable=True)
+    is_default = Column(Boolean, default=True)
+    status = Column(String, default="ACTIVE")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+# ==============================================================================
+# UIDAI Secure QR & Identity Verification Engine Models
+# ==============================================================================
+
+class IdentityVerificationRecord(Base):
+    __tablename__ = "identity_verifications"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    candidate_id = Column(String, ForeignKey("candidate_profiles.id"), nullable=False)
+    verification_type = Column(String, default="AADHAAR_SECURE_QR") # AADHAAR_SECURE_QR, OFFLINE_EKYC_XML, AUTHORIZED_AUTH
+    status = Column(String, default="PENDING") # PENDING, VERIFIED, MANUAL_REVIEW, REJECTED
+    aadhaar_last4 = Column(String, nullable=True)
+    document_hash = Column(String, nullable=False) # SHA256(uploadedDocument)
+    qr_signature_valid = Column(Boolean, default=False)
+    payload_valid = Column(Boolean, default=False)
+    name_match_status = Column(String, default="EXACT_MATCH") # EXACT_MATCH, PARTIAL_MATCH, MISMATCH
+    dob_match_status = Column(String, default="EXACT_MATCH") # EXACT_MATCH, MISMATCH
+    gender_match_status = Column(String, default="EXACT_MATCH") # EXACT_MATCH, MISMATCH
+    overall_match_score = Column(Float, default=1.0)
+    verified_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class VerificationAttempt(Base):
+    __tablename__ = "verification_attempts"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    verification_id = Column(String, ForeignKey("identity_verifications.id"), nullable=False)
+    method = Column(String, nullable=False) # SECURE_QR_DECODE, EKYC_ZIP_DECRYPT
+    quality_score = Column(Float, default=100.0) # Blur score & illumination check
+    error_code = Column(String, nullable=True)
+    ip_address = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class VerificationEvidence(Base):
+    __tablename__ = "verification_evidences"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    verification_id = Column(String, ForeignKey("identity_verifications.id"), unique=True, nullable=False)
+    uidai_cert_thumbprint = Column(String, nullable=False)
+    payload_sha256 = Column(String, nullable=False)
+    signature_algorithm = Column(String, default="RSA-2048-SHA256")
+    timestamp_signature = Column(String, nullable=True)
+    engine_version = Column(String, default="v2.0-UIDAI-QR")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class IdentityVerificationEvent(Base):
+    __tablename__ = "identity_verification_events"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    verification_id = Column(String, ForeignKey("identity_verifications.id"), nullable=False)
+    event_type = Column(String, nullable=False) # DOCUMENT_UPLOADED, QR_DETECTED, QR_SIGNATURE_CHECK_STARTED, QR_SIGNATURE_VALID, DATA_MATCH_SUCCESS, VERIFICATION_COMPLETED
+    details = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+
 

@@ -74,42 +74,42 @@ export default function OpsDashboard() {
 
   if (loading && !health) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 font-mono text-xs gap-3">
-        <span className="animate-spin text-xl">⚙️</span>
-        <span>ACQUIRING PLATFORM SUBSYSTEM HEARTBEAT...</span>
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 text-xs gap-3 font-sans">
+        <RefreshCw className="w-5 h-5 animate-spin text-indigo-600" />
+        <span>Acquiring Subsystem Telemetry...</span>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       {/* Sub-Header */}
-      <div className="flex justify-between items-center bg-slate-900/40 p-4 rounded-xl border border-slate-900/60 backdrop-blur-md">
+      <div className="flex justify-between items-center bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
         <div>
-          <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
-            <span>Operations Command Centre</span>
-            <span className="text-[9px] px-2 py-0.5 bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 rounded uppercase font-mono font-bold tracking-widest">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <span>Platform Operations Health</span>
+            <span className="text-xs px-2.5 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full font-medium">
               Live Health
             </span>
           </h1>
-          <p className="text-[11px] text-slate-500 mt-0.5">
-            Production health status, background task worker pools, and API latency checks.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Production health status, background worker tasks, and API latency metrics.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 border border-slate-800 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5 text-xs font-mono"
+            className="p-2 border border-slate-200 hover:bg-slate-50 rounded-md text-slate-600 transition flex items-center gap-1.5 text-xs font-medium cursor-pointer shadow-xs"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-indigo-600" : ""}`} />
             <span>Sync</span>
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="p-3 bg-red-950/10 border border-red-900/20 text-red-400 rounded-xl text-xs font-mono">
+        <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-xs font-medium">
           ⚠️ Telemetry Warning: {error}
         </div>
       )}
@@ -118,73 +118,73 @@ export default function OpsDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         
         {/* Deep health */}
-        <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 flex flex-col gap-3 justify-between min-h-[140px] shadow-lg">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col justify-between min-h-[140px] shadow-xs">
           <div className="flex justify-between items-center">
-            <span className="text-[9px] uppercase font-bold text-slate-500 font-mono">Telemetry Health</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">System Health</span>
             <Server className="w-4 h-4 text-slate-400" />
           </div>
           <div>
-            <h3 className={`text-2xl font-black tracking-tight font-mono uppercase ${
-              health?.status === "READY" ? "text-emerald-400" : "text-amber-400"
+            <h3 className={`text-2xl font-bold tracking-tight uppercase font-mono ${
+              health?.status === "READY" ? "text-emerald-700" : "text-amber-700"
             }`}>
               {health?.status || "UNKNOWN"}
             </h3>
-            <p className="text-[10px] text-slate-500 mt-1 font-medium">Subsystem health classification.</p>
+            <p className="text-xs text-slate-500 mt-1">Subsystem health classification.</p>
           </div>
-          <Link href="/ops/health" className="text-[9px] font-bold text-blue-400 hover:underline uppercase tracking-wider block font-mono">
+          <Link href="/ops/health" className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 uppercase tracking-wider block">
             Subsystems →
           </Link>
         </div>
 
         {/* Worker Pool */}
-        <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 flex flex-col gap-3 justify-between min-h-[140px] shadow-lg">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col justify-between min-h-[140px] shadow-xs">
           <div className="flex justify-between items-center">
-            <span className="text-[9px] uppercase font-bold text-slate-500 font-mono">Active Jobs</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Tasks</span>
             <Cpu className="w-4 h-4 text-slate-400" />
           </div>
           <div>
-            <h3 className="text-2xl font-black tracking-tight text-white font-mono">
+            <h3 className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
               {jobsCount} Tasks
             </h3>
-            <p className="text-[10px] text-slate-500 mt-1 font-medium">Pending or processing backend tasks.</p>
+            <p className="text-xs text-slate-500 mt-1">Pending or processing backend tasks.</p>
           </div>
-          <Link href="/ops/jobs" className="text-[9px] font-bold text-blue-400 hover:underline uppercase tracking-wider block font-mono">
+          <Link href="/ops/jobs" className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 uppercase tracking-wider block">
             Job Ledger →
           </Link>
         </div>
 
         {/* Alert incident count */}
-        <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 flex flex-col gap-3 justify-between min-h-[140px] shadow-lg">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col justify-between min-h-[140px] shadow-xs">
           <div className="flex justify-between items-center">
-            <span className="text-[9px] uppercase font-bold text-slate-500 font-mono">Open Anomalies</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Open Anomalies</span>
             <AlertTriangle className="w-4 h-4 text-slate-400" />
           </div>
           <div>
-            <h3 className={`text-2xl font-black tracking-tight font-mono ${
-              incidentsCount > 0 ? "text-red-400 animate-pulse" : "text-emerald-400"
+            <h3 className={`text-2xl font-bold tracking-tight font-mono ${
+              incidentsCount > 0 ? "text-red-700" : "text-emerald-700"
             }`}>
               {incidentsCount} Incidents
             </h3>
-            <p className="text-[10px] text-slate-500 mt-1 font-medium">Unresolved alert response files.</p>
+            <p className="text-xs text-slate-500 mt-1">Unresolved alert response files.</p>
           </div>
-          <Link href="/ops/maintenance" className="text-[9px] font-bold text-blue-400 hover:underline uppercase tracking-wider block font-mono">
+          <Link href="/ops/maintenance" className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 uppercase tracking-wider block">
             Investigate →
           </Link>
         </div>
 
         {/* Latency */}
-        <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 flex flex-col gap-3 justify-between min-h-[140px] shadow-lg">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col justify-between min-h-[140px] shadow-xs">
           <div className="flex justify-between items-center">
-            <span className="text-[9px] uppercase font-bold text-slate-500 font-mono">Mean Responsiveness</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Responsiveness</span>
             <Clock className="w-4 h-4 text-slate-400" />
           </div>
           <div>
-            <h3 className="text-2xl font-black tracking-tight text-white font-mono">
+            <h3 className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
               {metrics ? `${(metrics.average_latency_seconds * 1000).toFixed(1)} ms` : "0.0 ms"}
             </h3>
-            <p className="text-[10px] text-slate-500 mt-1 font-medium">Average transaction roundtrip processing time.</p>
+            <p className="text-xs text-slate-500 mt-1">Average API roundtrip processing time.</p>
           </div>
-          <Link href="/ops/metrics" className="text-[9px] font-bold text-blue-400 hover:underline uppercase tracking-wider block font-mono">
+          <Link href="/ops/metrics" className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 uppercase tracking-wider block">
             Diagnostics →
           </Link>
         </div>
@@ -193,13 +193,13 @@ export default function OpsDashboard() {
 
       {/* Row 2: Subsystem Status Grid */}
       {health && (
-        <div className="bg-slate-900 p-5 rounded-2xl border border-slate-850 shadow-lg">
-          <h2 className="text-xs font-bold text-white uppercase tracking-wider mb-4 font-mono flex items-center gap-1.5">
-            <Activity className="w-4 h-4 text-emerald-400" />
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+          <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+            <Activity className="w-4 h-4 text-indigo-600" />
             <span>Platform Subsystem Status Grid</span>
           </h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 font-mono text-center">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-center">
             {[
               { name: "POSTGRES DB", status: health.database },
               { name: "REDIS CACHE", status: health.redis },
@@ -208,13 +208,13 @@ export default function OpsDashboard() {
               { name: "AUDIT LEDGER", status: health.audit_namespace },
               { name: "KEYSPACE VAULT", status: health.keyspace },
             ].map((sub, idx) => (
-              <div key={idx} className="bg-slate-950/40 p-3.5 rounded-xl border border-slate-850">
-                <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">{sub.name}</div>
+              <div key={idx} className="bg-slate-50 p-3.5 rounded-lg border border-slate-200">
+                <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">{sub.name}</div>
                 <div className="mt-2">
-                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                     sub.status === "OK" || sub.status === "READY" 
-                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
-                      : "bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse"
+                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200" 
+                      : "bg-red-50 text-red-700 border border-red-200"
                   }`}>{sub.status}</span>
                 </div>
               </div>

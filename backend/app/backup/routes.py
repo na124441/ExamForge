@@ -32,7 +32,7 @@ class BackupManifestResponse(BaseModel):
     created_at: Optional[datetime] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class BackupEventResponse(BaseModel):
     event_type: str
@@ -40,7 +40,7 @@ class BackupEventResponse(BaseModel):
     created_at: Optional[datetime] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class BackupDetailsResponse(BaseModel):
     manifest: BackupManifestResponse

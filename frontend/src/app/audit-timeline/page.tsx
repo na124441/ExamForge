@@ -1,19 +1,19 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/cn";
+import { ForgeTable, ForgeTableColumn } from "@/components/forge/ForgeTable";
+import { ForgeAuditEvent } from "@/components/forge/ForgeAuditEvent";
+import { ForgeBadge, BadgeStatus } from "@/components/forge/ForgeBadge";
+import { ForgeMonoText } from "@/components/forge/ForgeMonoText";
 import { 
-  History, 
-  ShieldCheck, 
-  ShieldAlert, 
-  HelpCircle,
-  Clock,
-  Fingerprint,
-  ChevronRight,
-  Database
-} from "lucide-react";
-import { StatusBadge } from "../../components/ui/StatusBadge";
-import { ProofDrawer, ProofData } from "../../components/ui/ProofDrawer";
+  ForgeDialog, 
+  ForgeDialogContent, 
+  ForgeDialogTitle, 
+  ForgeDialogDescription 
+} from "@/components/forge/ForgeDialog";
+import { Search, Filter, ShieldAlert, RefreshCw } from "lucide-react";
 
 const BACKEND_URL = "http://localhost:8000";
 const EXAM_ID = "EXM-001";
@@ -113,9 +113,13 @@ export default function AuditTimelinePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   
-  // Drawer states
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedProof, setSelectedProof] = useState<ProofData | null>(null);
+  const [selectedBlock, setSelectedBlock] = useState<TimelineBlock | null>(null);
+
+  const [search, setSearch] = useState("");
+  const [severityFilter, setSeverityFilter] = useState("ALL");
+  const [actorFilter, setActorFilter] = useState("ALL");
+  const [sortKey, setSortKey] = useState<string>("timestamp");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
     fetchTimeline();
@@ -137,8 +141,6 @@ export default function AuditTimelinePage() {
       }
       setError("");
     } catch (err: any) {
-      console.warn("FastAPI backend connection failed. Falling back to local offline mock audit timeline logs.", err);
-      // Offline fallback
       setTimeline(MOCK_FALLBACK_TIMELINE);
       setChainValid(true);
       setError("");
@@ -147,324 +149,271 @@ export default function AuditTimelinePage() {
     }
   };
 
-  const handleBlockClick = (block: TimelineBlock) => {
-    const proof: ProofData = {
-      resourceId: block.resource_id,
-      resourceType: block.resource_type,
-      payloadHash: block.payload_hash,
-      previousHash: block.previous_hash,
-      currentHash: block.current_hash,
-      signature: "MEYCIQCc9v19sO12X9kGq81jA208B81a3d9f429188e001ba7e44ee52b1ba7d4c9f1a01AiEA2b... (ECDSA Authenticated signature)",
-      actorName: block.actor_name,
-      actorRole: block.actor_id.includes("controller") ? "Exam Controller" : "Authorized System Agent",
-      timestamp: block.timestamp,
-      auditEvent: block.action,
-      explanation: block.explanation
-    };
-    setSelectedProof(proof);
-    setIsDrawerOpen(true);
+  const filteredData = useMemo(() => {
+    return timeline.filter(row => {
+      const risk = row.signature_status === "TAMPERED" ? "CRITICAL" : (row.action.includes("LOCK") ? "MEDIUM" : "LOW");
+      if (severityFilter !== "ALL" && risk !== severityFilter) return false;
+      if (actorFilter !== "ALL" && !row.actor_id.toLowerCase().includes(actorFilter.toLowerCase())) return false;
+      if (search) {
+        const s = search.toLowerCase();
+        if (!row.action.toLowerCase().includes(s) && 
+            !row.actor_name.toLowerCase().includes(s) && 
+            !row.current_hash.toLowerCase().includes(s)) {
+          return false;
+        }
+      }
+      return true;
+    }).sort((a, b) => {
+      let valA = a[sortKey as keyof TimelineBlock];
+      let valB = b[sortKey as keyof TimelineBlock];
+      if (valA < valB) return sortDir === "asc" ? -1 : 1;
+      if (valA > valB) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [timeline, search, severityFilter, actorFilter, sortKey, sortDir]);
+
+  const handleSort = (key: string) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortDir("desc");
+    }
   };
+
+  const columns: ForgeTableColumn<TimelineBlock>[] = [
+    {
+      key: "timestamp",
+      header: "Timestamp",
+      mono: true,
+      render: (row) => (
+        <span className="text-[var(--text-muted)]">
+          {new Date(row.timestamp).toLocaleString()}
+        </span>
+      )
+    },
+    {
+      key: "current_hash",
+      header: "Event ID",
+      mono: true,
+      render: (row) => row.current_hash.substring(0, 12)
+    },
+    {
+      key: "actor_name",
+      header: "Actor",
+      render: (row) => (
+        <div className="flex flex-col">
+          <span className="font-medium text-[var(--text-primary)]">{row.actor_name}</span>
+          <ForgeMonoText className="text-[10px]">{row.actor_id}</ForgeMonoText>
+        </div>
+      )
+    },
+    {
+      key: "action",
+      header: "Action",
+      render: (row) => row.action.replace(/_/g, " ")
+    },
+    {
+      key: "resource_type",
+      header: "Target",
+      render: (row) => (
+        <div className="flex flex-col">
+          <span>{row.resource_type}</span>
+          <ForgeMonoText className="text-[10px]">{row.resource_id}</ForgeMonoText>
+        </div>
+      )
+    },
+    {
+      key: "result",
+      header: "Result",
+      render: (row) => {
+        const status: BadgeStatus = row.signature_status === "VERIFIED" ? "VERIFIED" : 
+                                    row.signature_status === "TAMPERED" ? "BLOCKED" : "WARNING";
+        return <ForgeBadge status={status} />;
+      }
+    },
+    {
+      key: "risk",
+      header: "Risk",
+      render: (row) => {
+        const isTampered = row.signature_status === "TAMPERED";
+        const isLock = row.action.includes("LOCK") || row.action.includes("KEY");
+        let riskLevel = "LOW";
+        let colorClass = "text-[var(--text-muted)]";
+        if (isTampered) {
+          riskLevel = "CRITICAL";
+          colorClass = "text-[var(--status-danger)] font-bold";
+        } else if (isLock) {
+          riskLevel = "MEDIUM";
+          colorClass = "text-[var(--status-warning)]";
+        }
+        return <span className={colorClass}>{riskLevel}</span>;
+      }
+    },
+    {
+      key: "actions",
+      header: "",
+      render: (row) => (
+        <button
+          onClick={(e) => { e.stopPropagation(); setSelectedBlock(row); }}
+          className="text-[var(--accent-primary)] hover:underline text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] rounded-[var(--radius-1)] px-2 py-1"
+        >
+          View Details
+        </button>
+      )
+    }
+  ];
 
   if (loading && timeline.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 font-mono text-xs gap-3">
-        <span className="animate-spin text-xl">⚙️</span>
-        <span>RECONSTRUCTING CRYPTOGRAPHIC LEDGER CHAIN...</span>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--surface-base)] text-[var(--text-muted)] text-sm gap-3 font-sans">
+        <RefreshCw className="w-5 h-5 animate-spin text-[var(--accent-primary)]" />
+        <span>Reconstructing Audit Ledger Timeline...</span>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 min-h-screen bg-cyber-grid bg-slate-950 pb-12">
-      {/* Sub-Header */}
-      <div className="flex justify-between items-center bg-glass border border-slate-900/60 p-5 rounded-2xl backdrop-blur-md shadow-glow-blue/5">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-cyan-600/10 border border-cyan-500/20 text-cyan-400 rounded-xl shadow-glow-cyan/5">
-            <History className="w-5 h-5 animate-spin" style={{ animationDuration: "12s" }} />
-          </div>
+    <div className="min-h-screen bg-[var(--surface-base)] text-[var(--text-primary)] font-sans flex flex-col">
+      {/* Header */}
+      <header className="border-b border-[var(--border-subtle)] bg-[var(--surface-panel)] p-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-lg font-black text-white tracking-tight flex items-center gap-2 font-outfit">
-              <span>Audit Evidence Ledger</span>
-              <span className="text-[9px] px-2.5 py-0.5 bg-cyan-600/10 border border-cyan-500/20 text-cyan-400 rounded uppercase font-mono font-bold tracking-widest">
-                Ledger Console
-              </span>
-            </h1>
-            <p className="text-[11px] text-slate-400 mt-0.5 font-sans">
-              Immutable timeline verifying the cryptographic chain-of-custody for all examination blocks.
-            </p>
+            <h1 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">Audit Log</h1>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">Immutable timeline verifying the cryptographic chain-of-custody.</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className={cn(
+              "flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-2)] border text-sm font-medium",
+              chainValid ? "bg-[var(--status-success-surface)] border-[var(--status-success)] text-[var(--status-success-text)]" : "bg-[var(--status-danger-surface)] border-[var(--status-danger)] text-[var(--status-danger-text)]"
+            )}>
+              <div className={cn("w-2 h-2 rounded-full", chainValid ? "bg-[var(--status-success)]" : "bg-[var(--status-danger)]")} />
+              {chainValid ? "Chain Intact" : "Discrepancy Alert!"}
+            </div>
+            <button
+              onClick={() => {
+                const role = localStorage.getItem("user_role") || "CONTROLLER";
+                if (role === "CONTROLLER") router.push("/authority");
+                else if (role === "OFFICER" || role === "INVIGILATOR") router.push("/center-console");
+                else router.push("/");
+              }}
+              className="text-sm px-4 py-2 bg-[var(--surface-interactive)] hover:bg-[var(--surface-hover)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-[var(--radius-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] font-medium"
+            >
+              Return to Console
+            </button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              const role = localStorage.getItem("user_role") || "CONTROLLER";
-              if (role === "CONTROLLER") router.push("/authority");
-              else if (role === "OFFICER" || role === "INVIGILATOR") router.push("/center-console");
-              else router.push("/");
-            }}
-            className="text-xs px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 hover:text-white rounded-xl transition font-mono cursor-pointer active:scale-95 flex items-center gap-1.5"
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 p-6 max-w-7xl mx-auto w-full flex flex-col gap-6">
+        {error && (
+          <div className="p-4 bg-[var(--status-danger-surface)] border border-[var(--status-danger)] text-[var(--status-danger-text)] rounded-[var(--radius-2)] text-sm font-medium flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Filter Bar */}
+        <div className="flex flex-wrap gap-4 items-center bg-[var(--surface-panel)] p-4 rounded-[var(--radius-2)] border border-[var(--border-subtle)]">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+            <input
+              type="text"
+              placeholder="Search events, actors..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-[var(--surface-base)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-[var(--radius-2)] pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-[var(--text-muted)]" />
+            <select
+              value={severityFilter}
+              onChange={(e) => setSeverityFilter(e.target.value)}
+              className="bg-[var(--surface-base)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-[var(--radius-2)] px-3 py-2 text-sm focus:outline-none focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors"
+            >
+              <option value="ALL">All Severities</option>
+              <option value="LOW">Low Risk</option>
+              <option value="MEDIUM">Medium Risk</option>
+              <option value="CRITICAL">Critical Risk</option>
+            </select>
+          </div>
+          <select
+            value={actorFilter}
+            onChange={(e) => setActorFilter(e.target.value)}
+            className="bg-[var(--surface-base)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-[var(--radius-2)] px-3 py-2 text-sm focus:outline-none focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors"
           >
-            <span>⬅️ Return to Console</span>
-          </button>
+            <option value="ALL">All Actors</option>
+            <option value="controller">Controller</option>
+            <option value="system-admin">System Admin</option>
+            <option value="gate-keeper">Consensus</option>
+            <option value="officer">Officer</option>
+          </select>
         </div>
-      </div>
 
-      {error && (
-        <div className="p-3.5 bg-red-950/15 border border-red-900/20 text-red-400 rounded-xl text-xs font-mono animate-bounce flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 shrink-0" />
-          <span>⚠️ {error}</span>
+        {/* Table */}
+        <div className="bg-[var(--surface-panel)] rounded-[var(--radius-2)] flex-1 overflow-hidden">
+          <ForgeTable
+            columns={columns}
+            data={filteredData}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSort={handleSort}
+            emptyMessage="No audit events found matching your criteria."
+          />
         </div>
-      )}
+      </main>
 
-      {/* Cryptographic Block Visualizer (SVG Ledger Graph) */}
-      {timeline.length > 0 && (
-        <div className="bg-glass border border-slate-850 p-6 rounded-2xl shadow-glow-blue/2">
-          <div className="flex justify-between items-center mb-4.5 px-1 font-mono">
-            <div className="flex items-center gap-2">
-              <Database className="w-4 h-4 text-cyan-400 animate-pulse" />
-              <span className="text-xs font-bold text-white uppercase tracking-wider">Cryptographic Hash-Chain Visualizer</span>
-            </div>
-            <span className="text-[10px] text-slate-500">Click any block node to view verification proof</span>
-          </div>
-
-          <div className="overflow-x-auto pb-4 scrollbar-thin">
-            <svg 
-              width={Math.max(800, timeline.length * 200 + 40)} 
-              height={100} 
-              className="mx-auto"
-            >
-              {/* Draw connections first (so they render behind nodes) */}
-              {timeline.map((block, idx) => {
-                if (idx === 0) return null;
-                const prevTampered = timeline[idx - 1].signature_status === "TAMPERED";
-                const thisTampered = block.signature_status === "TAMPERED";
-                const isConnectionTampered = prevTampered || thisTampered;
+      {/* Detail Dialog */}
+      <ForgeDialog open={!!selectedBlock} onOpenChange={(open) => !open && setSelectedBlock(null)}>
+        <ForgeDialogContent className="max-w-3xl">
+          <ForgeDialogTitle>Audit Event Details</ForgeDialogTitle>
+          <ForgeDialogDescription>Complete cryptographic evidence and explanation.</ForgeDialogDescription>
+          
+          {selectedBlock && (() => {
+            const isTampered = selectedBlock.signature_status === "TAMPERED";
+            const risk = isTampered ? "CRITICAL" : (selectedBlock.action.includes("LOCK") ? "MEDIUM" : "LOW");
+            const result = isTampered ? "FAIL" : (selectedBlock.signature_status === "VERIFIED" ? "PASS" : "WARNING");
+            
+            return (
+              <div className="mt-4 flex flex-col gap-6">
+                <ForgeAuditEvent
+                  eventId={selectedBlock.current_hash}
+                  timestamp={new Date(selectedBlock.timestamp).toLocaleString()}
+                  actor={`${selectedBlock.actor_name} (${selectedBlock.actor_id})`}
+                  action={selectedBlock.action}
+                  target={`${selectedBlock.resource_type} - ${selectedBlock.resource_id}`}
+                  result={result as any}
+                  risk={risk as any}
+                  links={[
+                    { label: "View Session", href: "#" },
+                    { label: "View Device", href: "#" },
+                    { label: "View Candidate", href: "#" }
+                  ]}
+                />
                 
-                return (
-                  <g key={`line-${block.index}`}>
-                    {/* Animated glowing trace path */}
-                    <line 
-                      x1={30 + (idx - 1) * 200 + 140} 
-                      y1={50} 
-                      x2={30 + idx * 200} 
-                      y2={50} 
-                      className={`stroke-2 ${isConnectionTampered ? "stroke-red-500/70" : "stroke-cyan-500/70 animate-trace-flow"}`}
-                      strokeDasharray="6 4"
-                    />
-                    {/* Connection indicator dot */}
-                    <circle 
-                      cx={30 + (idx - 1) * 200 + 170} 
-                      cy={50} 
-                      r={3} 
-                      className={isConnectionTampered ? "fill-red-500 animate-ping" : "fill-cyan-400 animate-pulse"} 
-                    />
-                  </g>
-                );
-              })}
-
-              {/* Draw block nodes */}
-              {timeline.map((block, idx) => {
-                const isTampered = block.signature_status === "TAMPERED";
-                return (
-                  <g 
-                    key={`node-${block.index}`} 
-                    className="cursor-pointer group" 
-                    onClick={() => handleBlockClick(block)}
-                  >
-                    {/* Node card */}
-                    <rect 
-                      x={30 + idx * 200} 
-                      y={10} 
-                      width={140} 
-                      height={80} 
-                      rx={12} 
-                      className={`fill-slate-950/80 stroke-[2px] transition-all duration-300 group-hover:-translate-y-1 ${
-                        isTampered 
-                          ? "stroke-red-500 shadow-glow-red fill-red-950/10" 
-                          : "stroke-slate-800 group-hover:stroke-cyan-500/80 group-hover:shadow-glow-cyan"
-                      }`}
-                    />
-                    
-                    {/* Block index label */}
-                    <rect 
-                      x={30 + idx * 200 + 10} 
-                      y={20} 
-                      width={48} 
-                      height={14} 
-                      rx={4} 
-                      className="fill-slate-900 stroke stroke-slate-800/60"
-                    />
-                    <text 
-                      x={30 + idx * 200 + 34} 
-                      y={30} 
-                      textAnchor="middle" 
-                      className="fill-slate-400 font-mono text-[8px] font-bold"
-                    >
-                      B#{block.index}
-                    </text>
-
-                    {/* Status Badge inside SVG */}
-                    <text 
-                      x={30 + idx * 200 + 130} 
-                      y={30} 
-                      textAnchor="end" 
-                      className={`font-mono text-[8px] font-black uppercase tracking-wider ${
-                        isTampered ? "fill-red-400 animate-pulse" : "fill-emerald-400"
-                      }`}
-                    >
-                      {block.signature_status}
-                    </text>
-
-                    {/* Action Text */}
-                    <text 
-                      x={30 + idx * 200 + 12} 
-                      y={52} 
-                      className="fill-white font-outfit font-bold text-[10px] tracking-tight group-hover:fill-cyan-400 transition-colors"
-                    >
-                      {block.action.length > 20 ? `${block.action.slice(0, 18).replace(/_/g, " ")}...` : block.action.replace(/_/g, " ")}
-                    </text>
-
-                    {/* Payload hash fragment */}
-                    <text 
-                      x={30 + idx * 200 + 12} 
-                      y={72} 
-                      className="fill-slate-500 font-mono text-[7px]"
-                    >
-                      SHA256: {block.current_hash.slice(0, 18)}...
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
-        </div>
-      )}
-
-      {/* Ledger status strip */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
-        <div className="lg:col-span-8 bg-glass border border-slate-850 p-5 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-6 shadow-lg">
-          <div>
-            <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
-              Ledger Chain Verification Status
-            </h2>
-            <p className="text-[11px] text-slate-400 mt-1 leading-relaxed font-sans">
-              Each block calculates its hash from the preceding block's hash. A hash discrepancy indicates database modification outside authorized cryptographic channels.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 bg-slate-950 border border-slate-900 p-4 rounded-xl font-mono text-xs w-full md:w-auto shrink-0 shadow-inner">
-            <div>
-              <span className="text-[9px] text-slate-500 uppercase font-bold block">Ledger State</span>
-              <div className={chainValid ? "text-emerald-400 font-bold uppercase mt-0.5 tracking-wide" : "text-red-400 font-bold uppercase mt-0.5 animate-pulse tracking-wide"}>
-                {chainValid ? "✓ Chain Intact" : "🚨 Discrepancy Alert!"}
-              </div>
-            </div>
-            <span className={`relative flex h-3.5 w-3.5`}>
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${chainValid ? "bg-emerald-400" : "bg-red-400"}`}></span>
-              <span className={`relative inline-flex rounded-full h-3.5 w-3.5 ${chainValid ? "bg-emerald-500" : "bg-red-500"}`}></span>
-            </span>
-          </div>
-        </div>
-
-        <div className="lg:col-span-4 bg-glass border border-slate-850 p-5 rounded-2xl flex flex-col justify-between shadow-lg text-xs font-mono">
-          <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider block">Signature Engine Specifications</span>
-          <div className="mt-2.5 space-y-1 text-slate-350">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Key Type:</span>
-              <span className="text-white font-bold">ECDSA secp256k1</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Block Mode:</span>
-              <span className="text-white font-bold">Merkle Hash Chain</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Vertical Timeline List */}
-      <div className="relative pl-7 border-l-2 border-slate-900 space-y-6 ml-3">
-        {timeline.map((block) => {
-          const isTampered = block.signature_status === "TAMPERED";
-          return (
-            <div
-              key={block.index}
-              onClick={() => handleBlockClick(block)}
-              className={`bg-glass-card p-5 rounded-2xl border cursor-pointer hover:bg-slate-900/50 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 flex flex-col gap-4 relative group ${
-                isTampered 
-                  ? "border-red-500/40 bg-red-950/10 shadow-md shadow-red-950/20 animate-glow-pulse-red" 
-                  : "border-slate-900 hover:border-cyan-500/30 hover:shadow-glow-blue/2"
-              }`}
-            >
-              {/* Dot marker */}
-              <span className={`absolute left-[-37px] top-[26px] w-4.5 h-4.5 rounded-full border-4 border-slate-950 flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${
-                isTampered 
-                  ? "bg-red-500 shadow-glow-red animate-ping" 
-                  : "bg-cyan-500 shadow-glow-cyan"
-              }`} />
-
-              {/* Block Header */}
-              <div className="flex justify-between items-start flex-wrap gap-2.5 font-mono">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-white font-black uppercase text-[9px] px-2.5 py-0.5 bg-slate-950 rounded-lg border border-slate-900 tracking-wider">
-                      Block #{block.index}
-                    </span>
-                    <span className="text-white font-black text-xs uppercase tracking-wide group-hover:text-cyan-455 transition-colors font-outfit">
-                      {block.action.replace(/_/g, " ")}
-                    </span>
+                <div className="bg-[var(--surface-base)] border border-[var(--border-subtle)] rounded-[var(--radius-2)] p-4 flex flex-col gap-4">
+                  <div>
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1">Cryptographic Explanation</h4>
+                    <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{selectedBlock.explanation}</p>
                   </div>
-                  <div className="text-[10px] text-slate-500 mt-2">
-                    Authority: <span className="text-slate-350 font-semibold">{block.actor_name}</span> | Resource: <span className="text-slate-400">{block.resource_type}</span> | ID: <span className="text-slate-400 font-mono">{block.resource_id.slice(0, 12)}...</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-[var(--border-subtle)]">
+                    <div>
+                      <div className="text-xs text-[var(--text-muted)] mb-1 uppercase font-semibold">Previous Hash</div>
+                      <ForgeMonoText className="text-xs truncate block">{selectedBlock.previous_hash}</ForgeMonoText>
+                    </div>
+                    <div>
+                      <div className="text-xs text-[var(--text-muted)] mb-1 uppercase font-semibold">Payload Hash</div>
+                      <ForgeMonoText className="text-xs truncate block">{selectedBlock.payload_hash}</ForgeMonoText>
+                    </div>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2.5 text-[10px]">
-                  <span className="text-slate-550 font-semibold flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>{new Date(block.timestamp).toLocaleTimeString()}</span>
-                  </span>
-                  <span className={`px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider text-[9px] border ${
-                    isTampered ? "bg-red-500/10 text-red-400 border-red-500/25" : "bg-emerald-500/10 text-emerald-400 border-emerald-500/25"
-                  }`}>
-                    {block.signature_status}
-                  </span>
-                </div>
               </div>
-
-              {/* Explanation section */}
-              <div className="text-xs leading-relaxed text-slate-300 bg-slate-950/60 p-4 border border-slate-900/60 rounded-xl relative overflow-hidden">
-                <div className="text-[9px] text-cyan-400 uppercase font-black tracking-wider font-mono mb-1.5 flex items-center gap-1.5">
-                  <Fingerprint className="w-3.5 h-3.5" />
-                  <span>Audit Explanation & Cryptographic Proof</span>
-                </div>
-                <p className="font-sans leading-relaxed text-[11px] text-slate-450">
-                  {block.explanation}
-                </p>
-              </div>
-
-              {/* Short hashes block */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-[9px] text-slate-500 border-t border-slate-900/40 pt-3">
-                <div className="truncate">
-                  <span className="text-slate-550 block uppercase font-bold text-[8px]">Block Hash</span>
-                  <span className="text-slate-400 font-mono text-[8px]">{block.current_hash}</span>
-                </div>
-                <div className="truncate text-right hidden md:block self-center">
-                  <span className="text-cyan-400 font-black hover:underline font-mono tracking-wider">Inspect ECDSA cryptographic proof →</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Reusable Proof Drawer */}
-      <ProofDrawer 
-        isOpen={isDrawerOpen} 
-        onClose={() => setIsDrawerOpen(false)} 
-        proof={selectedProof} 
-      />
+            );
+          })()}
+        </ForgeDialogContent>
+      </ForgeDialog>
     </div>
   );
 }

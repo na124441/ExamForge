@@ -27,7 +27,7 @@ class AccessReviewCycleResponse(BaseModel):
     completed_at: Optional[datetime]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class AccessReviewItemResponse(BaseModel):
     id: str
@@ -39,7 +39,7 @@ class AccessReviewItemResponse(BaseModel):
     reviewed_at: Optional[datetime]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class AccessReviewDetailResponse(BaseModel):
     cycle: AccessReviewCycleResponse

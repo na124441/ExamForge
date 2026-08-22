@@ -33,7 +33,7 @@ class ComplianceReportResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PentestSimulationResponse(BaseModel):
     id: str
@@ -44,7 +44,7 @@ class PentestSimulationResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 @router.get("/readiness-score")
 def get_readiness_score(

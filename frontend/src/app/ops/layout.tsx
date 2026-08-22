@@ -26,7 +26,11 @@ export default function OpsLayout({ children }: { children: React.ReactNode }) {
       <aside className="w-64 bg-card-bg border-r border-border-color flex flex-col justify-between shrink-0">
         <div className="flex flex-col gap-6 p-6">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">⚙️</span>
+            <img
+              src="/logo-icon.png"
+              alt="ExamForge Logo"
+              className="w-9 h-9 rounded-xl object-cover shadow-sm border border-border-color"
+            />
             <div>
               <h2 className="text-sm font-extrabold text-white tracking-wider uppercase">ExamForge Ops</h2>
               <span className="text-[9px] text-accent-emerald font-bold tracking-widest font-mono uppercase">RELIABILITY DECK</span>
