@@ -13,6 +13,7 @@ import {
   Layers,
   ChevronRight,
   UserCheck,
+  Download
 } from "lucide-react";
 import { HeroOrbitalSystem } from "./HeroOrbitalSystem";
 import { GlassStatusCard } from "./GlassStatusCard";
@@ -112,28 +113,43 @@ export function ExamForgeHero({ onOpenAuthModal }: ExamForgeHeroProps) {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
-              <Link
-                href="/candidate"
+              <button
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    window.dispatchEvent(new CustomEvent("open-pwa-install"));
+                  }
+                }}
                 className={cn(
                   "px-6 py-3.5 rounded-2xl font-bold text-sm text-[#132D28] bg-[#8AD8B8] hover:bg-[#a0e8cb]",
                   "border border-white/40 flex items-center justify-center gap-2 shadow-[0_10px_30px_-8px_rgba(138,216,184,0.6)]",
-                  "hover:shadow-[0_15px_35px_-5px_rgba(138,216,184,0.8)] transition-all duration-300 active:scale-95 cursor-pointer font-sans no-underline"
+                  "hover:shadow-[0_15px_35px_-5px_rgba(138,216,184,0.8)] transition-all duration-300 active:scale-95 cursor-pointer font-sans"
                 )}
               >
-                <span>Register as Candidate</span>
-                <ArrowRight size={16} />
-              </Link>
+                <Download size={16} className="animate-bounce" />
+                <span>Download App</span>
+              </button>
 
               <Link
-                href="/create-exam"
+                href="/candidate"
                 className={cn(
                   "px-6 py-3.5 rounded-2xl font-semibold text-sm text-[#FFF4E2] bg-[rgba(255,244,226,0.06)] hover:bg-[rgba(255,244,226,0.12)]",
                   "border border-[rgba(138,216,184,0.25)] hover:border-[rgba(138,216,184,0.45)] flex items-center justify-center gap-2",
                   "backdrop-blur-xl transition-all duration-300 active:scale-95 cursor-pointer font-sans no-underline"
                 )}
               >
-                <span>Conduct an Exam</span>
+                <span>Candidate Portal</span>
                 <ArrowRight size={16} className="text-[#8AD8B8]" />
+              </Link>
+
+              <Link
+                href="/create-exam"
+                className={cn(
+                  "px-5 py-3.5 rounded-2xl font-semibold text-sm text-[#FFF4E2]/80 hover:text-[#FFF4E2] hover:bg-[rgba(255,244,226,0.06)]",
+                  "border border-transparent hover:border-[rgba(138,216,184,0.25)] flex items-center justify-center gap-2",
+                  "transition-all duration-300 active:scale-95 cursor-pointer font-sans no-underline hidden lg:flex"
+                )}
+              >
+                <span>Conduct an Exam</span>
               </Link>
             </div>
 
