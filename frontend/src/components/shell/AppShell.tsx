@@ -3,7 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ForgeAdminLayout } from "./ForgeAdminLayout";
+import { ForgeBottomNav } from "./ForgeBottomNav";
 import { CommandPalette } from "./CommandPalette";
+import { cn } from "@/lib/cn";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -54,6 +56,7 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const workspace = getWorkspace(pathname);
+  const isExamLockdown = pathname.startsWith("/student-exam");
 
   // Auto-authenticate default controller session if not logged in
   useEffect(() => {
@@ -138,14 +141,20 @@ export function AppShell({ children }: AppShellProps) {
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
-  // Standalone routes — workspace-themed full screen
+  // Standalone routes — workspace-themed full screen with mobile bottom nav on candidate portals
   if (isStandaloneRoute(pathname)) {
     return (
       <div
         data-workspace={workspace}
-        className="min-h-[100dvh] bg-[var(--color-surface)] text-[var(--color-ink)] font-sans"
+        className={cn(
+          "min-h-[100dvh] bg-[var(--color-surface)] text-[var(--color-ink)] font-sans relative",
+          !isExamLockdown && pathname !== "/" && "pb-safe-bottom-nav md:pb-0"
+        )}
       >
         {children}
+        {!isExamLockdown && pathname !== "/" && (
+          <ForgeBottomNav />
+        )}
       </div>
     );
   }

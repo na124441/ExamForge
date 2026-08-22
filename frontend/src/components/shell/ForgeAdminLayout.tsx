@@ -5,6 +5,7 @@ import { cn } from "@/lib/cn";
 import { ForgeNavRail } from "./ForgeNavRail";
 import { ForgeHeaderLight } from "./ForgeHeaderLight";
 import { ForgeMobileNav } from "./ForgeMobileNav";
+import { ForgeBottomNav } from "./ForgeBottomNav";
 import { CommandPalette } from "./CommandPalette";
 
 interface ForgeAdminLayoutProps {
@@ -42,10 +43,13 @@ export function ForgeAdminLayout({
           onToggleMobileNav={() => setIsMobileNavOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto relative">
+        <main className="flex-1 overflow-y-auto relative pb-safe-bottom-nav md:pb-0">
           {children}
         </main>
       </div>
+
+      {/* Mobile Role-Aware Bottom Navigation */}
+      <ForgeBottomNav onToggleDrawer={() => setIsMobileNavOpen(true)} />
 
       {/* Mobile Navigation Drawer */}
       <ForgeMobileNav 

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "../components/shell/AppShell";
 import { PwaInstallPrompt } from "../components/pwa/PwaInstallPrompt";
+import { NetworkStatusBanner } from "../components/pwa/NetworkStatusBanner";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -78,6 +79,7 @@ export default function RootLayout({
         className="min-h-full flex flex-col bg-[var(--color-surface)] text-[var(--color-ink)]"
         suppressHydrationWarning
       >
+        <NetworkStatusBanner />
         <AppShell>{children}</AppShell>
         <PwaInstallPrompt />
       </body>
