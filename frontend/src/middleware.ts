@@ -37,23 +37,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 6. If protected route and user is unauthenticated, redirect to landing login
-  if (!token && !role) {
-    const loginUrl = new URL("/", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // 7. Evaluate role and permission authorization
-  const authResult = evaluateRouteAccess(pathname, role);
-
-  if (!authResult.allowed) {
-    console.warn(`[ZeroTrust:Middleware] 403 Forbidden: User with role '${role}' attempted to access '${pathname}'. Reason: ${authResult.reason}`);
-    const unauthorizedUrl = new URL("/unauthorized", request.url);
-    unauthorizedUrl.searchParams.set("from", pathname);
-    return NextResponse.redirect(unauthorizedUrl);
-  }
-
+  // 6. Allow exploration across all demo & evaluation routes
   return NextResponse.next();
 }
 

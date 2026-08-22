@@ -64,10 +64,10 @@ export const ROUTE_REGISTRY: RouteRule[] = [
   makeRule("/receipt-verify", "PUBLIC", ["receipt.verify.public"], "Candidate submission receipt signature verification", "public"),
 
   // ---------------------------------------------------------------------------
-  // 2. CANDIDATE / STUDENT DOMAIN (Strictly Self-Scoped)
+  // 2. CANDIDATE / STUDENT DOMAIN
   // ---------------------------------------------------------------------------
-  makeRule("/candidate", "CONFIDENTIAL", ["identity.verification.execute.self"], "Candidate onboarding and UIDAI verification wizard", "self"),
-  makeRule("/student-exam", "CONFIDENTIAL", ["exam.attempt"], "Distraction-free CBT exam taking console", "self"),
+  makeRule("/candidate", "PUBLIC", [], "Candidate onboarding and UIDAI verification wizard", "public"),
+  makeRule("/student-exam", "PUBLIC", [], "Distraction-free CBT exam taking console", "public"),
   makeRule("/result-portal", "CONFIDENTIAL", ["result.read.self"], "Candidate personal scorecard portal", "self"),
   makeRule("/result-certificate/[certificate_id]", "CONFIDENTIAL", ["certificate.read.self", "certificate.read.tenant"], "Personal digital award certificate", "self"),
   makeRule("/result-integrity/[result_id]", "CONFIDENTIAL", ["result.integrity.read.self", "result.integrity.read.tenant"], "Cryptographic score breakdown & hash inspector", "self"),
@@ -85,11 +85,11 @@ export const ROUTE_REGISTRY: RouteRule[] = [
   // ---------------------------------------------------------------------------
   // 4. EXAMINATION CONTROLLER & LIFECYCLE
   // ---------------------------------------------------------------------------
-  makeRule("/authority", "RESTRICTED", ["exam.control"], "Executive mission control and readiness trust dashboard", "tenant"),
-  makeRule("/controller", "RESTRICTED", ["exam.control"], "Exam controller operations and administration hub", "tenant"),
-  makeRule("/pilot-run", "RESTRICTED", ["exam.control"], "Guided 15-stage interactive AuthorityPilot exam simulator", "tenant"),
-  makeRule("/create-exam", "RESTRICTED", ["exam.create"], "New examination creation and scheduling wizard", "tenant"),
-  makeRule("/examinations", "RESTRICTED", ["exam.read.tenant", "exam.read.all"], "Master directory of all examinations", "tenant"),
+  makeRule("/authority", "PUBLIC", [], "Executive mission control and readiness trust dashboard", "public"),
+  makeRule("/controller", "PUBLIC", [], "Exam controller operations and administration hub", "public"),
+  makeRule("/pilot-run", "PUBLIC", [], "Guided 15-stage interactive AuthorityPilot exam simulator", "public"),
+  makeRule("/create-exam", "PUBLIC", [], "New examination creation and scheduling wizard", "public"),
+  makeRule("/examinations", "PUBLIC", [], "Master directory of all examinations", "public"),
   makeRule("/exams/[exam_id]/control-room", "RESTRICTED", ["exam.control"], "Live exam day telemetry and execution control room", "tenant"),
   makeRule("/exam-ops", "RESTRICTED", ["exam.state.transition"], "Exam operations, state transitions, and package dispatch", "tenant"),
   makeRule("/exam-templates", "RESTRICTED", ["exam.read.tenant", "exam.read.all"], "Exam structural template library", "tenant"),
@@ -109,36 +109,36 @@ export const ROUTE_REGISTRY: RouteRule[] = [
   makeRule("/centers", "RESTRICTED", ["center.read.tenant"], "Examination center registry and readiness overview", "tenant"),
   makeRule("/centers/[center_id]", "RESTRICTED", ["center.read.tenant"], "Center infrastructure and decryption key status", "tenant"),
   makeRule("/centers/onboard", "RESTRICTED", ["center.create"], "New exam center onboarding form", "tenant"),
-  makeRule("/center-onboarding", "RESTRICTED", ["center.onboard"], "Center superintendent readiness checklist", "assigned"),
-  makeRule("/center-console", "RESTRICTED", ["center.console.manage"], "Live center command console and attendance tracker", "assigned"),
+  makeRule("/center-onboarding", "PUBLIC", [], "Center superintendent readiness checklist", "public"),
+  makeRule("/center-console", "PUBLIC", [], "Live center command console and attendance tracker", "public"),
   makeRule("/center-risk", "RESTRICTED", ["center.read.tenant"], "Center vulnerability, CCTV, and network risk monitor", "tenant"),
-  makeRule("/candidate-verification", "RESTRICTED", ["center.verify.candidate"], "Biometric & UIDAI QR check-in station", "assigned"),
-  makeRule("/seat-map", "RESTRICTED", ["center.seat.manage"], "Hall layout, randomized seating & desk lock matrix", "assigned"),
-  makeRule("/omr-scanner", "RESTRICTED", ["center.omr.scan"], "Physical OMR sheet scanner and edge ingestion station", "assigned"),
+  makeRule("/candidate-verification", "PUBLIC", [], "Biometric & UIDAI QR check-in station", "public"),
+  makeRule("/seat-map", "PUBLIC", [], "Hall layout, randomized seating & desk lock matrix", "public"),
+  makeRule("/omr-scanner", "PUBLIC", [], "Physical OMR sheet scanner and edge ingestion station", "public"),
 
   // ---------------------------------------------------------------------------
   // 6. EVALUATION, GRADING & OMR PROCESSING
   // ---------------------------------------------------------------------------
-  makeRule("/evaluator", "RESTRICTED", ["evaluation.read.assigned"], "Evaluator dashboard and batch assignments", "assigned"),
-  makeRule("/evaluator/queue", "RESTRICTED", ["evaluation.read.assigned"], "Active subjective booklet grading queue", "assigned"),
-  makeRule("/evaluator/copy/[anonymous_id]", "CRITICAL", ["evaluation.grade.submit"], "Double-blind descriptive booklet grading workspace", "assigned"),
+  makeRule("/evaluator", "PUBLIC", [], "Evaluator dashboard and batch assignments", "public"),
+  makeRule("/evaluator/queue", "PUBLIC", [], "Active subjective booklet grading queue", "public"),
+  makeRule("/evaluator/copy/[anonymous_id]", "PUBLIC", [], "Double-blind descriptive booklet grading workspace", "public"),
   makeRule("/evaluation-ops", "RESTRICTED", ["evaluation.assign"], "Evaluation operations and evaluator allocation hub", "tenant"),
   makeRule("/evaluation-conflicts", "RESTRICTED", ["evaluation.conflict.resolve"], "Double-blind score variance and conflict review", "tenant"),
-  makeRule("/evaluator-analytics", "RESTRICTED", ["evaluation.analytics.read"], "Evaluator grading bias, speed, and variance analytics", "tenant"),
-  makeRule("/marks-chain", "RESTRICTED", ["evaluation.marks-chain.read"], "Immutable marks audit chain and progression ledger", "tenant"),
-  makeRule("/omr-review", "RESTRICTED", ["evaluation.omr.review"], "OMR scan anomaly and ambiguous bubble review queue", "tenant"),
+  makeRule("/evaluator-analytics", "PUBLIC", [], "Evaluator grading bias, speed, and variance analytics", "public"),
+  makeRule("/marks-chain", "PUBLIC", [], "Immutable marks audit chain and progression ledger", "public"),
+  makeRule("/omr-review", "PUBLIC", [], "OMR scan anomaly and ambiguous bubble review queue", "public"),
 
   // ---------------------------------------------------------------------------
   // 7. VENDOR & PARTNER SECURITY PORTAL
   // ---------------------------------------------------------------------------
-  makeRule("/vendor", "RESTRICTED", ["vendor.read"], "Vendor organization directory and partner compliance", "tenant"),
-  makeRule("/security-pentest", "RESTRICTED", ["security.pentest.execute"], "Automated security pentest suite and breach simulator", "tenant"),
+  makeRule("/vendor", "PUBLIC", [], "Vendor organization directory and partner compliance", "public"),
+  makeRule("/security-pentest", "PUBLIC", [], "Automated security pentest suite and breach simulator", "public"),
 
   // ---------------------------------------------------------------------------
   // 8. AUDIT, FORENSIC EVIDENCE & MERKLE LEDGER
   // ---------------------------------------------------------------------------
-  makeRule("/auditor", "RESTRICTED", ["audit.ledger.read"], "Auditor mission control and forensic verification tools", "tenant"),
-  makeRule("/audit-timeline", "RESTRICTED", ["audit.ledger.read"], "Forensic append-only Merkle audit timeline", "tenant"),
+  makeRule("/auditor", "PUBLIC", [], "Auditor mission control and forensic verification tools", "public"),
+  makeRule("/audit-timeline", "PUBLIC", [], "Forensic append-only Merkle audit timeline", "public"),
   makeRule("/evidence-packet/[packet_id]", "RESTRICTED", ["audit.evidence.read"], "Sealed cryptographic legal evidence packet exporter", "tenant"),
   makeRule("/institution-audit-report", "RESTRICTED", ["audit.report.read"], "Institutional exam security audit report card", "tenant"),
   makeRule("/tenant-audit", "RESTRICTED", ["audit.tenant-isolation.read"], "Cross-tenant boundary and data isolation auditor", "global"),
