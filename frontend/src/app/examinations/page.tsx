@@ -22,6 +22,7 @@ import { ForgeSection } from '@/components/forge/ForgeSection';
 import { ForgeCard, ForgeCardHeader, ForgeCardTitle, ForgeCardContent } from '@/components/forge/ForgeCard';
 import { ForgeStatusPill } from '@/components/forge/ForgeStatusPill';
 import { ForgeMetric } from '@/components/forge/ForgeMetric';
+import { ForgePageHeader } from '@/components/forge/ForgePageHeader';
 import { ForgeButton } from '@/components/forge/ForgeButton';
 import { cn } from '@/lib/cn';
 
@@ -250,22 +251,47 @@ function ExaminationsContent() {
   };
 
   return (
-    <ForgeSection 
-      title="Examinations Directory" 
-      subtitle="Live database catalog of all accredited examination sessions and blueprints"
-      className="flex flex-col h-full overflow-hidden"
-    >
-      <div className="h-[calc(100vh-140px)] w-full flex-1">
+    <div className="flex flex-col h-full overflow-hidden p-4 sm:p-6 lg:p-8 space-y-6 font-sans select-none">
+      <ForgePageHeader
+        breadcrumbs={[
+          { label: "Operations", href: "/authority" },
+          { label: "Examinations" }
+        ]}
+        title="Examinations Directory"
+        description="Live database catalog of all accredited examination sessions, fee schedules, and question blueprints."
+        actions={
+          <div className="flex items-center gap-2.5">
+            <ForgeButton
+              variant="secondary"
+              size="md"
+              icon={<RefreshCw className={cn("w-3.5 h-3.5", isLoading && "animate-spin")} />}
+              onClick={fetchExams}
+              disabled={isLoading}
+            >
+              Refresh
+            </ForgeButton>
+            <ForgeButton
+              variant="primary"
+              size="md"
+              onClick={() => router.push("/create-exam")}
+            >
+              Create Examination
+            </ForgeButton>
+          </div>
+        }
+      />
+
+      <div className="h-[calc(100vh-220px)] w-full flex-1">
         {isLoading ? (
           <div className="p-12 text-center text-xs font-mono text-[var(--color-accent)] flex items-center justify-center gap-2">
             <RefreshCw className="w-4 h-4 animate-spin" /> Querying Database Catalog...
           </div>
         ) : error ? (
-          <div className="p-8 rounded-xl bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 text-xs text-center space-y-2">
+          <div className="p-8 rounded-xl bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 text-xs text-center space-y-3 max-w-md mx-auto mt-8">
             <p className="font-bold">Database Query Error: {error}</p>
-            <button onClick={fetchExams} className="px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-white text-xs font-semibold cursor-pointer">
+            <ForgeButton variant="primary" size="sm" onClick={fetchExams}>
               Retry Query
-            </button>
+            </ForgeButton>
           </div>
         ) : (
           <ForgeMasterDetail
@@ -284,6 +310,6 @@ function ExaminationsContent() {
           />
         )}
       </div>
-    </ForgeSection>
+    </div>
   );
 }

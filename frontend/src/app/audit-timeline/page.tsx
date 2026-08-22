@@ -13,6 +13,8 @@ import {
   ForgeDialogTitle, 
   ForgeDialogDescription 
 } from "@/components/forge/ForgeDialog";
+import { ForgePageHeader } from "@/components/forge/ForgePageHeader";
+import { ForgeButton } from "@/components/forge/ForgeButton";
 import { Search, Filter, ShieldAlert, RefreshCw, Database, AlertTriangle } from "lucide-react";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -173,31 +175,40 @@ export default function AuditTimelinePage() {
   ];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto font-sans pb-12">
-      
-      {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4">
-        <div>
-          <h1 className="text-xl font-bold text-[var(--color-ink)] flex items-center gap-2">
-            <Database className="w-5 h-5 text-[var(--color-accent)]" />
-            Append-Only Cryptographic Audit Timeline
-          </h1>
-          <p className="text-xs text-[var(--color-ink-secondary)] font-mono mt-0.5">
-            Database-Anchored Merkle Chain &bull; Non-Repudiable Digital Signatures &bull; Exam ID: {EXAM_ID}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={fetchTimeline}
-            disabled={loading}
-            className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-sunken)] text-[var(--color-ink)] text-xs font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-colors"
-          >
-            <RefreshCw className={cn("w-3.5 h-3.5", loading && "animate-spin")} />
-            Refresh Stream
-          </button>
-        </div>
-      </div>
+    <div className="space-y-6 max-w-7xl mx-auto font-sans p-4 sm:p-6 lg:p-8 pb-12 select-none">
+      <ForgePageHeader
+        breadcrumbs={[
+          { label: "Audit Authority", href: "/auditor" },
+          { label: "Cryptographic Ledger Timeline" }
+        ]}
+        title="Append-Only Cryptographic Audit Timeline"
+        description={`Database-anchored Merkle hash chaining, non-repudiable transaction digests, and immutable block verification for ${EXAM_ID}.`}
+        status={
+          <ForgeBadge variant={chainValid ? "success" : "critical"}>
+            {chainValid ? "CHAIN UNBROKEN" : "TAMPER DETECTED"}
+          </ForgeBadge>
+        }
+        actions={
+          <div className="flex items-center gap-2.5">
+            <ForgeButton
+              variant="secondary"
+              size="md"
+              onClick={fetchTimeline}
+              disabled={loading}
+              icon={<RefreshCw className={cn("w-3.5 h-3.5", loading && "animate-spin")} />}
+            >
+              Refresh Stream
+            </ForgeButton>
+            <ForgeButton
+              variant="secondary"
+              size="md"
+              onClick={() => router.push("/verify-result")}
+            >
+              Public Verifier
+            </ForgeButton>
+          </div>
+        }
+      />
 
       {/* Ledger Integrity Banner */}
       <div className={cn(

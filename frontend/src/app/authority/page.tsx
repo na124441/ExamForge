@@ -26,6 +26,7 @@ import { ForgeMetric } from "@/components/forge/ForgeMetric";
 import { ForgeStatusPill } from "@/components/forge/ForgeStatusPill";
 import { ForgeButton } from "@/components/forge/ForgeButton";
 import { ForgeTable } from "@/components/forge/ForgeTable";
+import { ForgePageHeader } from "@/components/forge/ForgePageHeader";
 import { ForgeActivityFeed, ForgeActivityEvent } from "@/components/forge/ForgeActivityFeed";
 import { cn } from "@/lib/cn";
 
@@ -173,7 +174,48 @@ export default function AuthorityDashboard() {
   const activeExamsCount = exams.filter(e => e.status === "live").length;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto font-sans pb-12">
+    <div className="space-y-6 max-w-7xl mx-auto font-sans p-4 sm:p-6 lg:p-8 pb-12 select-none">
+      <ForgePageHeader
+        breadcrumbs={[
+          { label: "Operations Hub", href: "/authority" },
+          { label: "Executive Mission Control" }
+        ]}
+        title="Examination Authority Mission Control"
+        description="Unified real-time governance, dual-control publication gates, institutional trust scoring, and active exam telemetry."
+        status={
+          <ForgeStatusPill variant={metrics.verdict.status === "READY" ? "success" : "warning"} dot>
+            {metrics.verdict.status === "READY" ? "GOVERNANCE ACTIVE" : "DEGRADED SAFETY"}
+          </ForgeStatusPill>
+        }
+        actions={
+          <div className="flex items-center gap-2.5">
+            <ForgeButton
+              variant="secondary"
+              size="md"
+              onClick={fetchDashboardData}
+              disabled={refreshing}
+              icon={<RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin")} />}
+            >
+              Refresh
+            </ForgeButton>
+            <ForgeButton
+              variant="secondary"
+              size="md"
+              onClick={() => router.push("/safebatch")}
+              icon={<Layers className="w-3.5 h-3.5 text-amber-500" />}
+            >
+              SafeBatch
+            </ForgeButton>
+            <ForgeButton
+              variant="primary"
+              size="md"
+              onClick={() => router.push("/create-exam")}
+            >
+              Create Exam
+            </ForgeButton>
+          </div>
+        }
+      />
       
       {/* Top Banner / Verdict Callout */}
       <div className={cn(

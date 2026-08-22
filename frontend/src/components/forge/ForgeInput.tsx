@@ -15,27 +15,27 @@ export interface ForgeInputProps extends React.InputHTMLAttributes<HTMLInputElem
 const ForgeInput = React.forwardRef<HTMLInputElement, ForgeInputProps>(
   ({ className, label, error, helperText, mono, leadingIcon, trailingIcon, type, ...props }, ref) => {
     return (
-      <div className="flex flex-col gap-1.5 w-full font-sans">
+      <div className="flex flex-col gap-1.5 w-full font-sans select-none">
         {label && (
-          <label className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] tracking-wide">
+          <label className="text-xs font-semibold text-[var(--color-ink-secondary)] tracking-wide font-mono uppercase">
             {label}
           </label>
         )}
         <div className="relative flex items-center w-full">
           {leadingIcon && (
-            <div className="absolute left-3.5 flex items-center pointer-events-none text-[var(--md-sys-color-on-surface-variant)]">
+            <div className="absolute left-3.5 flex items-center pointer-events-none text-[var(--color-ink-muted)]">
               {leadingIcon}
             </div>
           )}
           <input
             type={type}
             className={cn(
-              "flex h-11 w-full rounded-xl border bg-[var(--md-sys-color-surface)] px-4 py-2 text-sm text-[var(--md-sys-color-on-surface)] transition-all duration-[var(--duration-fast)] placeholder:text-[var(--text-muted)] focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-38",
+              "flex h-11 w-full rounded-xl border bg-[var(--color-surface-sunken)] px-3.5 py-2 text-sm text-[var(--color-ink)] transition-all duration-[var(--duration-fast)] placeholder:text-[var(--color-ink-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:bg-[var(--color-surface-raised)] disabled:cursor-not-allowed disabled:opacity-40 shadow-2xs",
               leadingIcon ? "pl-10" : "",
               trailingIcon ? "pr-10" : "",
               error
-                ? "border-[var(--md-sys-color-error)] focus-visible:ring-[var(--md-sys-color-error)] focus-visible:border-[var(--md-sys-color-error)]"
-                : "border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-outline)] focus-visible:border-[var(--md-sys-color-primary)] focus-visible:ring-[var(--md-sys-color-primary)]",
+                ? "border-[var(--color-danger)] focus-visible:ring-[var(--color-danger)] focus-visible:border-[var(--color-danger)]"
+                : "border-[var(--color-border)] hover:border-[var(--color-border-strong)] focus-visible:border-[var(--color-accent)] focus-visible:ring-[var(--color-accent)]",
               mono ? "font-mono" : "font-sans",
               className
             )}
@@ -43,17 +43,17 @@ const ForgeInput = React.forwardRef<HTMLInputElement, ForgeInputProps>(
             {...props}
           />
           {trailingIcon && (
-            <div className="absolute right-3.5 flex items-center pointer-events-none text-[var(--md-sys-color-on-surface-variant)]">
+            <div className="absolute right-3.5 flex items-center pointer-events-none text-[var(--color-ink-muted)]">
               {trailingIcon}
             </div>
           )}
         </div>
         {error ? (
-          <p className="text-xs font-medium text-[var(--md-sys-color-error)]">
+          <p className="text-xs font-medium text-[var(--color-danger-text)]">
             {error}
           </p>
         ) : helperText ? (
-          <p className="text-xs text-[var(--md-sys-color-on-surface-variant)]">
+          <p className="text-[11px] text-[var(--color-ink-muted)]">
             {helperText}
           </p>
         ) : null}

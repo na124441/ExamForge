@@ -55,6 +55,19 @@ export const ForgeCardTitle = React.forwardRef<HTMLHeadingElement, ForgeCardTitl
 );
 ForgeCardTitle.displayName = "ForgeCardTitle";
 
+export interface ForgeCardDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
+
+export const ForgeCardDescription = React.forwardRef<HTMLParagraphElement, ForgeCardDescriptionProps>(
+  ({ className, ...props }, ref) => (
+    <p
+      ref={ref}
+      className={cn("text-xs text-[var(--color-ink-secondary)] leading-relaxed font-sans mt-0.5", className)}
+      {...props}
+    />
+  )
+);
+ForgeCardDescription.displayName = "ForgeCardDescription";
+
 export interface ForgeCardContentProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const ForgeCardContent = React.forwardRef<HTMLDivElement, ForgeCardContentProps>(

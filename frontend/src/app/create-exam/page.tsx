@@ -3,6 +3,7 @@
 import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
+import { ForgePageHeader } from "@/components/forge/ForgePageHeader";
 import { ForgeStepIndicator, Step } from "@/components/forge/ForgeStepIndicator";
 import { ForgeButton } from "@/components/forge/ForgeButton";
 import { ForgeInput } from "@/components/forge/ForgeInput";
@@ -167,21 +168,36 @@ function CreateExamPageInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--surface-background)] text-[var(--text-primary)] font-sans flex flex-col">
-      <div className="border-b border-[var(--border-subtle)] bg-[var(--surface-elevated)] px-8 py-4">
-        <h1 className="text-xl font-bold mb-4">Create New Examination</h1>
-        <div className="overflow-x-auto pb-2">
-          <ForgeStepIndicator steps={stepList} className="min-w-max" />
-        </div>
+    <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-ink)] font-sans flex flex-col p-4 sm:p-6 lg:p-8 space-y-6 select-none">
+      <ForgePageHeader
+        breadcrumbs={[
+          { label: "Examinations", href: "/examinations" },
+          { label: "Create Examination" }
+        ]}
+        title="Configure New Examination"
+        description="Define examination blueprint, security policies, time per section, and assessment center quotas."
+        actions={
+          <ForgeButton
+            variant="secondary"
+            size="md"
+            onClick={() => router.push("/examinations")}
+          >
+            Cancel & Exit
+          </ForgeButton>
+        }
+      />
+
+      <div className="w-full bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-2xl p-4 sm:p-6 overflow-x-auto shadow-xs">
+        <ForgeStepIndicator steps={stepList} className="min-w-max" />
       </div>
 
-      <main className="flex-1 max-w-4xl w-full mx-auto p-8">
-        <div className="bg-[var(--surface-elevated)] border border-[var(--border-default)] rounded-[var(--radius-3)] p-6 md:p-8 flex flex-col min-h-[500px]">
+      <main className="flex-1 max-w-4xl w-full mx-auto">
+        <div className="bg-[var(--color-surface-raised)] border border-[var(--color-border)] rounded-2xl p-6 md:p-8 flex flex-col min-h-[500px] shadow-xs">
           
           <div className="flex-1 mb-8">
             {step === 1 && (
               <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
-                <h2 className="text-lg font-semibold text-[var(--text-primary)]">01. Identity Details</h2>
+                <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)] font-sans">01. Identity Details</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <ForgeInput 
                     label="Exam Title" 
@@ -220,7 +236,7 @@ function CreateExamPageInner() {
 
             {step === 2 && (
               <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
-                <h2 className="text-lg font-semibold text-[var(--text-primary)]">02. Structure Configuration</h2>
+                <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)] font-sans">02. Structure Configuration</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <ForgeInput 
                     label="Number of Sections" 
@@ -257,7 +273,7 @@ function CreateExamPageInner() {
 
             {step === 3 && (
               <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
-                <h2 className="text-lg font-semibold text-[var(--text-primary)]">03. Question Bank</h2>
+                <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)] font-sans">03. Question Bank</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <ForgeInput 
                     label="Total Question Count" 
@@ -271,7 +287,7 @@ function CreateExamPageInner() {
                     value={sets.toString()} 
                     onChange={(e) => setSets(Number(e.target.value))} 
                   />
-                  <div className="md:col-span-2 mt-4 p-4 border border-[var(--border-default)] rounded-[var(--radius-2)]">
+                  <div className="md:col-span-2 mt-4 p-4 border border-[var(--color-border)] rounded-xl bg-[var(--color-surface-sunken)]">
                     <ForgeSwitch 
                       label="Enable Question Randomization" 
                       description="Randomize question sequence across different candidate sessions"
@@ -285,9 +301,9 @@ function CreateExamPageInner() {
 
             {step === 4 && (
               <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
-                <h2 className="text-lg font-semibold text-[var(--text-primary)]">04. Examination Rules</h2>
+                <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)] font-sans">04. Examination Rules</h2>
                 <div className="space-y-4">
-                  <div className="p-4 border border-[var(--border-default)] rounded-[var(--radius-2)]">
+                  <div className="p-4 border border-[var(--color-border)] rounded-xl bg-[var(--color-surface-sunken)]">
                     <ForgeSwitch 
                       label="Negative Marking" 
                       description="Deduct partial marks for incorrect answers"
@@ -295,7 +311,7 @@ function CreateExamPageInner() {
                       onCheckedChange={setNegativeMarking}
                     />
                   </div>
-                  <div className="p-4 border border-[var(--border-default)] rounded-[var(--radius-2)]">
+                  <div className="p-4 border border-[var(--color-border)] rounded-xl bg-[var(--color-surface-sunken)]">
                     <ForgeSwitch 
                       label="Enforce Time Per Section" 
                       description="Candidates must spend a strict amount of time on each section before proceeding"
@@ -303,7 +319,7 @@ function CreateExamPageInner() {
                       onCheckedChange={setTimePerSection}
                     />
                   </div>
-                  <div className="p-4 border border-[var(--border-default)] rounded-[var(--radius-2)]">
+                  <div className="p-4 border border-[var(--color-border)] rounded-xl bg-[var(--color-surface-sunken)]">
                     <ForgeSwitch 
                       label="On-Screen Calculator Allowed" 
                       description="Provide an on-screen scientific calculator during the exam"
@@ -318,7 +334,7 @@ function CreateExamPageInner() {
             {step === 5 && (
               <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-semibold text-[var(--text-primary)]">05. Security Policies</h2>
+                  <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)] font-sans">05. Security Policies</h2>
                   <ForgeSelect 
                     className="w-48"
                     options={INTEGRITY_PACKAGES.map(p => ({ value: p.id, label: p.name }))}
@@ -329,7 +345,7 @@ function CreateExamPageInner() {
 
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-sm font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-3">Session Security</h3>
+                    <h3 className="text-xs font-bold text-[var(--color-ink-secondary)] uppercase tracking-wider mb-3 font-mono">Session Security</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <ForgeSwitch label="Device Binding" checked={securitySettings.deviceBinding} onCheckedChange={(v) => handleSecurityChange('deviceBinding', v)} />
                       <ForgeSwitch label="Browser Integrity" checked={securitySettings.browserIntegrity} onCheckedChange={(v) => handleSecurityChange('browserIntegrity', v)} />
@@ -341,7 +357,7 @@ function CreateExamPageInner() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-3">Identity</h3>
+                    <h3 className="text-xs font-bold text-[var(--color-ink-secondary)] uppercase tracking-wider mb-3 font-mono">Identity</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <ForgeSwitch label="Identity Verification" description="REQUIRED" checked={securitySettings.identityVerification} disabled />
                       <ForgeSwitch label="Liveness Verification" description="REQUIRED" checked={securitySettings.livenessVerification} disabled />
@@ -349,7 +365,7 @@ function CreateExamPageInner() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-3">Monitoring</h3>
+                    <h3 className="text-xs font-bold text-[var(--color-ink-secondary)] uppercase tracking-wider mb-3 font-mono">Monitoring</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <ForgeSwitch label="Tab Switching Detection" checked={securitySettings.tabSwitchingDetection} onCheckedChange={(v) => handleSecurityChange('tabSwitchingDetection', v)} />
                       <ForgeSwitch label="Network Anomaly Detection" checked={securitySettings.networkAnomalyDetection} onCheckedChange={(v) => handleSecurityChange('networkAnomalyDetection', v)} />
@@ -362,7 +378,7 @@ function CreateExamPageInner() {
 
             {step === 6 && (
               <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
-                <h2 className="text-lg font-semibold text-[var(--text-primary)]">06. Designated Centres</h2>
+                <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)] font-sans">06. Designated Centres</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <ForgeInput 
                     label="Expected Candidates" 
@@ -378,24 +394,24 @@ function CreateExamPageInner() {
                   />
                 </div>
                 
-                <h3 className="text-sm font-medium text-[var(--text-secondary)] mb-3">Select Specific Exam Hubs</h3>
+                <h3 className="text-xs font-bold text-[var(--color-ink-secondary)] uppercase tracking-wider mb-3 font-mono">Select Specific Exam Hubs</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {CENTRE_LIST.map(centre => (
                     <div 
                       key={centre.id}
                       onClick={() => toggleCentre(centre.id)}
                       className={cn(
-                        "p-4 rounded-[var(--radius-2)] border cursor-pointer transition-colors flex items-center gap-3",
+                        "p-4 rounded-xl border cursor-pointer transition-colors flex items-center gap-3",
                         selectedCentres.includes(centre.id) 
-                          ? "border-[var(--accent-primary)] bg-[var(--surface-interactive)]" 
-                          : "border-[var(--border-default)] hover:border-[var(--border-strong)]"
+                          ? "border-[var(--color-accent)] bg-[var(--color-accent-surface)] text-[var(--color-accent)]" 
+                          : "border-[var(--color-border)] bg-[var(--color-surface-sunken)] hover:border-[var(--color-border-strong)] text-[var(--color-ink)]"
                       )}
                     >
                       <input 
                         type="checkbox" 
                         checked={selectedCentres.includes(centre.id)}
                         onChange={() => {}} // handled by parent onClick
-                        className="w-4 h-4 accent-[var(--accent-primary)] cursor-pointer"
+                        className="w-4 h-4 accent-[var(--color-accent)] cursor-pointer"
                       />
                       <span className="text-sm font-medium">{centre.name}</span>
                     </div>
@@ -406,47 +422,47 @@ function CreateExamPageInner() {
 
             {step === 7 && (
               <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)]">
-                <h2 className="text-lg font-semibold text-[var(--text-primary)]">07. Review Configuration</h2>
+                <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)] font-sans">07. Review Configuration</h2>
                 
-                <div className="bg-[var(--surface-background)] border border-[var(--border-subtle)] rounded-[var(--radius-2)] p-6 space-y-6">
+                <div className="bg-[var(--color-surface-sunken)] border border-[var(--color-border)] rounded-xl p-6 space-y-6">
                   <div>
-                    <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2 flex justify-between">
+                    <h3 className="text-xs font-bold text-[var(--color-ink-secondary)] uppercase tracking-wider mb-2 flex justify-between font-mono">
                       Identity & Structure
-                      <button onClick={() => setStep(1)} className="text-[var(--accent-primary)] hover:underline capitalize normal-case text-xs">Edit</button>
+                      <button onClick={() => setStep(1)} className="text-[var(--color-accent)] hover:underline capitalize normal-case text-xs font-sans cursor-pointer">Edit</button>
                     </h3>
                     <div className="grid grid-cols-2 gap-y-2 text-sm">
-                      <span className="text-[var(--text-secondary)]">Name:</span> <span>{examName}</span>
-                      <span className="text-[var(--text-secondary)]">Code:</span> <span className="font-mono">{examCode}</span>
-                      <span className="text-[var(--text-secondary)]">Date & Duration:</span> <span>{examDate || "Not set"} ({duration} mins)</span>
-                      <span className="text-[var(--text-secondary)]">Type:</span> <span className="uppercase">{examType}</span>
+                      <span className="text-[var(--color-ink-secondary)]">Name:</span> <span className="font-semibold text-[var(--color-ink)]">{examName}</span>
+                      <span className="text-[var(--color-ink-secondary)]">Code:</span> <span className="font-mono font-semibold text-[var(--color-ink)]">{examCode}</span>
+                      <span className="text-[var(--color-ink-secondary)]">Date & Duration:</span> <span className="text-[var(--color-ink)]">{examDate || "Not set"} ({duration} mins)</span>
+                      <span className="text-[var(--color-ink-secondary)]">Type:</span> <span className="uppercase font-semibold text-[var(--color-ink)]">{examType}</span>
                     </div>
                   </div>
 
-                  <div className="h-px bg-[var(--border-subtle)]" />
+                  <div className="h-px bg-[var(--color-border)]" />
                   
                   <div>
-                    <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2 flex justify-between">
+                    <h3 className="text-xs font-bold text-[var(--color-ink-secondary)] uppercase tracking-wider mb-2 flex justify-between font-mono">
                       Rules & Security
-                      <button onClick={() => setStep(4)} className="text-[var(--accent-primary)] hover:underline capitalize normal-case text-xs">Edit</button>
+                      <button onClick={() => setStep(4)} className="text-[var(--color-accent)] hover:underline capitalize normal-case text-xs font-sans cursor-pointer">Edit</button>
                     </h3>
                     <div className="grid grid-cols-2 gap-y-2 text-sm">
-                      <span className="text-[var(--text-secondary)]">Integrity Package:</span> <span className="capitalize">{integrityPackage}</span>
-                      <span className="text-[var(--text-secondary)]">Negative Marking:</span> <span>{negativeMarking ? "Yes" : "No"}</span>
-                      <span className="text-[var(--text-secondary)]">Strict Timing:</span> <span>{timePerSection ? "Yes" : "No"}</span>
+                      <span className="text-[var(--color-ink-secondary)]">Integrity Package:</span> <span className="capitalize font-semibold text-[var(--color-ink)]">{integrityPackage}</span>
+                      <span className="text-[var(--color-ink-secondary)]">Negative Marking:</span> <span className="text-[var(--color-ink)]">{negativeMarking ? "Yes" : "No"}</span>
+                      <span className="text-[var(--color-ink-secondary)]">Strict Timing:</span> <span className="text-[var(--color-ink)]">{timePerSection ? "Yes" : "No"}</span>
                     </div>
                   </div>
 
-                  <div className="h-px bg-[var(--border-subtle)]" />
+                  <div className="h-px bg-[var(--color-border)]" />
                   
                   <div>
-                    <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2 flex justify-between">
+                    <h3 className="text-xs font-bold text-[var(--color-ink-secondary)] uppercase tracking-wider mb-2 flex justify-between font-mono">
                       Scale
-                      <button onClick={() => setStep(6)} className="text-[var(--accent-primary)] hover:underline capitalize normal-case text-xs">Edit</button>
+                      <button onClick={() => setStep(6)} className="text-[var(--color-accent)] hover:underline capitalize normal-case text-xs font-sans cursor-pointer">Edit</button>
                     </h3>
                     <div className="grid grid-cols-2 gap-y-2 text-sm">
-                      <span className="text-[var(--text-secondary)]">Candidates:</span> <span>{candidates.toLocaleString()}</span>
-                      <span className="text-[var(--text-secondary)]">Centres Capacity:</span> <span>{centers}</span>
-                      <span className="text-[var(--text-secondary)]">Selected Hubs:</span> <span>{selectedCentres.length}</span>
+                      <span className="text-[var(--color-ink-secondary)]">Candidates:</span> <span className="font-semibold text-[var(--color-ink)]">{candidates.toLocaleString()}</span>
+                      <span className="text-[var(--color-ink-secondary)]">Centres Capacity:</span> <span className="font-semibold text-[var(--color-ink)]">{centers}</span>
+                      <span className="text-[var(--color-ink-secondary)]">Selected Hubs:</span> <span className="text-[var(--color-ink)]">{selectedCentres.length}</span>
                     </div>
                   </div>
                 </div>
@@ -455,11 +471,11 @@ function CreateExamPageInner() {
 
             {step === 8 && (
               <div className="space-y-6 animate-in fade-in duration-[var(--duration-normal)] h-full flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-16 h-16 rounded-full bg-[var(--status-success)]/10 text-[var(--status-success)] flex items-center justify-center mb-4">
+                <div className="w-16 h-16 rounded-full bg-[var(--color-success-surface)] text-[var(--color-success)] border border-[var(--color-success-border)] flex items-center justify-center mb-4">
                   <CheckCircle className="w-8 h-8" />
                 </div>
-                <h2 className="text-2xl font-semibold text-[var(--text-primary)]">Ready to Publish</h2>
-                <p className="text-[var(--text-secondary)] max-w-md mx-auto mb-8">
+                <h2 className="text-2xl font-bold text-[var(--color-ink)] font-sans">Ready to Publish</h2>
+                <p className="text-sm text-[var(--color-ink-secondary)] max-w-md mx-auto mb-8 font-sans">
                   The examination {examCode} is configured and ready for deployment. This will initialize the secure environment and lock the configuration.
                 </p>
                 <ForgeButton 

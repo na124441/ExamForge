@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   Building2, 
   ShieldCheck, 
@@ -22,12 +23,18 @@ import {
   Landmark,
   BadgeCheck
 } from "lucide-react";
+import { ForgePageHeader } from "@/components/forge/ForgePageHeader";
+import { ForgeFormField } from "@/components/forge/ForgeFormField";
+import { ForgeInput } from "@/components/forge/ForgeInput";
+import { ForgeButton } from "@/components/forge/ForgeButton";
+import { ForgeStatusPill } from "@/components/forge/ForgeStatusPill";
 import { cn } from "@/lib/cn";
 import { getVendors, VendorOrganization } from "@/lib/api";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 export default function VendorPortalPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"REGISTER" | "DIRECTORY" | "EXAM_CREATOR">("REGISTER");
   const [vendors, setVendors] = useState<VendorOrganization[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -102,55 +109,50 @@ export default function VendorPortalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      {/* Header Bar */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img
-              src="/logo-icon.png"
-              alt="ExamForge Logo"
-              className="w-10 h-10 rounded-xl object-cover shadow-md border border-slate-200"
-            />
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-bold text-slate-900 text-base tracking-tight">ExamForge Authority & Vendor Hub</h1>
-                <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-mono font-bold">
-                  NATIONAL REPOSITORIES
-                </span>
-              </div>
-              <p className="text-xs text-slate-500">
-                Examination Conducting Authorities & Assessment Vendor Onboarding Portal
-              </p>
-            </div>
+    <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-ink)] font-sans p-4 sm:p-6 lg:p-8 space-y-6 select-none">
+      <ForgePageHeader
+        breadcrumbs={[
+          { label: "Operations Hub", href: "/authority" },
+          { label: "Vendor & Authority Registry" }
+        ]}
+        title="Authority & Vendor Management Hub"
+        description="Statutory registration, banking settlement coordinates, and accredited testing agency directories."
+        status={
+          <ForgeStatusPill variant="info" dot>
+            NATIONAL REPOSITORY
+          </ForgeStatusPill>
+        }
+        actions={
+          <div className="flex items-center gap-2.5">
+            <ForgeButton
+              variant="secondary"
+              size="md"
+              onClick={() => router.push("/safebatch")}
+              icon={<Sparkles className="w-3.5 h-3.5 text-amber-500" />}
+            >
+              SafeBatch Studio
+            </ForgeButton>
+            <ForgeButton
+              variant="secondary"
+              size="md"
+              onClick={() => router.push("/candidate")}
+              icon={<ExternalLink className="w-3.5 h-3.5" />}
+            >
+              Candidate Portal
+            </ForgeButton>
+            <ForgeButton
+              variant="primary"
+              size="md"
+              onClick={() => router.push("/create-exam")}
+            >
+              Publish Exam
+            </ForgeButton>
           </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/safebatch"
-              className="px-3.5 py-2 rounded-xl bg-blue-50 border border-blue-200 hover:bg-blue-100 text-blue-700 text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              SafeBatch Operations
-            </Link>
-            <Link
-              href="/candidate"
-              className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5"
-            >
-              Candidate Portal <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-            </Link>
-            <Link
-              href="/platform-admin"
-              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm"
-            >
-              Platform Admin
-            </Link>
-          </div>
-        </div>
-      </header>
+        }
+      />
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+      <main className="w-full space-y-6">
         {/* Navigation Tabs */}
         <div className="flex items-center gap-3 border-b border-slate-200 pb-2">
           <button

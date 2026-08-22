@@ -18,6 +18,7 @@ export interface ForgeSelectProps {
   placeholder?: string;
   label?: string;
   className?: string;
+  disabled?: boolean;
 }
 
 export function ForgeSelect({
@@ -25,9 +26,10 @@ export function ForgeSelect({
   value,
   onValueChange,
   onChange,
-  placeholder = "Select...",
+  placeholder = "Select option...",
   label,
   className,
+  disabled,
 }: ForgeSelectProps) {
   const handleValueChange = (val: string) => {
     if (onValueChange) onValueChange(val);
@@ -35,50 +37,49 @@ export function ForgeSelect({
   };
 
   return (
-    <div className={cn("flex flex-col gap-1.5 font-sans w-full", className)}>
+    <div className={cn("flex flex-col gap-1.5 font-sans w-full select-none", className)}>
       {label && (
-        <label className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] tracking-wide">
+        <label className="text-xs font-semibold text-[var(--color-ink-secondary)] tracking-wide font-mono uppercase">
           {label}
         </label>
       )}
-      <Select.Root value={value} onValueChange={handleValueChange}>
+      <Select.Root value={value} onValueChange={handleValueChange} disabled={disabled}>
         <Select.Trigger
           className={cn(
             "flex h-11 w-full items-center justify-between rounded-xl",
-            "bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] px-4 py-2 text-sm",
-            "text-[var(--md-sys-color-on-surface)] hover:border-[var(--md-sys-color-outline)] focus:outline-none focus:ring-2 focus:ring-[var(--md-sys-color-primary)] focus:border-[var(--md-sys-color-primary)]",
-            "disabled:cursor-not-allowed disabled:opacity-38 transition-all duration-[var(--duration-fast)] cursor-pointer"
+            "bg-[var(--color-surface-sunken)] border border-[var(--color-border)] px-3.5 py-2 text-sm",
+            "text-[var(--color-ink)] hover:border-[var(--color-border-strong)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-raised)]",
+            "disabled:cursor-not-allowed disabled:opacity-40 transition-all duration-[var(--duration-fast)] cursor-pointer shadow-2xs"
           )}
         >
           <Select.Value placeholder={placeholder} />
           <Select.Icon asChild>
-            <ChevronDown className="h-4 w-4 opacity-60 text-[var(--md-sys-color-on-surface-variant)]" />
+            <ChevronDown className="h-4 w-4 text-[var(--color-ink-muted)] shrink-0" />
           </Select.Icon>
         </Select.Trigger>
         <Select.Portal>
           <Select.Content
             className={cn(
-              "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-2xl",
-              "border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)] shadow-[var(--md-sys-elevation-3)]",
-              "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
+              "z-50 min-w-[8rem] overflow-hidden rounded-xl border border-[var(--color-border)]",
+              "bg-[var(--color-surface-raised)] p-1.5 text-[var(--color-ink)] shadow-xl animate-in fade-in-80",
+              "data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 duration-[var(--duration-fast)]"
             )}
             position="popper"
-            sideOffset={6}
+            sideOffset={4}
           >
-            <Select.Viewport className="p-1.5">
+            <Select.Viewport className="p-1">
               {options.map((opt) => (
                 <Select.Item
                   key={opt.value}
                   value={opt.value}
                   className={cn(
-                    "relative flex w-full cursor-pointer select-none items-center rounded-xl py-2 pl-9 pr-3 text-sm outline-none transition-colors duration-[var(--duration-fast)]",
-                    "focus:bg-[var(--md-sys-color-secondary-container)] focus:text-[var(--md-sys-color-on-secondary-container)]",
-                    "data-[disabled]:pointer-events-none data-[disabled]:opacity-38"
+                    "relative flex w-full cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-3 text-xs font-medium outline-none",
+                    "text-[var(--color-ink)] hover:bg-[var(--color-surface-sunken)] focus:bg-[var(--color-accent-surface)] focus:text-[var(--color-accent)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 transition-colors"
                   )}
                 >
-                  <span className="absolute left-2.5 flex h-4 w-4 items-center justify-center">
+                  <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
                     <Select.ItemIndicator>
-                      <Check className="h-4 w-4 text-[var(--md-sys-color-primary)]" />
+                      <Check className="h-3.5 w-3.5 text-[var(--color-accent)]" />
                     </Select.ItemIndicator>
                   </span>
                   <Select.ItemText>{opt.label}</Select.ItemText>

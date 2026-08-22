@@ -28,6 +28,8 @@ import {
 import { ForgeCard, ForgeCardHeader, ForgeCardTitle, ForgeCardContent } from "@/components/forge/ForgeCard";
 import { ForgeButton } from "@/components/forge/ForgeButton";
 import { ForgeStatusPill } from "@/components/forge/ForgeStatusPill";
+import { ForgePageHeader } from "@/components/forge/ForgePageHeader";
+import { ForgeFormField } from "@/components/forge/ForgeFormField";
 import { cn } from "@/lib/cn";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -202,44 +204,44 @@ function ResultPortalContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-ink)] font-sans pb-16">
+    <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-ink)] font-sans pb-16 select-none">
       
       {/* Header Banner */}
-      <header className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)] py-6 px-4 sm:px-8 print:hidden">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[var(--color-accent-surface)] border border-[var(--color-accent)]/30 flex items-center justify-center text-[var(--color-accent)] font-bold text-lg shadow-xs">
-              🏛️
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-6 print:hidden">
+        <ForgePageHeader
+          breadcrumbs={[
+            { label: "Candidate Hub", href: "/candidate" },
+            { label: "Official Scorecard Portal" }
+          ]}
+          title="Official Examination Scorecard Portal"
+          description="Verifiable multi-party cryptographic transcript, percentile ranking, and grade registry."
+          status={
+            <ForgeStatusPill variant="success" dot>
+              LIVE DATABASE
+            </ForgeStatusPill>
+          }
+          actions={
+            <div className="flex items-center gap-2">
+              <ForgeButton
+                variant="secondary"
+                size="md"
+                onClick={() => router.push("/verify-result")}
+                icon={<ShieldCheck className="w-3.5 h-3.5 text-[var(--color-accent)]" />}
+              >
+                Public Verifier
+              </ForgeButton>
+              <ForgeButton
+                variant="secondary"
+                size="md"
+                onClick={() => router.push("/audit-timeline")}
+                icon={<Scale className="w-3.5 h-3.5 text-[var(--color-accent)]" />}
+              >
+                Audit Chain
+              </ForgeButton>
             </div>
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-[var(--color-ink)] flex items-center gap-2">
-                Official Examination Scorecard Portal
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--color-success-surface)] text-[var(--color-success-text)] border border-[var(--color-success)]/30">
-                  LIVE DATABASE
-                </span>
-              </h1>
-              <p className="text-xs text-[var(--color-ink-secondary)] font-mono mt-0.5">
-                Verifiable Multi-Party Cryptographic Transcript &amp; Grade Registry
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => router.push("/verify-result")}
-              className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-sunken)] text-[var(--color-ink)] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-[var(--color-accent)]" /> Public Verifier
-            </button>
-            <button
-              onClick={() => router.push("/audit-timeline")}
-              className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-sunken)] text-[var(--color-ink)] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
-            >
-              <Scale className="w-3.5 h-3.5 text-[var(--color-accent)]" /> Audit Chain
-            </button>
-          </div>
-        </div>
-      </header>
+          }
+        />
+      </div>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-8 pt-8 space-y-8">
         
@@ -256,18 +258,15 @@ function ResultPortalContent() {
             </div>
 
             {/* Search Box */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-sm space-y-5">
+            <div className="p-6 sm:p-8 rounded-2xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-5">
               <div className="space-y-4">
                 
                 {/* Examination Selector */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-[var(--color-ink)] uppercase tracking-wider block">
-                    Select Examination Session
-                  </label>
+                <ForgeFormField label="Select Examination Session" required>
                   <select
                     value={selectedExamCode}
                     onChange={(e) => setSelectedExamCode(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-lg bg-[var(--color-surface-sunken)] border border-[var(--color-border)] text-xs text-[var(--color-ink)] font-semibold focus:outline-none focus:border-[var(--color-border-focus)] transition-colors"
+                    className="w-full h-11 px-3.5 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] text-xs text-[var(--color-ink)] font-semibold focus:outline-none focus:border-[var(--color-border-focus)] transition-colors cursor-pointer"
                   >
                     {publishedExams.map((ex) => (
                       <option key={ex.code} value={ex.code}>
@@ -278,7 +277,7 @@ function ResultPortalContent() {
                       <option value="JEE-MAIN-2026">Joint Entrance Examination (Main) - 2026</option>
                     )}
                   </select>
-                </div>
+                </ForgeFormField>
 
                 {/* Roll Number Input */}
                 <div className="space-y-1.5">

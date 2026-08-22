@@ -14,6 +14,12 @@ import {
   Lock,
   Database
 } from "lucide-react";
+import { ForgeCard, ForgeCardContent } from "@/components/forge/ForgeCard";
+import { ForgeButton } from "@/components/forge/ForgeButton";
+import { ForgePageHeader } from "@/components/forge/ForgePageHeader";
+import { ForgeFormField } from "@/components/forge/ForgeFormField";
+import { ForgeInput } from "@/components/forge/ForgeInput";
+import { ForgeStatusPill } from "@/components/forge/ForgeStatusPill";
 import { cn } from "@/lib/cn";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -82,84 +88,74 @@ function VerifyResultContent() {
   }, [initialCert]);
 
   return (
-    <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-ink)] font-sans flex flex-col">
-      {/* Navbar */}
-      <header className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)] py-4 px-6 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[var(--color-accent-surface)] border border-[var(--color-accent)]/30 flex items-center justify-center text-[var(--color-accent)] font-bold text-sm">
-            🛡️
-          </div>
-          <div>
-            <h1 className="text-sm sm:text-base font-bold text-[var(--color-ink)] flex items-center gap-2">
-              ExamForge Public Scorecard Verifier
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--color-success-surface)] text-[var(--color-success-text)] border border-[var(--color-success)]/30">
-                MERKLE PROOF
-              </span>
-            </h1>
-          </div>
-        </div>
-        <button
-          onClick={() => router.push("/result-portal")}
-          className="text-xs font-semibold text-[var(--color-accent)] hover:underline flex items-center gap-1 cursor-pointer"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" /> Result Portal
-        </button>
-      </header>
+    <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-ink)] font-sans flex flex-col p-4 sm:p-6 lg:p-8 space-y-6 select-none">
+      <ForgePageHeader
+        breadcrumbs={[
+          { label: "Public Verifier", href: "/verify-result" },
+          { label: "Scorecard Integrity" }
+        ]}
+        title="Public Scorecard & Certificate Verifier"
+        description="Instant non-repudiable verification of physical examination booklets, evaluation signatures, and blockchain-style Merkle audit logs."
+        status={
+          <ForgeStatusPill variant="success" dot>
+            MERKLE PROOF ACTIVE
+          </ForgeStatusPill>
+        }
+        actions={
+          <ForgeButton
+            variant="secondary"
+            size="md"
+            onClick={() => router.push("/result-portal")}
+            icon={<ArrowLeft className="w-3.5 h-3.5" />}
+          >
+            Result Portal
+          </ForgeButton>
+        }
+      />
 
       {/* Main search and certificate wrapper */}
-      <div className="flex-1 flex flex-col justify-center items-center p-6 max-w-xl mx-auto w-full">
-        <div className="w-full bg-[var(--color-surface-raised)] p-6 sm:p-8 rounded-2xl border border-[var(--color-border)] shadow-sm space-y-6">
+      <div className="flex-1 flex flex-col justify-center items-center py-6 max-w-xl mx-auto w-full">
+        <div className="w-full bg-[var(--color-surface-raised)] p-6 sm:p-8 rounded-2xl border border-[var(--color-border)] shadow-xs space-y-6">
           <div className="text-center space-y-1.5">
-            <h2 className="text-lg font-bold text-[var(--color-ink)]">
+            <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)] font-sans">
               Digital Scorecard Authenticity Verification
             </h2>
-            <p className="text-xs text-[var(--color-ink-secondary)]">
-              Instant non-repudiable verification of physical examination booklets, evaluation signatures, and blockchain-style Merkle audit logs.
+            <p className="text-xs text-[var(--color-ink-secondary)] font-sans">
+              Enter any SHA-256 certificate digest, QR transcript hash, or candidate ID to verify cryptographic seals.
             </p>
           </div>
 
           <form onSubmit={handleVerify} className="space-y-4 text-xs font-sans">
-            <div className="space-y-1.5">
-              <label className="font-bold text-[var(--color-ink)] uppercase tracking-wider block">
-                Certificate Hash / Submission Receipt SHA-256 Digest
-              </label>
-              <input
+            <ForgeFormField label="Certificate Hash / Submission Receipt Digest" required>
+              <ForgeInput
                 type="text"
                 placeholder="Enter 64-character hash or Certificate ID"
                 value={receiptHash}
                 onChange={(e) => setReceiptHash(e.target.value)}
-                className="w-full p-2.5 bg-[var(--color-surface-sunken)] border border-[var(--color-border)] rounded-lg focus:border-[var(--color-border-focus)] focus:outline-none font-mono text-xs text-[var(--color-ink)]"
+                mono
               />
-            </div>
+            </ForgeFormField>
             
-            <div className="space-y-1.5">
-              <label className="font-bold text-[var(--color-ink-secondary)] uppercase tracking-wider block">
-                Candidate ID / Anonymous Hash (Optional)
-              </label>
-              <input
+            <ForgeFormField label="Candidate ID / Anonymous Hash (Optional)">
+              <ForgeInput
                 type="text"
                 placeholder="e.g. CAND-9812, ANON-9812-SEC"
                 value={candidateId}
                 onChange={(e) => setCandidateId(e.target.value)}
-                className="w-full p-2.5 bg-[var(--color-surface-sunken)] border border-[var(--color-border)] rounded-lg focus:border-[var(--color-border-focus)] focus:outline-none font-mono text-xs text-[var(--color-ink)]"
+                mono
               />
-            </div>
+            </ForgeFormField>
 
-            <button
+            <ForgeButton
               type="submit"
+              variant="primary"
+              size="lg"
+              fullWidth
               disabled={verifying}
-              className="w-full py-2.5 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold rounded-lg shadow-xs transition cursor-pointer text-xs flex items-center justify-center gap-2"
+              icon={verifying ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
             >
-              {verifying ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" /> Querying Cryptographic Ledger...
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="w-4 h-4" /> Verify Cryptographic Integrity
-                </>
-              )}
-            </button>
+              {verifying ? "Querying Cryptographic Ledger..." : "Verify Cryptographic Integrity"}
+            </ForgeButton>
           </form>
 
           {/* Validation Error */}
@@ -175,12 +171,12 @@ function VerifyResultContent() {
 
           {/* Verified Certificate */}
           {verifiedData && (
-            <div className="p-5 bg-[var(--color-success-surface)] border-2 border-[var(--color-success)]/40 rounded-xl text-center flex flex-col gap-3">
-              <div className="w-10 h-10 rounded-full bg-[var(--color-success)]/20 text-[var(--color-success)] flex items-center justify-center font-bold text-lg mx-auto">
+            <div className="p-5 bg-[var(--color-success-surface)] border border-[var(--color-success-border)] rounded-xl text-center flex flex-col gap-3">
+              <div className="w-10 h-10 rounded-full bg-[var(--color-success-surface)] border border-[var(--color-success-border)] text-[var(--color-success)] flex items-center justify-center font-bold text-lg mx-auto">
                 ✓
               </div>
               <div>
-                <h3 className="text-sm font-extrabold text-[var(--color-success-text)] uppercase tracking-wider">
+                <h3 className="text-xs font-bold text-[var(--color-success-text)] uppercase tracking-wider font-mono">
                   Cryptographic Authenticity Verified
                 </h3>
                 <p className="text-[11px] text-[var(--color-ink-secondary)] mt-1 font-sans">
