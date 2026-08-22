@@ -61,7 +61,7 @@ export function ForgeRealTimePayment({
   const [receipt, setReceipt] = useState<PaymentReceipt | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [timeLeftSeconds, setTimeLeftSeconds] = useState<number>(600); // 10 mins
+  const [timeLeftSeconds, setTimeLeftSeconds] = useState<number>(600);
 
   // Card Form State
   const [cardNumber, setCardNumber] = useState("");
@@ -74,7 +74,6 @@ export function ForgeRealTimePayment({
   // Netbanking State
   const [selectedBank, setSelectedBank] = useState("SBI");
 
-  // 1. Initialize Payment Order on Mount
   useEffect(() => {
     async function initOrder() {
       setIsLoadingOrder(true);
@@ -97,7 +96,6 @@ export function ForgeRealTimePayment({
     initOrder();
   }, [candidateStudentId, examId, vendorId]);
 
-  // 2. Countdown Timer
   useEffect(() => {
     if (timeLeftSeconds <= 0) return;
     const timer = setInterval(() => {
@@ -106,7 +104,6 @@ export function ForgeRealTimePayment({
     return () => clearInterval(timer);
   }, [timeLeftSeconds]);
 
-  // 3. Copy helper
   const copyToClipboard = (text: string, fieldKey: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(text);
@@ -115,7 +112,6 @@ export function ForgeRealTimePayment({
     }
   };
 
-  // 4. Handle UPI Simulation & Verification
   const handleVerifyUpiPayment = async () => {
     if (!order) return;
     setIsVerifying(true);
@@ -136,7 +132,6 @@ export function ForgeRealTimePayment({
     }
   };
 
-  // 5. Handle Card Verification
   const handleVerifyCardPayment = async () => {
     if (!order) return;
     setIsVerifying(true);
@@ -158,7 +153,6 @@ export function ForgeRealTimePayment({
     }
   };
 
-  // 6. Handle Netbanking Verification
   const handleVerifyNetBanking = async () => {
     if (!order) return;
     setIsVerifying(true);
@@ -184,86 +178,85 @@ export function ForgeRealTimePayment({
   const seconds = timeLeftSeconds % 60;
   const timerDisplay = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
-  // If already paid, show immutable cryptographic receipt
   if (receipt) {
     return (
-      <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6 text-[#FFF4E2] font-sans">
+      <div className="p-6 sm:p-8 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)] font-sans animate-fade-in">
         {/* Success Header */}
-        <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4">
+        <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[rgba(64,133,118,0.3)] text-[#8AD8B8] flex items-center justify-center border border-[rgba(138,216,184,0.3)]">
-              <CheckCircle2 className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-xl bg-[var(--color-success-surface)] text-[var(--color-success)] flex items-center justify-center border border-[var(--color-success)]/30">
+              <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2]">Payment Completed &amp; Verified</h2>
-              <p className="text-xs text-[#8AD8B8]/80 font-mono">Receipt No: {receipt.receipt_number}</p>
+              <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)]">Payment Completed &amp; Verified</h2>
+              <p className="text-xs text-[var(--color-ink-secondary)] font-mono">Receipt No: {receipt.receipt_number}</p>
             </div>
           </div>
-          <span className="px-3 py-1 rounded-full bg-[rgba(138,216,184,0.2)] text-[#8AD8B8] font-mono font-bold text-xs border border-[#8AD8B8] flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#8AD8B8] animate-pulse"></span>
+          <span className="px-3 py-1 rounded-full bg-[var(--color-success-surface)] text-[var(--color-success-text)] font-mono font-bold text-xs border border-[var(--color-success)]/30 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[var(--color-success)] animate-pulse"></span>
             SETTLED &amp; CONFIRMED
           </span>
         </div>
 
         {/* Cryptographic Payment Dossier */}
-        <div className="p-5 rounded-2xl bg-[rgba(19,45,40,0.85)] border border-[rgba(138,216,184,0.25)] space-y-4 shadow-inner">
-          <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-3">
+        <div className="p-5 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-4">
+          <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
             <div>
-              <span className="text-[10px] uppercase font-mono font-bold text-[#8AD8B8] tracking-wider">
+              <span className="text-[10px] uppercase font-mono font-bold text-[var(--color-accent)] tracking-wider">
                 Official Examination Application Receipt
               </span>
-              <h3 className="font-bold text-[#FFF4E2] text-sm mt-0.5">{receipt.exam_title}</h3>
-              <p className="text-xs text-[#8AD8B8]/80 font-mono mt-0.5">Authority: {receipt.conducting_authority}</p>
+              <h3 className="font-bold text-[var(--color-ink)] text-sm mt-0.5">{receipt.exam_title}</h3>
+              <p className="text-xs text-[var(--color-ink-secondary)] font-mono mt-0.5">Authority: {receipt.conducting_authority}</p>
             </div>
             <div className="text-right">
-              <span className="text-[10px] text-[#8AD8B8]/70 font-mono block">AMOUNT PAID</span>
-              <span className="text-2xl font-bold font-mono text-[#8AD8B8]">₹{receipt.amount_paid.toFixed(2)}</span>
+              <span className="text-[10px] text-[var(--color-ink-muted)] font-mono block font-bold">AMOUNT PAID</span>
+              <span className="text-2xl font-bold font-mono text-[var(--color-success)]">₹{receipt.amount_paid.toFixed(2)}</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div className="p-3 rounded-xl bg-[rgba(8,19,16,0.7)] border border-[rgba(138,216,184,0.15)] space-y-0.5">
-              <span className="text-[#8AD8B8]/70 text-[10px] block font-mono">Candidate Name</span>
-              <span className="font-bold text-[#FFF4E2]">{receipt.candidate_name}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+            <div className="p-3 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] space-y-0.5">
+              <span className="text-[var(--color-ink-muted)] text-[10px] block font-bold">Candidate Name</span>
+              <span className="font-bold text-[var(--color-ink)] font-sans">{receipt.candidate_name}</span>
             </div>
-            <div className="p-3 rounded-xl bg-[rgba(8,19,16,0.7)] border border-[rgba(138,216,184,0.15)] space-y-0.5">
-              <span className="text-[#8AD8B8]/70 text-[10px] block font-mono">Application Number</span>
-              <span className="font-mono font-bold text-[#8AD8B8]">{receipt.application_number}</span>
+            <div className="p-3 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] space-y-0.5">
+              <span className="text-[var(--color-ink-muted)] text-[10px] block font-bold">Application Number</span>
+              <span className="font-bold text-[var(--color-accent)]">{receipt.application_number}</span>
             </div>
-            <div className="p-3 rounded-xl bg-[rgba(8,19,16,0.7)] border border-[rgba(138,216,184,0.15)] space-y-0.5">
-              <span className="text-[#8AD8B8]/70 text-[10px] block font-mono">Bank Reference No (UTR)</span>
-              <span className="font-mono font-bold text-[#FFF4E2]">{receipt.bank_ref_no}</span>
+            <div className="p-3 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] space-y-0.5">
+              <span className="text-[var(--color-ink-muted)] text-[10px] block font-bold">Bank Reference No (UTR)</span>
+              <span className="font-bold text-[var(--color-ink)]">{receipt.bank_ref_no}</span>
             </div>
-            <div className="p-3 rounded-xl bg-[rgba(8,19,16,0.7)] border border-[rgba(138,216,184,0.15)] space-y-0.5">
-              <span className="text-[#8AD8B8]/70 text-[10px] block font-mono">Transaction Ref ID</span>
-              <span className="font-mono text-[#8AD8B8] text-[11px]">{receipt.transaction_ref}</span>
+            <div className="p-3 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] space-y-0.5">
+              <span className="text-[var(--color-ink-muted)] text-[10px] block font-bold">Transaction Ref ID</span>
+              <span className="text-[11px] text-[var(--color-ink-secondary)]">{receipt.transaction_ref}</span>
             </div>
-            <div className="p-3 rounded-xl bg-[rgba(8,19,16,0.7)] border border-[rgba(138,216,184,0.15)] space-y-0.5">
-              <span className="text-[#8AD8B8]/70 text-[10px] block font-mono">Payment Channel</span>
-              <span className="font-bold text-[#FFF4E2]">{receipt.payment_method}</span>
+            <div className="p-3 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] space-y-0.5">
+              <span className="text-[var(--color-ink-muted)] text-[10px] block font-bold">Payment Channel</span>
+              <span className="font-bold text-[var(--color-ink)] font-sans">{receipt.payment_method}</span>
             </div>
-            <div className="p-3 rounded-xl bg-[rgba(8,19,16,0.7)] border border-[rgba(138,216,184,0.15)] space-y-0.5">
-              <span className="text-[#8AD8B8]/70 text-[10px] block font-mono">Timestamp</span>
-              <span className="font-mono text-[#FFF4E2]/80 text-[11px]">{receipt.paid_at}</span>
+            <div className="p-3 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] space-y-0.5">
+              <span className="text-[var(--color-ink-muted)] text-[10px] block font-bold">Timestamp</span>
+              <span className="text-[11px] text-[var(--color-ink-secondary)]">{receipt.paid_at}</span>
             </div>
           </div>
 
           {/* Cryptographic Hash Verification Banner */}
-          <div className="p-3 rounded-xl bg-[rgba(8,19,16,0.8)] border border-[rgba(138,216,184,0.25)] flex items-start justify-between gap-3 text-xs">
+          <div className="p-3 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] flex items-start justify-between gap-3 text-xs">
             <div className="space-y-1">
-              <span className="text-[10px] font-mono font-bold text-[#8AD8B8] uppercase flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#8AD8B8]" />
+              <span className="text-[10px] font-mono font-bold text-[var(--color-accent)] uppercase flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-[var(--color-accent)]" />
                 Immutable SHA-256 Audit Hash
               </span>
-              <span className="font-mono text-[10px] text-[#FFF4E2] break-all select-all block bg-[rgba(19,45,40,0.6)] p-2 rounded border border-[rgba(138,216,184,0.15)]">
+              <span className="font-mono text-[10px] text-[var(--color-ink)] break-all select-all block bg-[var(--color-surface-sunken)] p-2 rounded border border-[var(--color-border)]">
                 {receipt.receipt_sha256}
               </span>
             </div>
             <button
               onClick={() => copyToClipboard(receipt.receipt_sha256, "receipt_hash")}
-              className="px-2.5 py-1.5 rounded-lg border border-[rgba(138,216,184,0.25)] bg-[rgba(64,133,118,0.2)] hover:bg-[rgba(64,133,118,0.35)] text-[#8AD8B8] font-mono text-[10px] font-semibold flex items-center gap-1 shrink-0 cursor-pointer mt-4 transition-colors"
+              className="px-2.5 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-sunken)] hover:bg-[var(--color-surface-inset)] text-[var(--color-ink)] font-mono text-[10px] font-semibold flex items-center gap-1 shrink-0 cursor-pointer mt-4 transition-colors"
             >
-              {copiedField === "receipt_hash" ? <Check className="w-3 h-3 text-[#8AD8B8]" /> : <Copy className="w-3 h-3" />}
+              {copiedField === "receipt_hash" ? <Check className="w-3 h-3 text-[var(--color-success)]" /> : <Copy className="w-3 h-3" />}
               {copiedField === "receipt_hash" ? "Copied" : "Copy"}
             </button>
           </div>
@@ -273,14 +266,14 @@ export function ForgeRealTimePayment({
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
           <button
             onClick={() => window.print()}
-            className="px-4 py-2.5 rounded-xl border border-[rgba(138,216,184,0.25)] bg-[rgba(255,244,226,0.06)] hover:bg-[rgba(255,244,226,0.12)] text-[#FFF4E2] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+            className="px-4 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-sunken)] hover:bg-[var(--color-surface-inset)] text-[var(--color-ink)] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
           >
             <Download className="w-4 h-4" /> Download / Print Official Receipt
           </button>
 
           <button
             onClick={() => onPaymentSuccess(receipt)}
-            className="bg-[#408576] hover:bg-[#132D28] text-[#FFF4E2] font-bold py-3 px-6 rounded-xl border border-[rgba(138,216,184,0.35)] flex items-center gap-2 text-xs shadow-md shadow-[#132D28]/50 cursor-pointer transition-all"
+            className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold py-2.5 px-5 rounded-lg flex items-center gap-2 text-xs shadow-xs cursor-pointer transition-all active:scale-95"
           >
             Proceed to Test Centre Allocation <ArrowRight className="w-4 h-4" />
           </button>
@@ -290,86 +283,86 @@ export function ForgeRealTimePayment({
   }
 
   return (
-    <div className="p-6 rounded-3xl bg-[rgba(19,45,40,0.65)] border border-[rgba(138,216,184,0.2)] backdrop-blur-xl shadow-xl space-y-6 text-[#FFF4E2] font-sans">
+    <div className="p-6 sm:p-8 rounded-xl bg-[var(--color-surface-raised)] border border-[var(--color-border)] shadow-xs space-y-6 text-[var(--color-ink)] font-sans animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-4 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[var(--color-border)] pb-4 gap-2">
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-[#FFF4E2] flex items-center gap-2">
-            <CreditCard className="w-5 h-5 text-[#8AD8B8]" />
+          <h2 className="text-base sm:text-lg font-bold text-[var(--color-ink)] flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-[var(--color-accent)]" />
             Step 10: Examination Fee Payment
           </h2>
-          <p className="text-xs text-[#8AD8B8]/80 mt-0.5 font-mono">
+          <p className="text-xs text-[var(--color-ink-secondary)] mt-0.5 font-mono">
             Real-time secure transaction gateway powered by NPCI Unified Payments Interface (UPI) &amp; Banking Networks.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full bg-[rgba(64,133,118,0.25)] text-[#8AD8B8] font-mono font-bold text-[11px] border border-[rgba(138,216,184,0.3)] flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-[#8AD8B8]" />
-            Order Valid: <strong className="text-[#FFF4E2]">{timerDisplay}</strong>
+          <span className="px-3 py-1 rounded-full bg-[var(--color-accent-surface)] text-[var(--color-accent)] font-mono font-bold text-[11px] border border-[var(--color-accent)]/20 flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-[var(--color-accent)]" />
+            Order Valid: <strong className="text-[var(--color-ink)]">{timerDisplay}</strong>
           </span>
-          <span className="text-xs font-mono text-[#8AD8B8]/70">10 of 12</span>
+          <span className="text-xs font-mono text-[var(--color-ink-muted)]">10 of 12</span>
         </div>
       </div>
 
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-[rgba(180,60,60,0.2)] border border-red-500/40 text-red-200 text-xs flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 text-xs flex items-center justify-between">
           <span className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+            <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
             {errorMessage}
           </span>
-          <button onClick={() => setErrorMessage(null)} className="text-red-100 font-bold text-[11px] underline cursor-pointer">
+          <button onClick={() => setErrorMessage(null)} className="text-red-600 font-bold text-[11px] underline cursor-pointer">
             Dismiss
           </button>
         </div>
       )}
 
       {/* Order Summary Card */}
-      <div className="p-4 rounded-2xl bg-[rgba(19,45,40,0.85)] border border-[rgba(138,216,184,0.25)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-4 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <span className="text-[10px] uppercase font-mono font-bold text-[#8AD8B8] tracking-wider">
+          <span className="text-[10px] uppercase font-mono font-bold text-[var(--color-accent)] tracking-wider">
             Fee Assessment Breakdown
           </span>
-          <div className="font-bold text-[#FFF4E2] text-sm">{examTitle}</div>
-          <div className="text-xs text-[#8AD8B8]/80 flex flex-wrap items-center gap-2 font-mono text-[11px]">
+          <div className="font-bold text-[var(--color-ink)] text-sm">{examTitle}</div>
+          <div className="text-xs text-[var(--color-ink-secondary)] flex flex-wrap items-center gap-2 font-mono text-[11px]">
             <span>Authority: <strong>{vendorName || "National Testing Agency"}</strong></span>
-            <span>•</span>
+            <span>&bull;</span>
             <span>Category: <strong>{category || "General"}</strong></span>
-            <span>•</span>
+            <span>&bull;</span>
             <span>Student ID: <strong>{candidateStudentId}</strong></span>
           </div>
         </div>
 
-        <div className="text-left sm:text-right border-t sm:border-t-0 border-[rgba(138,216,184,0.15)] pt-2 sm:pt-0 shrink-0">
-          <span className="text-[10px] text-[#8AD8B8]/70 font-mono block">TOTAL PAYABLE AMOUNT</span>
-          <span className="text-2xl font-bold font-mono text-[#8AD8B8]">₹{feeAmount.toFixed(2)}</span>
-          <span className="text-[10px] text-[#8AD8B8] font-mono block font-semibold">✓ Govt. Exam (GST Exempted)</span>
+        <div className="text-left sm:text-right border-t sm:border-t-0 border-[var(--color-border)] pt-2 sm:pt-0 shrink-0">
+          <span className="text-[10px] text-[var(--color-ink-muted)] font-mono block font-bold">TOTAL PAYABLE AMOUNT</span>
+          <span className="text-2xl font-bold font-mono text-[var(--color-success)]">₹{feeAmount.toFixed(2)}</span>
+          <span className="text-[10px] text-[var(--color-success-text)] font-mono block font-semibold">✓ Govt. Exam (GST Exempted)</span>
         </div>
       </div>
 
       {/* Payment Channel Selector Tabs */}
       <div className="space-y-4">
-        <div className="flex border-b border-[rgba(138,216,184,0.15)] gap-2 overflow-x-auto pb-1">
+        <div className="flex border-b border-[var(--color-border)] gap-2 overflow-x-auto pb-1">
           <button
             onClick={() => setActiveTab("UPI")}
             className={cn(
-              "py-2.5 px-4 font-bold text-xs flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap",
+              "py-2 px-4 font-bold text-xs flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap",
               activeTab === "UPI"
-                ? "border-[#8AD8B8] text-[#FFF4E2] bg-[rgba(64,133,118,0.3)] rounded-t-xl"
-                : "border-transparent text-[#8AD8B8]/70 hover:text-[#FFF4E2]"
+                ? "border-[var(--color-accent)] text-[var(--color-accent)] bg-[var(--color-accent-surface)] rounded-t-lg"
+                : "border-transparent text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)]"
             )}
           >
             <Smartphone className="w-4 h-4" />
             Instant UPI &amp; Dynamic QR
-            <span className="px-1.5 py-0.5 rounded bg-[rgba(138,216,184,0.2)] text-[#8AD8B8] text-[9px] font-mono font-bold">Fastest</span>
+            <span className="px-1.5 py-0.5 rounded bg-[var(--color-accent-surface)] text-[var(--color-accent)] text-[9px] font-mono font-bold border border-[var(--color-accent)]/20">Fastest</span>
           </button>
 
           <button
             onClick={() => setActiveTab("CARD")}
             className={cn(
-              "py-2.5 px-4 font-bold text-xs flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap",
+              "py-2 px-4 font-bold text-xs flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap",
               activeTab === "CARD"
-                ? "border-[#8AD8B8] text-[#FFF4E2] bg-[rgba(64,133,118,0.3)] rounded-t-xl"
-                : "border-transparent text-[#8AD8B8]/70 hover:text-[#FFF4E2]"
+                ? "border-[var(--color-accent)] text-[var(--color-accent)] bg-[var(--color-accent-surface)] rounded-t-lg"
+                : "border-transparent text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)]"
             )}
           >
             <CreditCard className="w-4 h-4" />
@@ -379,10 +372,10 @@ export function ForgeRealTimePayment({
           <button
             onClick={() => setActiveTab("NETBANKING")}
             className={cn(
-              "py-2.5 px-4 font-bold text-xs flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap",
+              "py-2 px-4 font-bold text-xs flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap",
               activeTab === "NETBANKING"
-                ? "border-[#8AD8B8] text-[#FFF4E2] bg-[rgba(64,133,118,0.3)] rounded-t-xl"
-                : "border-transparent text-[#8AD8B8]/70 hover:text-[#FFF4E2]"
+                ? "border-[var(--color-accent)] text-[var(--color-accent)] bg-[var(--color-accent-surface)] rounded-t-lg"
+                : "border-transparent text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)]"
             )}
           >
             <Building2 className="w-4 h-4" />
@@ -392,23 +385,23 @@ export function ForgeRealTimePayment({
 
         {/* TAB 1: INSTANT UPI & REAL-TIME QR CODE */}
         {activeTab === "UPI" && (
-          <div className="p-6 rounded-2xl bg-[rgba(19,45,40,0.5)] border border-[rgba(138,216,184,0.2)] grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <div className="p-6 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             {/* Left: Dynamic QR Code Box */}
-            <div className="flex flex-col items-center justify-center p-6 bg-[rgba(8,19,16,0.85)] rounded-2xl border border-[rgba(138,216,184,0.2)] shadow-inner space-y-3">
-              <div className="relative p-3 rounded-xl border border-[rgba(138,216,184,0.25)] bg-white">
+            <div className="flex flex-col items-center justify-center p-6 bg-[var(--color-surface-raised)] rounded-xl border border-[var(--color-border)] shadow-xs space-y-3">
+              <div className="relative p-3 rounded-lg border border-[var(--color-border)] bg-white">
                 {isLoadingOrder ? (
-                  <div className="w-44 h-44 flex items-center justify-center">
-                    <RefreshCw className="w-8 h-8 animate-spin text-[#132D28]" />
+                  <div className="w-40 h-40 flex items-center justify-center">
+                    <RefreshCw className="w-8 h-8 animate-spin text-[var(--color-accent)]" />
                   </div>
                 ) : (
                   <div className="space-y-2 flex flex-col items-center">
                     <img 
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(order?.upi_qr_payload || `upi://pay?pa=nta.exams@govicici&pn=NTA&am=${feeAmount}`)}`}
                       alt="NPCI Dynamic UPI QR"
-                      className="w-40 h-40 rounded-lg"
+                      className="w-36 h-36 rounded-lg"
                     />
-                    <div className="flex items-center gap-1 text-[10px] font-mono text-[#132D28] font-bold">
-                      <ShieldCheck className="w-3 h-3 text-[#408576]" />
+                    <div className="flex items-center gap-1 text-[10px] font-mono text-slate-800 font-bold">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
                       NPCI UPI 2.0 Certified
                     </div>
                   </div>
@@ -416,13 +409,13 @@ export function ForgeRealTimePayment({
               </div>
 
               <div className="text-center space-y-1">
-                <span className="text-xs font-bold text-[#FFF4E2]">Scan with any UPI App</span>
-                <div className="flex flex-wrap items-center justify-center gap-1.5 text-[10px] text-[#8AD8B8]">
-                  <span className="px-1.5 py-0.5 rounded bg-[rgba(64,133,118,0.25)] font-semibold">GPay</span>
-                  <span className="px-1.5 py-0.5 rounded bg-[rgba(64,133,118,0.25)] font-semibold">PhonePe</span>
-                  <span className="px-1.5 py-0.5 rounded bg-[rgba(64,133,118,0.25)] font-semibold">Paytm</span>
-                  <span className="px-1.5 py-0.5 rounded bg-[rgba(64,133,118,0.25)] font-semibold">BHIM</span>
-                  <span className="px-1.5 py-0.5 rounded bg-[rgba(64,133,118,0.25)] font-semibold">CRED</span>
+                <span className="text-xs font-bold text-[var(--color-ink)]">Scan with any UPI App</span>
+                <div className="flex flex-wrap items-center justify-center gap-1.5 text-[10px] text-[var(--color-ink-secondary)]">
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--color-surface-sunken)] border border-[var(--color-border)] font-semibold">GPay</span>
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--color-surface-sunken)] border border-[var(--color-border)] font-semibold">PhonePe</span>
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--color-surface-sunken)] border border-[var(--color-border)] font-semibold">Paytm</span>
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--color-surface-sunken)] border border-[var(--color-border)] font-semibold">BHIM</span>
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--color-surface-sunken)] border border-[var(--color-border)] font-semibold">CRED</span>
                 </div>
               </div>
             </div>
@@ -430,18 +423,18 @@ export function ForgeRealTimePayment({
             {/* Right: Payment Intent, Copy VPA & Live Polling Status */}
             <div className="space-y-4">
               <div className="space-y-2">
-                <span className="text-xs font-bold text-[#FFF4E2] uppercase tracking-wider font-mono">
+                <span className="text-xs font-bold text-[var(--color-ink)] uppercase tracking-wider font-mono">
                   Merchant UPI ID / VPA
                 </span>
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 p-2.5 rounded-xl bg-[rgba(8,19,16,0.8)] border border-[rgba(138,216,184,0.25)] font-mono text-xs text-[#FFF4E2] truncate">
+                  <div className="flex-1 p-2.5 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] font-mono text-xs text-[var(--color-ink)] truncate">
                     {order?.upi_vpa || "nta.exams@govicici"}
                   </div>
                   <button
                     onClick={() => copyToClipboard(order?.upi_vpa || "nta.exams@govicici", "vpa")}
-                    className="px-3 py-2.5 rounded-xl border border-[rgba(138,216,184,0.3)] bg-[rgba(64,133,118,0.25)] hover:bg-[rgba(64,133,118,0.4)] text-[#FFF4E2] text-xs font-semibold flex items-center gap-1 shrink-0 cursor-pointer transition-colors"
+                    className="px-3 py-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-sunken)] text-[var(--color-ink)] text-xs font-semibold flex items-center gap-1 shrink-0 cursor-pointer transition-colors"
                   >
-                    {copiedField === "vpa" ? <Check className="w-3.5 h-3.5 text-[#8AD8B8]" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedField === "vpa" ? <Check className="w-3.5 h-3.5 text-[var(--color-success)]" /> : <Copy className="w-3.5 h-3.5" />}
                     {copiedField === "vpa" ? "Copied" : "Copy VPA"}
                   </button>
                 </div>
@@ -449,48 +442,48 @@ export function ForgeRealTimePayment({
 
               {/* Mobile Deep-Links */}
               <div className="space-y-2">
-                <span className="text-xs font-bold text-[#FFF4E2] uppercase tracking-wider font-mono">
+                <span className="text-xs font-bold text-[var(--color-ink)] uppercase tracking-wider font-mono">
                   Direct Mobile Payment Intent
                 </span>
                 <div className="grid grid-cols-2 gap-2">
                   <a
                     href={order?.upi_intent_gpay || "#"}
-                    className="p-2.5 rounded-xl bg-[rgba(8,19,16,0.8)] border border-[rgba(138,216,184,0.2)] hover:border-[#8AD8B8] font-bold text-xs text-[#FFF4E2] flex items-center justify-center gap-1.5 text-center shadow-xs transition-colors"
+                    className="p-2.5 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:border-[var(--color-accent)] font-bold text-xs text-[var(--color-ink)] flex items-center justify-center gap-1.5 text-center shadow-xs transition-colors no-underline"
                   >
-                    <Smartphone className="w-3.5 h-3.5 text-[#8AD8B8]" /> Google Pay
+                    <Smartphone className="w-3.5 h-3.5 text-[var(--color-accent)]" /> Google Pay
                   </a>
                   <a
                     href={order?.upi_intent_phonepe || "#"}
-                    className="p-2.5 rounded-xl bg-[rgba(8,19,16,0.8)] border border-[rgba(138,216,184,0.2)] hover:border-[#8AD8B8] font-bold text-xs text-[#FFF4E2] flex items-center justify-center gap-1.5 text-center shadow-xs transition-colors"
+                    className="p-2.5 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:border-[var(--color-accent)] font-bold text-xs text-[var(--color-ink)] flex items-center justify-center gap-1.5 text-center shadow-xs transition-colors no-underline"
                   >
-                    <Smartphone className="w-3.5 h-3.5 text-[#8AD8B8]" /> PhonePe
+                    <Smartphone className="w-3.5 h-3.5 text-[var(--color-accent)]" /> PhonePe
                   </a>
                   <a
                     href={order?.upi_intent_paytm || "#"}
-                    className="p-2.5 rounded-xl bg-[rgba(8,19,16,0.8)] border border-[rgba(138,216,184,0.2)] hover:border-[#8AD8B8] font-bold text-xs text-[#FFF4E2] flex items-center justify-center gap-1.5 text-center shadow-xs transition-colors"
+                    className="p-2.5 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:border-[var(--color-accent)] font-bold text-xs text-[var(--color-ink)] flex items-center justify-center gap-1.5 text-center shadow-xs transition-colors no-underline"
                   >
-                    <Smartphone className="w-3.5 h-3.5 text-[#8AD8B8]" /> Paytm
+                    <Smartphone className="w-3.5 h-3.5 text-[var(--color-accent)]" /> Paytm
                   </a>
                   <a
                     href={order?.upi_intent_bhim || "#"}
-                    className="p-2.5 rounded-xl bg-[rgba(8,19,16,0.8)] border border-[rgba(138,216,184,0.2)] hover:border-[#8AD8B8] font-bold text-xs text-[#FFF4E2] flex items-center justify-center gap-1.5 text-center shadow-xs transition-colors"
+                    className="p-2.5 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:border-[var(--color-accent)] font-bold text-xs text-[var(--color-ink)] flex items-center justify-center gap-1.5 text-center shadow-xs transition-colors no-underline"
                   >
-                    <Smartphone className="w-3.5 h-3.5 text-[#8AD8B8]" /> BHIM UPI
+                    <Smartphone className="w-3.5 h-3.5 text-[var(--color-accent)]" /> BHIM UPI
                   </a>
                 </div>
               </div>
 
               {/* Real-time Polling Status & Instant Test Verification */}
               <div className="pt-2 space-y-2">
-                <div className="p-3 rounded-xl bg-[rgba(64,133,118,0.2)] border border-[rgba(138,216,184,0.25)] flex items-center gap-2.5 text-xs text-[#8AD8B8] font-mono">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#8AD8B8] animate-ping"></span>
+                <div className="p-3 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] flex items-center gap-2.5 text-xs text-[var(--color-ink-secondary)] font-mono">
+                  <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-ping"></span>
                   <span>Awaiting payment settlement from your bank...</span>
                 </div>
 
                 <button
                   onClick={handleVerifyUpiPayment}
                   disabled={isVerifying}
-                  className="w-full bg-[#408576] hover:bg-[#132D28] text-[#FFF4E2] font-bold py-3 rounded-xl border border-[rgba(138,216,184,0.35)] text-xs flex items-center justify-center gap-2 shadow-md shadow-[#132D28]/50 cursor-pointer disabled:opacity-50 transition-all font-sans"
+                  className="w-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold py-2.5 rounded-lg text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50 transition-all active:scale-95"
                 >
                   {isVerifying ? (
                     <>
@@ -509,67 +502,67 @@ export function ForgeRealTimePayment({
 
         {/* TAB 2: CREDIT / DEBIT CARDS */}
         {activeTab === "CARD" && (
-          <div className="p-6 rounded-2xl bg-[rgba(19,45,40,0.5)] border border-[rgba(138,216,184,0.2)] space-y-4 max-w-lg mx-auto">
-            <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-2">
-              <span className="font-bold text-xs text-[#FFF4E2] uppercase font-mono">
+          <div className="p-6 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-4 max-w-lg mx-auto">
+            <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-2">
+              <span className="font-bold text-xs text-[var(--color-ink)] uppercase font-mono">
                 Card Details (RuPay, Visa, MasterCard)
               </span>
-              <div className="flex gap-1 text-[10px] font-mono text-[#8AD8B8]">
+              <div className="flex gap-1 text-[10px] font-mono text-[var(--color-accent)] font-bold">
                 <span>3D Secure 2.0</span>
               </div>
             </div>
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="text-[#FFF4E2]/80 font-mono font-bold block mb-1">Card Number</label>
+                <label className="text-[var(--color-ink-muted)] font-mono font-bold block mb-1">Card Number</label>
                 <input
                   type="text"
                   maxLength={19}
                   placeholder="4532 •••• •••• 8921"
                   value={cardNumber}
                   onChange={e => setCardNumber(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-[rgba(138,216,184,0.25)] bg-[rgba(8,19,16,0.8)] text-[#FFF4E2] font-mono text-xs focus:outline-none focus:border-[#8AD8B8]"
+                  className="w-full p-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-[var(--color-ink)] font-mono text-xs focus:outline-none focus:border-[var(--color-border-focus)]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[#FFF4E2]/80 font-mono font-bold block mb-1">Expiry Date</label>
+                  <label className="text-[var(--color-ink-muted)] font-mono font-bold block mb-1">Expiry Date</label>
                   <input
                     type="text"
                     maxLength={5}
                     placeholder="MM/YY"
                     value={cardExpiry}
                     onChange={e => setCardExpiry(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-[rgba(138,216,184,0.25)] bg-[rgba(8,19,16,0.8)] text-[#FFF4E2] font-mono text-xs focus:outline-none focus:border-[#8AD8B8]"
+                    className="w-full p-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-[var(--color-ink)] font-mono text-xs focus:outline-none focus:border-[var(--color-border-focus)]"
                   />
                 </div>
                 <div>
-                  <label className="text-[#FFF4E2]/80 font-mono font-bold block mb-1">CVV / CVC</label>
+                  <label className="text-[var(--color-ink-muted)] font-mono font-bold block mb-1">CVV / CVC</label>
                   <input
                     type="password"
                     maxLength={3}
                     placeholder="•••"
                     value={cardCvv}
                     onChange={e => setCardCvv(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-[rgba(138,216,184,0.25)] bg-[rgba(8,19,16,0.8)] text-[#FFF4E2] font-mono text-xs focus:outline-none focus:border-[#8AD8B8]"
+                    className="w-full p-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-[var(--color-ink)] font-mono text-xs focus:outline-none focus:border-[var(--color-border-focus)]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[#FFF4E2]/80 font-mono font-bold block mb-1">Cardholder Name</label>
+                <label className="text-[var(--color-ink-muted)] font-mono font-bold block mb-1">Cardholder Name</label>
                 <input
                   type="text"
                   value={cardHolder}
                   onChange={e => setCardHolder(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-[rgba(138,216,184,0.25)] bg-[rgba(8,19,16,0.8)] text-[#FFF4E2] font-medium text-xs focus:outline-none focus:border-[#8AD8B8]"
+                  className="w-full p-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-[var(--color-ink)] font-medium text-xs focus:outline-none focus:border-[var(--color-border-focus)]"
                 />
               </div>
 
               <button
                 onClick={() => setShowCardOtpModal(true)}
-                className="w-full bg-[#408576] hover:bg-[#132D28] text-[#FFF4E2] font-bold py-3 rounded-xl border border-[rgba(138,216,184,0.35)] text-xs flex items-center justify-center gap-2 shadow-md shadow-[#132D28]/50 cursor-pointer mt-2 transition-all font-sans"
+                className="w-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold py-2.5 rounded-lg text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer mt-2 transition-all active:scale-95"
               >
                 <Lock className="w-4 h-4" /> Pay ₹{feeAmount} with 3D Secure OTP
               </button>
@@ -579,8 +572,8 @@ export function ForgeRealTimePayment({
 
         {/* TAB 3: NET BANKING */}
         {activeTab === "NETBANKING" && (
-          <div className="p-6 rounded-2xl bg-[rgba(19,45,40,0.5)] border border-[rgba(138,216,184,0.2)] space-y-4">
-            <span className="font-bold text-xs text-[#FFF4E2] uppercase font-mono block">
+          <div className="p-6 rounded-xl bg-[var(--color-surface-sunken)] border border-[var(--color-border)] space-y-4">
+            <span className="font-bold text-xs text-[var(--color-ink)] uppercase font-mono block">
               Select Your Bank for Direct Net Banking Payment
             </span>
 
@@ -597,14 +590,14 @@ export function ForgeRealTimePayment({
                   key={bank.code}
                   onClick={() => setSelectedBank(bank.code)}
                   className={cn(
-                    "p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between",
+                    "p-3 rounded-lg border transition-all cursor-pointer flex items-center justify-between",
                     selectedBank === bank.code
-                      ? "bg-[rgba(64,133,118,0.35)] border-[#8AD8B8] font-bold text-[#FFF4E2] shadow-sm"
-                      : "bg-[rgba(8,19,16,0.7)] border-[rgba(138,216,184,0.15)] hover:border-[#8AD8B8] text-[#FFF4E2]/80"
+                      ? "bg-[var(--color-accent-surface)] border-[var(--color-accent)] font-bold text-[var(--color-accent)] shadow-2xs"
+                      : "bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] text-[var(--color-ink)]"
                   )}
                 >
                   <span>{bank.name}</span>
-                  {selectedBank === bank.code && <Check className="w-4 h-4 text-[#8AD8B8] shrink-0" />}
+                  {selectedBank === bank.code && <Check className="w-4 h-4 text-[var(--color-accent)] shrink-0" />}
                 </div>
               ))}
             </div>
@@ -612,7 +605,7 @@ export function ForgeRealTimePayment({
             <button
               onClick={handleVerifyNetBanking}
               disabled={isVerifying}
-              className="w-full bg-[#408576] hover:bg-[#132D28] text-[#FFF4E2] font-bold py-3 rounded-xl border border-[rgba(138,216,184,0.35)] text-xs flex items-center justify-center gap-2 shadow-md shadow-[#132D28]/50 cursor-pointer disabled:opacity-50 mt-4 transition-all font-sans"
+              className="w-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold py-2.5 rounded-lg text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50 mt-4 transition-all active:scale-95"
             >
               {isVerifying ? (
                 <>
@@ -630,21 +623,21 @@ export function ForgeRealTimePayment({
 
       {/* Card 3D Secure OTP Modal Simulation */}
       {showCardOtpModal && (
-        <div className="fixed inset-0 bg-[rgba(8,19,16,0.85)] backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-[#132D28] rounded-2xl border border-[rgba(138,216,184,0.3)] shadow-2xl p-6 max-w-md w-full space-y-4 text-[#FFF4E2]">
-            <div className="flex items-center justify-between border-b border-[rgba(138,216,184,0.15)] pb-3">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[var(--color-surface-raised)] rounded-xl border border-[var(--color-border)] shadow-xl p-6 max-w-md w-full space-y-4 text-[var(--color-ink)]">
+            <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-[#8AD8B8]" />
-                <h3 className="font-bold text-[#FFF4E2] text-sm">3D Secure 2.0 Authentication</h3>
+                <ShieldCheck className="w-5 h-5 text-[var(--color-accent)]" />
+                <h3 className="font-bold text-[var(--color-ink)] text-sm">3D Secure 2.0 Authentication</h3>
               </div>
-              <span className="text-[10px] font-mono text-[#8AD8B8]">Verified by Visa / RuPay</span>
+              <span className="text-[10px] font-mono text-[var(--color-ink-muted)]">Verified by Visa / RuPay</span>
             </div>
 
-            <p className="text-xs text-[#FFF4E2]/80 leading-relaxed">
+            <p className="text-xs text-[var(--color-ink-secondary)] leading-relaxed">
               An SMS OTP has been sent to your registered mobile number ending with <strong>•••210</strong> for transaction of <strong>₹{feeAmount}</strong>.
             </p>
 
-            <div className="p-3 bg-[rgba(64,133,118,0.2)] border border-[rgba(138,216,184,0.25)] rounded-xl text-center font-mono text-xs text-[#8AD8B8]">
+            <div className="p-3 bg-[var(--color-accent-surface)] border border-[var(--color-accent)]/20 rounded-lg text-center font-mono text-xs text-[var(--color-accent)] font-bold">
               Demo Test OTP: <strong>749201</strong>
             </div>
 
@@ -665,7 +658,7 @@ export function ForgeRealTimePayment({
                       document.getElementById(`card-otp-${idx + 1}`)?.focus();
                     }
                   }}
-                  className="w-10 h-12 text-center text-lg font-mono font-bold rounded-xl border border-[rgba(138,216,184,0.3)] bg-[rgba(8,19,16,0.8)] text-[#FFF4E2] focus:border-[#8AD8B8]"
+                  className="w-10 h-12 text-center text-lg font-mono font-bold rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-sunken)] text-[var(--color-ink)] focus:border-[var(--color-border-focus)]"
                 />
               ))}
             </div>
@@ -673,14 +666,14 @@ export function ForgeRealTimePayment({
             <div className="flex gap-2 pt-2">
               <button
                 onClick={() => setShowCardOtpModal(false)}
-                className="flex-1 py-2.5 rounded-xl border border-[rgba(138,216,184,0.2)] text-[#8AD8B8] hover:text-[#FFF4E2] text-xs font-semibold cursor-pointer"
+                className="flex-1 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)] text-xs font-semibold cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleVerifyCardPayment}
                 disabled={isVerifying}
-                className="flex-1 py-2.5 rounded-xl bg-[#408576] hover:bg-[#132D28] text-[#FFF4E2] text-xs font-bold border border-[rgba(138,216,184,0.35)] shadow-sm cursor-pointer disabled:opacity-50 transition-all"
+                className="flex-1 py-2 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50 transition-all"
               >
                 {isVerifying ? "Verifying..." : "Submit OTP"}
               </button>
@@ -693,11 +686,11 @@ export function ForgeRealTimePayment({
       <div className="flex justify-between pt-2">
         <button
           onClick={onBack}
-          className="px-4 py-2.5 rounded-xl border border-[rgba(138,216,184,0.25)] bg-[rgba(255,244,226,0.06)] hover:bg-[rgba(255,244,226,0.12)] text-[#FFF4E2] text-xs font-semibold cursor-pointer transition-colors"
+          className="px-4 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-sunken)] hover:bg-[var(--color-surface-inset)] text-[var(--color-ink)] text-xs font-semibold cursor-pointer transition-colors"
         >
-          ← Back to Application Audit
+          &larr; Back to Application Audit
         </button>
-        <span className="text-[#8AD8B8]/70 text-xs font-mono self-center">
+        <span className="text-[var(--color-ink-muted)] text-xs font-mono self-center">
           256-Bit SSL Encrypted Payment Gateway
         </span>
       </div>
